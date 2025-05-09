@@ -16,14 +16,20 @@ This project is maintained by:
 
 ## Student Responsibilities
 
-| Week | Title                   | Student     | Description            |
-|------|-------------------------|-------------|------------------------|
-| CW19 | Draft Problem Statement | Everyone    |                        |
-| CW20 |                         |             |                        |
-| CW21 |                         |             |                        |
-| CW22 |                         |             |                        |
-| CW23 |                         |             |                        |
+| Week | Title                   | Student     | Description            | Status        | Impediments       | Promises         | 
+|------|-------------------------|-------------|------------------------|---------------|-------------------|------------------|
+| CW19 | Draft Problem Statement | Everyone    |                        |               |                   |                  |
+| CW20 |                         |             |                        |               |                   |                  |
+| CW21 |                         |             |                        |               |                   |                  |
+| CW22 |                         |             |                        |               |                   |                  |
+| CW23 |                         |             |                        |               |                   |                  |
 
+## Subsystem Ownership
+
+- Subsystem1: ..
+- Subsystem2: ..
+- Subsystem3: ..
+- ...
 
 ---
 
@@ -50,11 +56,30 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
 ## Tech Stack
 
-- **Frontend**: tbd
-- **Backend**: tbd
-- **AI Model**: tbd 
-- **Database**: tbd
+- **Frontend**: React
+- **Backend**: Spring Boot (Java)
+- **GenAI Integration**: LangChain
+- **AI models**: OpenAI, LLaMA
+- **Database**: PostgreSQL
 
 ---
 
 ## Architecture Overview
+
+### Top Level Architecture
+
+### Subsystem Decomposition
+
+---
+
+## API documentation
+
+---
+
+## CI/CD Instructions
+
+---
+
+## Monitoring Instructions
+
+---
