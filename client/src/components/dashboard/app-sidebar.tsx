@@ -3,14 +3,14 @@
 import * as React from "react"
 import { AudioWaveform, Blocks, Calendar, Command, Home, Inbox, MessageCircleQuestion, Plus, Search, Settings2, Sparkles, Trash2 } from "lucide-react"
 
-import { NavFavorites } from "@/components/nav-favorites"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavCourses } from "@/components/nav-courses"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavFavorites } from "@/components/dashboard/nav-favorites"
+import { NavMain } from "@/components/dashboard/nav-main"
+import { NavSecondary } from "@/components/dashboard/nav-secondary"
+import { NavCourses } from "@/components/dashboard/nav-courses"
+import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
-import coursesData from "../../mock/coursesData"
+import coursesData from "../../../mock/coursesData"
 
 const data = {
   teams: [
