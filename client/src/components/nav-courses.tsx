@@ -1,10 +1,6 @@
 import { ChevronRight, MoreHorizontal, Plus } from "lucide-react"
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -18,37 +14,47 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
-export function NavWorkspaces({
-  workspaces,
+export function NavCourses({
+  courses,
 }: {
-  workspaces: {
+  courses: {
+    id: string
+    type: string
     name: string
-    emoji: React.ReactNode
-    pages: {
+    emoji: string
+    isFavorite: boolean
+    url: string
+    createdAt: string
+    updatedAt: string
+    chapters: {
+      id: string
+      type: string
+      courseId: string
       name: string
-      emoji: React.ReactNode
+      emoji: string
+      isFavorite: boolean
+      url: string
+      createdAt: string
+      updatedAt: string
     }[]
   }[]
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
+      <SidebarGroupLabel>Courses</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {workspaces.map((workspace) => (
-            <Collapsible key={workspace.name}>
+          {courses.map((course) => (
+            <Collapsible key={course.name}>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a href="#">
-                    <span>{workspace.emoji}</span>
-                    <span>{workspace.name}</span>
+                    <span>{course.emoji}</span>
+                    <span>{course.name}</span>
                   </a>
                 </SidebarMenuButton>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuAction
-                    className="bg-sidebar-accent text-sidebar-accent-foreground left-2 data-[state=open]:rotate-90"
-                    showOnHover
-                  >
+                  <SidebarMenuAction className="bg-sidebar-accent text-sidebar-accent-foreground left-2 data-[state=open]:rotate-90" showOnHover>
                     <ChevronRight />
                   </SidebarMenuAction>
                 </CollapsibleTrigger>
@@ -57,7 +63,7 @@ export function NavWorkspaces({
                 </SidebarMenuAction>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {workspace.pages.map((page) => (
+                    {course.chapters.map((page) => (
                       <SidebarMenuSubItem key={page.name}>
                         <SidebarMenuSubButton asChild>
                           <a href="#">
