@@ -4,7 +4,7 @@ import Link from "next/link"
 export function FooterSection() {
   return (
     <footer className="border-t bg-background py-12">
-      <div className="container px-4 md:px-6">
+      <div className="px-4 md:px-6 max-w-3/4 mx-auto">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-2">
             <Link href="/" className="flex items-center gap-2 font-medium">
@@ -13,9 +13,7 @@ export function FooterSection() {
               </div>
               Acme Inc.
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Simplifying workflows and boosting productivity for teams around the world.
-            </p>
+            <p className="text-sm text-muted-foreground">Simplifying workflows and boosting productivity for teams around the world.</p>
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium">Product</h3>

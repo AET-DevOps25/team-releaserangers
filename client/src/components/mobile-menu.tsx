@@ -22,7 +22,7 @@ export function MobileMenu() {
           <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
           <SheetDescription className="text-sm text-muted-foreground">Navigate through the app</SheetDescription>
         </SheetHeader>
-        <nav className="mt-8 flex flex-col gap-4">
+        <nav className="flex flex-col gap-4 px-4">
           <Link href="#features" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={() => setOpen(false)}>
             Features
           </Link>
@@ -32,14 +32,14 @@ export function MobileMenu() {
           <Link href="#pricing" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={() => setOpen(false)}>
             Pricing
           </Link>
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="mt-4 flex gap-2 justify-start">
             <Link href="/login" onClick={() => setOpen(false)}>
-              <Button variant="outline" className="w-full justify-start">
+              <Button variant="outline" className="">
                 Login
               </Button>
             </Link>
             <Link href="/signup" onClick={() => setOpen(false)}>
-              <Button className="w-full justify-start">Sign up</Button>
+              <Button className="">Sign up</Button>
             </Link>
           </div>
         </nav>
