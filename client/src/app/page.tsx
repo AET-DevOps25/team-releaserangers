@@ -1,13 +1,13 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { HeroSection } from "@/components/hero-section"
-import { FeatureSection } from "@/components/feature-section"
-import { TestimonialSection } from "@/components/testimonial-section"
-import { PricingSection } from "@/components/pricing-section"
-import { FooterSection } from "@/components/footer-section"
-import { MobileMenu } from "@/components/mobile-menu"
-import { ModeToggle } from "@/components/mode-toggle"
+import { HeroSection } from "@/components/landing-page/hero-section"
+import { FeatureSection } from "@/components/landing-page/feature-section"
+import { TestimonialSection } from "@/components/landing-page/testimonial-section"
+import { PricingSection } from "@/components/landing-page/pricing-section"
+import { FooterSection } from "@/components/landing-page/footer-section"
+import { MobileMenu } from "@/components/landing-page/mobile-menu"
+import { ModeToggle } from "@/components/landing-page/mode-toggle"
 
 export default function LandingPage() {
   return (
