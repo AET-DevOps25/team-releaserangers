@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function TeamSwitcher({
   teams,
@@ -61,12 +62,14 @@ export function TeamSwitcher({
               <div className="text-muted-foreground font-medium">Add team</div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                <activeTeam.logo className="size-4" />
-              </div>
-              <div className="text-muted-foreground font-medium">Logout</div>
-              <DropdownMenuShortcut>⌘M</DropdownMenuShortcut>
+            <DropdownMenuItem asChild>
+              <Link href="/" className="gap-2 p-2 flex cursor-pointer items-center">
+                <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                  <activeTeam.logo className="size-4" />
+                </div>
+                <div className="text-muted-foreground font-medium">Logout</div>
+                <DropdownMenuShortcut>⌘M</DropdownMenuShortcut>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
