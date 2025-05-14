@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
         <NavMain items={data.navMain} />
-        <CourseCreationDialog />
+        {/* <CourseCreationDialog /> */}
       </SidebarHeader>
       <SidebarContent>
         <NavFavorites favorites={favorites} />
