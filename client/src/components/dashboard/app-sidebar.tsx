@@ -11,6 +11,7 @@ import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
 import coursesData from "../../../mock/coursesData"
+import { CourseCreationDialog } from "./course-creation-dialog"
 
 const data = {
   teams: [
@@ -53,11 +54,6 @@ const data = {
       icon: Inbox,
       badge: "10",
     },
-    {
-      title: "New Course",
-      url: "#",
-      icon: Plus,
-    },
   ],
   navSecondary: [
     {
@@ -86,6 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
         <NavMain items={data.navMain} />
+        <CourseCreationDialog />
       </SidebarHeader>
       <SidebarContent>
         <NavFavorites favorites={favorites} />

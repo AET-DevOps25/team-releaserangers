@@ -13,6 +13,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { CourseCreationDialog } from "./course-creation-dialog"
 
 export function NavCourses({
   courses,
@@ -41,7 +42,12 @@ export function NavCourses({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Courses</SidebarGroupLabel>
+      <SidebarGroupLabel className="flex items-center justify-between group/workspace-label">
+        <span>Courses</span>
+        <div className="opacity-0 group-hover/workspace-label:opacity-100 transition-opacity">
+          <CourseCreationDialog isPlusIcon={true} />
+        </div>
+      </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {courses.map((course) => (
