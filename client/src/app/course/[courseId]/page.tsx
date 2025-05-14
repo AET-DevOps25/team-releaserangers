@@ -5,7 +5,6 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { ChapterList } from "@/components/dashboard/chapter-list"
 import { UploadDropzone } from "@/components/dashboard/upload-dropzone"
-import { FloatingAddButton } from "@/components/dashboard/floating-add-button"
 import { AddContentButton } from "@/components/dashboard/add-content-button"
 
 // Sample course data
@@ -97,9 +96,6 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             )}
           </div>
         </div>
-
-        {/* Floating add button for quick access when there are many chapters */}
-        {hasChapters && <FloatingAddButton />}
       </SidebarInset>
     </SidebarProvider>
   )
