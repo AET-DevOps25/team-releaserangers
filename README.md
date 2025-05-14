@@ -19,7 +19,7 @@ This project is maintained by:
 | Week | Title                   | Student     | Description            | Status        | Impediments       | Promises         | 
 |------|-------------------------|-------------|------------------------|---------------|-------------------|------------------|
 | CW19 | Draft Problem Statement | Everyone    |                        |               |                   |                  |
-| CW20 |                         |             |                        |               |                   |                  |
+| CW20 | Create UML Models, Initial Backlog | Everyone |                        |               |                   |                  |
 | CW21 |                         |             |                        |               |                   |                  |
 | CW22 |                         |             |                        |               |                   |                  |
 | CW23 |                         |             |                        |               |                   |                  |
