@@ -44,7 +44,7 @@ export function NavCourses({
     <SidebarGroup>
       <SidebarGroupLabel className="flex items-center justify-between group/workspace-label">
         <span>Courses</span>
-        <div className="opacity-0 group-hover/workspace-label:opacity-100 transition-opacity">
+        <div>
           <CourseCreationDialog isPlusIcon={true} />
         </div>
       </SidebarGroupLabel>
