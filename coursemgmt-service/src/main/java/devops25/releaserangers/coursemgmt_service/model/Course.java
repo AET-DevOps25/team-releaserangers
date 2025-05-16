@@ -7,7 +7,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 // JPA annotations to define the entity and its table name
 @Table(name = "courses")
 @Entity
