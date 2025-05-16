@@ -2,6 +2,7 @@ package devops25.releaserangers.coursemgmt_service.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @Setter
@@ -12,17 +13,19 @@ import lombok.*;
 @Entity
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "course_id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
+    @Column(name = "course_name", nullable = false)
     private String name;
+
+    @Column(name = "course_description")
     private String description;
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
+    public void setId(String id) { this.id = id; }
+
     public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
+
     public void setDescription(String description) { this.description = description; }
 }
