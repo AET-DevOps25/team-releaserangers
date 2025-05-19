@@ -8,14 +8,31 @@ import java.util.List;
 
 @Service
 public class CourseService {
+
     @Autowired
     private CourseRepository courseRepository;
+
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    public Course getCourseById(String courseId) {
+        return courseRepository.findById(courseId).orElse(null);
+    }
+
+    public List<Course> getCoursesByUserId(String userId) {
+        return courseRepository.findAll().stream()
+                .filter(course -> course.getUserId().equals(userId)).toList();
+    }
 
     public Course saveCourse(Course course) {
         return courseRepository.save(course);
     }
 
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    public void deleteCourse(Course course) {
+        Course existingCourse = getCourseById(course.getId());
+        if (existingCourse != null) {
+            courseRepository.delete(existingCourse);
+        }
     }
 }

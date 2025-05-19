@@ -17,15 +17,12 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
     @Column(name = "course_name", nullable = false)
     private String name;
 
     @Column(name = "course_description")
     private String description;
-
-    public void setId(String id) { this.id = id; }
-
-    public void setName(String name) { this.name = name; }
-
-    public void setDescription(String description) { this.description = description; }
 }
