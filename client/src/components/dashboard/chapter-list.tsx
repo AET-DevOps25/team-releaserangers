@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Calendar, CalendarSync, ChevronRight, FileText } from "lucide-react"
+import { Calendar, CalendarSync, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Chapter {
   id: string
