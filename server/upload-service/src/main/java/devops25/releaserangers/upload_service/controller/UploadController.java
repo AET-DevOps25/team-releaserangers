@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
+import java.io.ByteArrayInputStream;
 import java.util.Objects;
 
 @RestController
@@ -44,6 +47,17 @@ public class UploadController {
                 response.append("File Name: ").append(upload.getFilename()).append("\n");
                 response.append("Content Type: ").append(upload.getContentType()).append("\n");
                 response.append("Data Size: ").append(upload.getData().length).append(" bytes\n\n");
+                if ("application/pdf".equals(upload.getContentType())) {
+                    try (PDDocument document = PDDocument.load(new ByteArrayInputStream(upload.getData()))) {
+                        PDFTextStripper pdfStripper = new PDFTextStripper();
+                        String text = pdfStripper.getText(document);
+                        response.append("Extracted Text: ").append(text).append("\n\n");
+                    } catch (Exception e) {
+                        response.append("[Failed to extract PDF text: ").append(e.getMessage()).append("]\n\n");
+                    }
+                } else {
+                    response.append("Data: ").append(new String(upload.getData())).append("\n\n");
+                }
             }
             return ResponseEntity.ok(response.toString());
         } catch (Exception e) {
