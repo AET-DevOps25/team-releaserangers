@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AudioWaveform, Blocks, Calendar, Command, Home, Inbox, MessageCircleQuestion, Plus, Search, Settings2, Sparkles, Trash2 } from "lucide-react"
+import { AudioWaveform, Command, Home, Inbox, MessageCircleQuestion, Search, Settings2, Sparkles, Trash2 } from "lucide-react"
 
 import { NavFavorites } from "@/components/dashboard/nav-favorites"
 import { NavMain } from "@/components/dashboard/nav-main"
@@ -11,7 +11,6 @@ import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
 import coursesData from "../../../mock/coursesData"
-import { CourseCreationDialog } from "./course-creation-dialog"
 
 const data = {
   teams: [
@@ -76,7 +75,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const favorites = coursesData.flatMap((course) => course.chapters).filter((chapter) => chapter.isFavorite)
-  const [courses, setCourses] = React.useState(coursesData)
+  const [courses] = React.useState(coursesData)
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
