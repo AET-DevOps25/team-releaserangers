@@ -2,7 +2,11 @@ package devops25.releaserangers.coursemgmt_service.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,4 +29,18 @@ public class Course {
 
     @Column(name = "course_description")
     private String description;
+
+    @Column(name = "course_emoji")
+    private String emoji;
+
+    @Column(name = "course_is_favorite")
+    @Value("false")
+    private Boolean isFavorite;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
