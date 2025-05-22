@@ -4,6 +4,7 @@ import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
+import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,18 +89,12 @@ public class CourseController {
         if (existingCourse == null) {
             return ResponseEntity.notFound().build();
         }
-        for (Field field : course.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                Object value = field.get(course);
-                if (value != null) {
-                    field.set(existingCourse, value);
-                }
-            } catch (IllegalAccessException e) {
-                return ResponseEntity.status(500).build();
-            }
+        try {
+            PatchUtils.applyPatch(course, existingCourse);
+            return ResponseEntity.ok(courseService.saveCourse(existingCourse));
+        } catch (IllegalAccessException e) {
+            return ResponseEntity.status(500).build();
         }
-        return ResponseEntity.ok(courseService.saveCourse(existingCourse));
     }
 
     @DeleteMapping("/{courseId}")

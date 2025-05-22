@@ -3,12 +3,12 @@ package devops25.releaserangers.coursemgmt_service.controller;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
+import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
@@ -44,6 +44,12 @@ public class ChapterController {
         return ResponseEntity.ok(created);
     }
 
+    private void checkForCourseIdAndSetCourse(Chapter chapter) {
+        if (chapter.getCourse() != null && chapter.getCourse().getId() != null) {
+            chapter.setCourse(courseService.getCourseById(chapter.getCourse().getId()));
+        }
+    }
+
     @PutMapping("/{chapter_id}")
     public ResponseEntity<Chapter> updateChapter(@PathVariable String chapter_id,
                                                  @RequestBody Chapter chapterRequest) {
@@ -51,11 +57,7 @@ public class ChapterController {
         if (existingChapter == null) {
             return ResponseEntity.notFound().build();
         }
-        
-        if (chapterRequest.getCourse() != null && chapterRequest.getCourse().getId() != null) {
-            chapterRequest.setCourse(courseService.getCourseById(chapterRequest.getCourse().getId()));
-        }
-        
+        checkForCourseIdAndSetCourse(chapterRequest);
         BeanUtils.copyProperties(chapterRequest, existingChapter, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(chapterService.saveChapter(existingChapter));
     }
@@ -66,23 +68,13 @@ public class ChapterController {
         if (patched == null) {
             return ResponseEntity.notFound().build();
         }
-
-        if (patch.getCourse() != null && patch.getCourse().getId() != null) {
-            patch.setCourse(courseService.getCourseById(patch.getCourse().getId()));
+        checkForCourseIdAndSetCourse(patch);
+        try {
+            PatchUtils.applyPatch(patch, patched);
+            return ResponseEntity.ok(chapterService.saveChapter(patched));
+        } catch (IllegalAccessException e) {
+            return ResponseEntity.status(500).build();
         }
-
-        for (Field field : patch.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                Object value = field.get(patch);
-                if (value != null) {
-                    field.set(patched, value);
-                }
-            } catch (IllegalAccessException e) {
-                return ResponseEntity.status(500).build();
-            }
-        }
-        return ResponseEntity.ok(chapterService.saveChapter(patched));
     }
 
     @DeleteMapping("/{chapter_id}")

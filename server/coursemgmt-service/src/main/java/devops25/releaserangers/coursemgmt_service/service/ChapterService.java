@@ -25,7 +25,7 @@ public class ChapterService {
     public List<Chapter> getAllChapters() {
         return chapterRepository.findAll();
     }
-    
+
     public Chapter getChapterById(String id) {
         return chapterRepository.findById(id).orElse(null);
     }
