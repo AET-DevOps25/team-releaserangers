@@ -3,7 +3,6 @@ package devops25.releaserangers.coursemgmt_service.model;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 

@@ -3,20 +3,18 @@ package devops25.releaserangers.coursemgmt_service.service;
 
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.repository.ChapterRepository;
-import devops25.releaserangers.coursemgmt_service.repository.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ChapterService {
-    @Autowired
-    private ChapterRepository chapterRepository;
 
-    @Autowired
-    private CourseRepository courseRepository;
+    private final ChapterRepository chapterRepository;
+
+    public ChapterService(ChapterRepository chapterRepository) {
+        this.chapterRepository = chapterRepository;
+    }
 
     public Chapter saveChapter(Chapter chapter) {
         return chapterRepository.save(chapter);

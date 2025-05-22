@@ -5,21 +5,22 @@ import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
 @RequestMapping("/courses")
 public class CourseController {
-    @Autowired
-    private CourseService courseService;
-    @Autowired
-    private ChapterService chapterService;
+    private final CourseService courseService;
+    private final ChapterService chapterService;
+
+    public CourseController(CourseService courseService, ChapterService chapterService) {
+        this.courseService = courseService;
+        this.chapterService = chapterService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {
