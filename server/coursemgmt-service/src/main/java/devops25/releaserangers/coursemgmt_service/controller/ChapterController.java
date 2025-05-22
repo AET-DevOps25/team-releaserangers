@@ -1,9 +1,10 @@
 package devops25.releaserangers.coursemgmt_service.controller;
 
 import devops25.releaserangers.coursemgmt_service.DTO.ChapterPatchRequest;
-import devops25.releaserangers.coursemgmt_service.DTO.ChapterRequest;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
+import devops25.releaserangers.coursemgmt_service.service.CourseService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ import java.util.List;
 public class ChapterController {
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private CourseService courseService;
 
     @GetMapping
     public ResponseEntity<List<Chapter>> getAllChapters() {
@@ -35,19 +39,25 @@ public class ChapterController {
     }
 
     @PostMapping
-    public ResponseEntity<Chapter> createChapter(@RequestBody ChapterRequest chapterRequest) {
-        Chapter created = chapterService.createChapter(chapterRequest);
+    public ResponseEntity<Chapter> createChapter(@RequestBody Chapter chapterRequest) {
+        Chapter created = chapterService.saveChapter(chapterRequest);
         return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{chapter_id}")
     public ResponseEntity<Chapter> updateChapter(@PathVariable String chapter_id,
-                                                 @RequestBody ChapterRequest chapterRequest) {
+                                                 @RequestBody Chapter chapterRequest) {
         Chapter existingChapter = chapterService.getChapterById(chapter_id);
         if (existingChapter == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(chapterService.updateChapter(chapter_id, chapterRequest));
+        
+        if (chapterRequest.getCourse() != null && chapterRequest.getCourse().getId() != null) {
+            chapterRequest.setCourse(courseService.getCourseById(chapterRequest.getCourse().getId()));
+        }
+        
+        BeanUtils.copyProperties(chapterRequest, existingChapter, "id", "createdAt", "updatedAt");
+        return ResponseEntity.ok(chapterService.saveChapter(existingChapter));
     }
 
     @PatchMapping("/{chapter_id}")

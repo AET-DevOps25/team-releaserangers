@@ -2,9 +2,7 @@ package devops25.releaserangers.coursemgmt_service.service;
 
 
 import devops25.releaserangers.coursemgmt_service.DTO.ChapterPatchRequest;
-import devops25.releaserangers.coursemgmt_service.DTO.ChapterRequest;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
-import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.repository.ChapterRepository;
 import devops25.releaserangers.coursemgmt_service.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +19,7 @@ public class ChapterService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public Chapter createChapter(ChapterRequest request) {
-        Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-
-        Chapter chapter = new Chapter();
-        chapter.setTitle(request.getTitle());
-        chapter.setContent(request.getContent());
-        chapter.setEmoji(request.getEmoji());
-        chapter.setIsFavorite(request.getIsFavorite());
-        chapter.setCreatedAt(request.getCreatedAt() != null ? request.getCreatedAt() : LocalDateTime.now());
-        chapter.setUpdatedAt(request.getUpdatedAt() != null ? request.getUpdatedAt() : LocalDateTime.now());
-        chapter.setCourse(course);
-
+    public Chapter saveChapter(Chapter chapter) {
         return chapterRepository.save(chapter);
     }
 
@@ -47,20 +33,6 @@ public class ChapterService {
 
     public List<Chapter> getChaptersByCourseId(String courseId) {
         return chapterRepository.findByCourseId(courseId);
-    }
-
-
-    public Chapter updateChapter(String id, ChapterRequest request) {
-        Chapter existing = chapterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chapter not found"));
-
-        existing.setTitle(request.getTitle());
-        existing.setContent(request.getContent());
-        existing.setEmoji(request.getEmoji());
-        existing.setIsFavorite(request.getIsFavorite());
-        existing.setUpdatedAt(request.getUpdatedAt() != null ? request.getUpdatedAt() : LocalDateTime.now());
-
-        return chapterRepository.save(existing);
     }
 
     public Chapter patchChapter(String id, ChapterPatchRequest patch) {

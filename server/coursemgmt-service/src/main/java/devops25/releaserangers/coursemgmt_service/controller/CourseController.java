@@ -1,6 +1,5 @@
 package devops25.releaserangers.coursemgmt_service.controller;
 
-import devops25.releaserangers.coursemgmt_service.DTO.ChapterRequest;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
@@ -43,7 +42,7 @@ public class CourseController {
     public ResponseEntity<Course> getCourseById(@PathVariable String courseId) {
         Course course = courseService.getCourseById(courseId);
         if (course == null) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(course);
     }
@@ -65,10 +64,10 @@ public class CourseController {
     @PostMapping("/{courseId}/chapters")
     public ResponseEntity<Chapter> createChapterInCourse(
             @PathVariable String courseId,
-            @RequestBody ChapterRequest request) {
-        request.setCourseId(courseId);
+            @RequestBody Chapter request) {
+        request.setCourse(courseService.getCourseById(courseId));
 
-        Chapter created = chapterService.createChapter(request);
+        Chapter created = chapterService.saveChapter(request);
         return ResponseEntity.ok(created);
     }
 
