@@ -8,6 +8,8 @@ RUN mvn clean package -DskipTests
 # Use JRE to run the application
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
+RUN addgroup -S spring && adduser -S spring -G spring
+USER  spring:spring
 COPY --from=build /app/target/*.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=docker
 EXPOSE 8080
