@@ -76,7 +76,7 @@ public class CourseController {
     public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course) {
         Course existingCourse = courseService.getCourseById(courseId);
         if (existingCourse == null) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
         BeanUtils.copyProperties(course, existingCourse, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(courseService.saveCourse(existingCourse));
@@ -86,7 +86,7 @@ public class CourseController {
     public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course) {
         Course existingCourse = courseService.getCourseById(courseId);
         if (existingCourse == null) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
         for (Field field : course.getClass().getDeclaredFields()) {
             field.setAccessible(true);

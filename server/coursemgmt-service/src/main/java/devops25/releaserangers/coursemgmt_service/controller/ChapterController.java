@@ -1,6 +1,5 @@
 package devops25.releaserangers.coursemgmt_service.controller;
 
-import devops25.releaserangers.coursemgmt_service.DTO.ChapterPatchRequest;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
@@ -61,9 +61,28 @@ public class ChapterController {
     }
 
     @PatchMapping("/{chapter_id}")
-    public ResponseEntity<Chapter> patchChapter(@PathVariable String chapter_id, @RequestBody ChapterPatchRequest patch) {
-        Chapter patched = chapterService.patchChapter(chapter_id, patch);
-        return ResponseEntity.ok(patched);
+    public ResponseEntity<Chapter> patchChapter(@PathVariable String chapter_id, @RequestBody Chapter patch) {
+        Chapter patched = chapterService.getChapterById(chapter_id);
+        if (patched == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (patch.getCourse() != null && patch.getCourse().getId() != null) {
+            patch.setCourse(courseService.getCourseById(patch.getCourse().getId()));
+        }
+
+        for (Field field : patch.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                Object value = field.get(patch);
+                if (value != null) {
+                    field.set(patched, value);
+                }
+            } catch (IllegalAccessException e) {
+                return ResponseEntity.status(500).build();
+            }
+        }
+        return ResponseEntity.ok(chapterService.saveChapter(patched));
     }
 
     @DeleteMapping("/{chapter_id}")
