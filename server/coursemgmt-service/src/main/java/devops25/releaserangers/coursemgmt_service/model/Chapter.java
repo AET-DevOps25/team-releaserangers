@@ -1,14 +1,13 @@
 package devops25.releaserangers.coursemgmt_service.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 
 @Getter
 @Setter
@@ -37,15 +36,14 @@ public class Chapter {
     @Column(name = "chapter_emoji")
     private String emoji;
 
-    @Column(name = "is_favorite")
+    @Column(name = "chapter_is_favorite")
     private Boolean isFavorite;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @Column(name = "created_At")
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @Column(name = "updated_At")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
 }

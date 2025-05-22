@@ -3,7 +3,6 @@ package devops25.releaserangers.coursemgmt_service.controller;
 import devops25.releaserangers.coursemgmt_service.DTO.ChapterPatchRequest;
 import devops25.releaserangers.coursemgmt_service.DTO.ChapterRequest;
 import devops25.releaserangers.coursemgmt_service.model.Chapter;
-import devops25.releaserangers.coursemgmt_service.repository.CourseRepository;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,6 @@ import java.util.List;
 public class ChapterController {
     @Autowired
     private ChapterService chapterService;
-    @Autowired
-    private CourseRepository courseRepository;
 
     @GetMapping
     public ResponseEntity<List<Chapter>> getAllChapters() {
