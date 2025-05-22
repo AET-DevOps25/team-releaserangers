@@ -1,6 +1,9 @@
 package devops25.releaserangers.coursemgmt_service.controller;
 
+import devops25.releaserangers.coursemgmt_service.DTO.ChapterRequest;
+import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.model.Course;
+import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +18,14 @@ import java.util.List;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private ChapterService chapterService;
 
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
         if (courses.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(courses);
     }
@@ -29,7 +34,7 @@ public class CourseController {
     public ResponseEntity<List<Course>> getCoursesByUser(@PathVariable String userId) {
         List<Course> courses = courseService.getCoursesByUserId(userId);
         if (courses.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(courses);
     }
@@ -38,9 +43,18 @@ public class CourseController {
     public ResponseEntity<Course> getCourseById(@PathVariable String courseId) {
         Course course = courseService.getCourseById(courseId);
         if (course == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(course);
+    }
+
+    @GetMapping("/{courseId}/chapters")
+    public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId) {
+        List<Chapter> chapters = chapterService.getChaptersByCourseId(courseId);
+        if (chapters.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(chapters);
     }
 
     @PostMapping
@@ -48,11 +62,22 @@ public class CourseController {
         return ResponseEntity.ok(courseService.saveCourse(course));
     }
 
+    @PostMapping("/{courseId}/chapters")
+    public ResponseEntity<Chapter> createChapterInCourse(
+            @PathVariable String courseId,
+            @RequestBody ChapterRequest request) {
+        request.setCourseId(courseId);
+
+        Chapter created = chapterService.createChapter(request);
+        return ResponseEntity.ok(created);
+    }
+
+
     @PutMapping("/{courseId}")
     public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course) {
         Course existingCourse = courseService.getCourseById(courseId);
         if (existingCourse == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         BeanUtils.copyProperties(course, existingCourse, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(courseService.saveCourse(existingCourse));
@@ -62,7 +87,7 @@ public class CourseController {
     public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course) {
         Course existingCourse = courseService.getCourseById(courseId);
         if (existingCourse == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         for (Field field : course.getClass().getDeclaredFields()) {
             field.setAccessible(true);
