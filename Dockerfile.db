@@ -1,0 +1,9 @@
+# PostgreSQL Dockerfile
+FROM postgres:15-alpine
+
+ENV POSTGRES_USER=release
+ENV POSTGRES_PASSWORD=ranger
+ENV POSTGRES_DB=devops25_db
+
+EXPOSE 5432
+
