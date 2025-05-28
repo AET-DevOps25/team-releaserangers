@@ -16,7 +16,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   set: (courses: Course[]) => set({ courses }),
   add: async (course: CourseCreationForm) => {
     course.userId = "1" // TODO: Assuming a static user ID for now
-    set((state) => ({ isLoading: true }))
+    set(() => ({ isLoading: true }))
     const response = await fetch("http://localhost:8080/courses", {
       method: "POST",
       headers: {
