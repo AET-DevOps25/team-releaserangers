@@ -68,7 +68,15 @@ export default function ChapterPage({ params }: { params: { courseId: string; ch
   // In a real application, you would fetch the course and chapter data based on the IDs
   const courseTitle = "Introduction to Web Development"
   const chapterTitle = "Getting Started with HTML"
-  const chapter: Chapter = {} // TODO: Replace with actual chapter data fetching logic
+  const chapter: Chapter = {
+    isFavorite: false,
+    id: params.chapterId,
+    name: chapterTitle,
+    description: "Learn the basics of HTML, the standard markup language for creating web pages.",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    emoji: "🌐",
+  } // TODO: Replace with actual chapter data fetching logic
 
   return (
     <SidebarProvider>
