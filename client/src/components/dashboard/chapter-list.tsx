@@ -8,13 +8,6 @@ import { formatDistanceToNow } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Chapter {
-  id: string
-  title: string
-  description: string
-  createdAt: string
-}
-
 interface ChapterListProps {
   chapters: Chapter[]
   courseId: string
@@ -47,7 +40,7 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
           >
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center justify-between">
-                <span className="line-clamp-1">{chapter.title}</span>
+                <span className="line-clamp-1">{chapter.name}</span>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </CardTitle>
               <CardDescription className="line-clamp-2">{chapter.description}</CardDescription>

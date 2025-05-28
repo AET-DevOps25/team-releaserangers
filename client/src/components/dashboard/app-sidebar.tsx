@@ -75,7 +75,6 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const favorites = coursesData.flatMap((course) => course.chapters).filter((chapter) => chapter.isFavorite)
-  const [courses] = React.useState(coursesData)
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
@@ -85,7 +84,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavFavorites favorites={favorites} />
-        <NavCourses courses={courses} />
+        <NavCourses />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />

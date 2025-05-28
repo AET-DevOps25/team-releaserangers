@@ -11,15 +11,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import useCourseStore from "@/hooks/course-store"
+import { EmojiPickerComponent } from "./emoji-picker"
 
 export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
+  const { add } = useCourseStore()
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    emoji: "📖",
   })
+  const [submitting, setSubmitting] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -28,17 +32,22 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsCreating(true)
+    setSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsCreating(false)
+    try {
+      const id = await add({
+        name: formData.title,
+        description: formData.description,
+        emoji: formData.emoji,
+      })
       setOpen(false)
-      // Reset form
-      setFormData({ title: "", description: "" })
-      // Navigate to the new course (using a dummy ID for demo)
-      router.push("/course/new-course")
-    }, 1500)
+      setFormData({ title: "", description: "", emoji: "📖" })
+      router.push(`/course/${id}`)
+    } catch (error) {
+      console.error("Failed to create course:", error)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -47,7 +56,7 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
         {isPlusIcon ? (
           <Plus className="h-4 w-4" />
         ) : (
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2 m-2">
             <BookOpen className="h-4 w-4" />
             <span>New Course</span>
           </Button>
@@ -62,7 +71,15 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="title">Course Title</Label>
-              <Input id="title" name="title" placeholder="e.g., Introduction to Machine Learning" value={formData.title} onChange={handleChange} required />
+              <div className="flex items-center gap-2">
+                <EmojiPickerComponent
+                  emoji={formData.emoji}
+                  onEmojiSelect={(emoji: string) => {
+                    setFormData((prev) => ({ ...prev, emoji }))
+                  }}
+                />
+                <Input id="title" name="title" placeholder="e.g., Introduction to Machine Learning" value={formData.title} onChange={handleChange} required />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
@@ -81,8 +98,8 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isCreating}>
-              {isCreating ? (
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating...
