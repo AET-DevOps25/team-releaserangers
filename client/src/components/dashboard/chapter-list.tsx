@@ -57,11 +57,11 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
                 <div className="flex items-center">
                   <CalendarSync className="mr-1 h-3 w-3" />
                   <span className="mr-1">Last updated</span>
-                  <span>{formatDistanceToNow(new Date(chapter.createdAt))} ago</span>
+                  <span>{formatDistanceToNow(new Date(chapter.createdAt), { addSuffix: true })}</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="mr-1 h-3 w-3" />
-                  <span>Created {formatDistanceToNow(new Date(chapter.createdAt))} ago</span>
+                  <span>Created {formatDistanceToNow(new Date(chapter.createdAt), { addSuffix: true })}</span>
                 </div>
               </div>
             </CardFooter>

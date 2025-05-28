@@ -1,9 +1,9 @@
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { NavActions } from "@/components/dashboard/nav-actions"
 import { MarkdownViewer } from "@/components/dashboard/markdown-viewer"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { NavActionsChapter } from "@/components/dashboard/nav-actions-chapter"
 
 // TODO: Table, Code, links and other components
 
@@ -68,6 +68,7 @@ export default function ChapterPage({ params }: { params: { courseId: string; ch
   // In a real application, you would fetch the course and chapter data based on the IDs
   const courseTitle = "Introduction to Web Development"
   const chapterTitle = "Getting Started with HTML"
+  const chapter: Chapter = {} // TODO: Replace with actual chapter data fetching logic
 
   return (
     <SidebarProvider>
@@ -90,7 +91,7 @@ export default function ChapterPage({ params }: { params: { courseId: string; ch
             </Breadcrumb>
           </div>
           <div className="ml-auto px-3">
-            <NavActions />
+            <NavActionsChapter chapter={chapter} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 px-4 py-10">
