@@ -1,7 +1,7 @@
 "use client"
 
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { NavActions } from "@/components/dashboard/nav-actions"
+import { NavActionsCourse } from "@/components/dashboard/nav-actions-course"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
@@ -103,7 +103,7 @@ export default function CoursePage() {
           </div>
           <div className="ml-auto flex items-center gap-4 px-3">
             {hasChapters && <AddContentButton />}
-            <NavActions />
+            <NavActionsCourse course={course} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-6">

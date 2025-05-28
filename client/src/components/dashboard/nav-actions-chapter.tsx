@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { formatDistanceToNow } from "date-fns"
 
 const data = [
   [
@@ -86,12 +87,14 @@ const data = [
   ],
 ]
 
-export function NavActions() {
+export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      <div className="text-muted-foreground hidden font-medium md:inline-block">Edit Oct 08</div>
+      <div className="text-muted-foreground hidden font-medium md:inline-block">
+        <span>Edited {formatDistanceToNow(new Date(chapter.updatedAt), { addSuffix: true })}</span>
+      </div>
       <Button variant="ghost" size="icon" className="h-7 w-7">
         <Star />
       </Button>
