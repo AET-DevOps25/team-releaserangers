@@ -67,7 +67,7 @@ export function NavCourses() {
               <Collapsible key={course.id}>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link href={`/course/${course.id}`}>
+                    <Link href={`/${course.id}`}>
                       <span>{course.emoji || "📚"}</span>
                       <span>{course.name}</span>
                     </Link>
@@ -75,10 +75,9 @@ export function NavCourses() {
                   <SidebarMenuAction showOnHover>
                     <Plus />
                   </SidebarMenuAction>
-                  {/* TODO: Fix if backend provides chapter details */}
                   {course.chapters && course.chapters.length > 0 && (
                     <>
-                      {/* <CollapsibleTrigger asChild>
+                      <CollapsibleTrigger asChild>
                         <SidebarMenuAction className="bg-sidebar-accent text-sidebar-accent-foreground left-2 data-[state=open]:rotate-90" showOnHover>
                           <ChevronRight />
                         </SidebarMenuAction>
@@ -88,15 +87,15 @@ export function NavCourses() {
                           {course.chapters.map((chapter) => (
                             <SidebarMenuSubItem key={chapter.id}>
                               <SidebarMenuSubButton asChild>
-                                <Link href={`/course/${course.id}`}>
+                                <Link href={`/${course.id}/chapter/${chapter.id}`}>
                                   <span>{chapter.emoji || "📖"}</span>
-                                  <span>{chapter.name}</span>
+                                  <span>{chapter.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
                         </SidebarMenuSub>
-                      </CollapsibleContent> */}
+                      </CollapsibleContent>
                     </>
                   )}
                 </SidebarMenuItem>

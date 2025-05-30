@@ -42,7 +42,7 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
       })
       setOpen(false)
       setFormData({ title: "", description: "", emoji: "📖" })
-      router.push(`/course/${id}`)
+      router.push(`/${id}`)
     } catch (error) {
       console.error("Failed to create course:", error)
     } finally {

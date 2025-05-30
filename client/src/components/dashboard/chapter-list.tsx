@@ -19,7 +19,7 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
 
   const handleChapterSelect = (chapterId: string) => {
     setSelectedChapterId(chapterId)
-    router.push(`/course/${courseId}/chapter/${chapterId}`)
+    router.push(`/${courseId}/chapter/${chapterId}`)
   }
 
   return (
@@ -40,10 +40,10 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
           >
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center justify-between">
-                <span className="line-clamp-1">{chapter.name}</span>
+                <span className="line-clamp-1">{chapter.title}</span>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </CardTitle>
-              <CardDescription className="line-clamp-2">{chapter.description}</CardDescription>
+              <CardDescription className="line-clamp-2">{chapter.content}</CardDescription>
             </CardHeader>
             {/* <CardContent className="pb-2">
               <div className="flex items-center text-sm text-muted-foreground">

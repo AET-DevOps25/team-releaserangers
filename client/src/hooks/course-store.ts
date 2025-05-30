@@ -8,6 +8,7 @@ interface CourseStore {
   fetchCourses: () => Promise<void>
   fetchCourse: (courseId: string) => Promise<Course>
   updateCourse: (courseId: string, course: Partial<Course>) => Promise<Course>
+  fetchChapter: (courseId: string, chapterId: string) => Promise<Chapter>
 }
 
 const useCourseStore = create<CourseStore>()((set, get) => ({
@@ -109,6 +110,51 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
       return updatedCourse
     } catch (error) {
       console.error("Error updating course:", error)
+      set({ isLoading: false })
+      throw error
+    }
+  },
+  fetchChapter: async (courseId: string, chapterId: string) => {
+    set({ isLoading: true })
+    try {
+      const response = await fetch(`http://localhost:8080/chapters/${chapterId}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch chapter")
+      }
+      const data: Chapter = await response.json()
+
+      set((state) => {
+        const courseExists = state.courses.some((c) => c.id === courseId)
+        let updatedCourses = state.courses
+        const chapterExists = courseExists && state.courses.find((c) => c.id === courseId)?.chapters?.some((ch) => ch.id === data.id)
+        if (chapterExists) {
+          updatedCourses = state.courses.map((course) => {
+            if (course.id === courseId) {
+              return {
+                ...course,
+                chapters: course.chapters.map((ch) => (ch.id === data.id ? data : ch)),
+              }
+            }
+            return course
+          })
+        } else if (courseExists) {
+          updatedCourses = state.courses.map((course) => {
+            if (course.id === courseId) {
+              return {
+                ...course,
+                chapters: [...(course.chapters || []), data],
+              }
+            }
+            return course
+          })
+        }
+
+        return { courses: updatedCourses, isLoading: false }
+      })
+
+      return data
+    } catch (error) {
+      console.error("Error fetching course:", error)
       set({ isLoading: false })
       throw error
     }

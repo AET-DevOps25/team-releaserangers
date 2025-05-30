@@ -18,8 +18,8 @@ interface CourseCreationForm {
 
 interface Chapter {
   id: string
-  name: string
-  description?: string
+  title: string
+  content?: string
   emoji: string
   isFavorite: boolean
   createdAt: string
