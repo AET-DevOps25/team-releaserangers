@@ -31,7 +31,7 @@ public class Chapter {
     @JsonBackReference
     private Course course;
 
-    @Column(name = "chapter_content")
+    @Column(name = "chapter_content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "chapter_emoji")
