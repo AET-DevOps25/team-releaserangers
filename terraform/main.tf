@@ -27,7 +27,7 @@ data "aws_ami" "ubuntu_server_24_04" {
   }
 
   owners = ["099720109477"] # Canonical
-  
+
 }
 
 resource "aws_instance" "app_server" {
