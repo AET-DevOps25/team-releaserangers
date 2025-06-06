@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coursemgmt-service
+  namespace: "{{ .Values.team }}"
+spec:
+  replicas: {{ .Values.coursemgmtService.replicaCount }}
+  selector:
+    matchLabels:
+      app: coursemgmt-service-selector
+  template:
+    metadata:
+      labels:
+        app: coursemgmt-service-selector
+    spec:
+      containers:
+        - name: coursemgmt-service
+          image: "{{ .Values.coursemgmtService.image.repository }}:{{ .Values.coursemgmtService.image.tag }}"
+          imagePullPolicy: {{ .Values.coursemgmtService.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          ports:
+            - containerPort: {{ .Values.coursemgmtService.service.targetPort }}
+          env:
+            {{- range .Values.coursemgmtService.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}

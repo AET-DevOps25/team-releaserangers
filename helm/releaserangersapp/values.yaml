@@ -1,4 +1,7 @@
 # This file contains the default values for the App Helm chart.
+
+team: team-releaserangers
+
 namespace:
   create: false
 
@@ -29,6 +32,13 @@ coursemgmtService:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://postgres:5432/devops25_db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: release
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: ranger
+
 
 uploadService:
   image:
@@ -37,12 +47,26 @@ uploadService:
     pullPolicy: Always
   service:
     type: ClusterIP
-    port: 8080
+    port: 5432
     targetPort: 8080
   replicaCount: 1
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+
+postgres:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+  auth:
+    username: release
+    password: ranger
+    database: devops25_db
+  service:
+    type: ClusterIP
+    port: 5432
 
 ingress:
   enabled: true
