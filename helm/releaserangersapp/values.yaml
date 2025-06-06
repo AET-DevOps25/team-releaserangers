@@ -1,0 +1,52 @@
+# This file contains the default values for the App Helm chart.
+namespace:
+  create: false
+
+authenticationService:
+  image:
+    repository: ghcr.io/aet-devops25/team-releaserangers/authentication-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: docker
+
+coursemgmtService:
+  image:
+    repository: ghcr.io/aet-devops25/team-releaserangers/coursemgmt-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: docker
+
+uploadService:
+  image:
+    repository: ghcr.io/aet-devops25/team-releaserangers/upload-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: docker
+
+ingress:
+  enabled: true
+  className: "nginx"
+  tls: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
