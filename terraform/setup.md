@@ -12,19 +12,41 @@
    aws_access_key_id = YOUR_ACCESS_KEY_ID
    aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
    ```
-3. Navigate to the `terraform` directory:
+3. Download the private key file and save it in a secure location. Make sure to
+   set the permissions to read/write for the owner only:
+   ```bash
+   chmod 400 /path/to/your/private-key.pem
+   ```
+
+## Setup Ansible
+
+1. Install Ansible if it is not already installed. You can follow the
+   instructions on the [Ansible installation
+   page](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
+
+## Setup Terraform
+
+1. Install Terraform if it is not already installed. You can follow the
+   instructions on the [Terraform installation
+   page](https://learn.hashicorp.com/tutorials/terraform/install-cli).
+2. Copy the example variables file:
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+3. Edit the `terraform.tfvars` file according to your needs.
+4. Navigate to the `terraform` directory:
    ```bash
    cd terraform
    ```
-4. Initialize Terraform:
+5. Initialize Terraform:
    ```bash
    terraform init
    ```
-5. Validate the Terraform configuration:
+6. Validate the Terraform configuration:
    ```bash
    terraform validate
    ```
-6. Apply the Terraform configuration:
+7. Apply the Terraform configuration:
    ```bash
    terraform apply
    ```

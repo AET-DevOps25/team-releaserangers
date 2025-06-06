@@ -377,3 +377,6 @@ sketch
 # gitignore template for Vue.js projects
 #
 # Recommended template: Node.gitignore
+
+# Ansible
+ansible/inventory.ini
