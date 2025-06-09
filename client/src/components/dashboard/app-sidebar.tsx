@@ -43,7 +43,7 @@ const data = {
     },
     {
       title: "Home",
-      url: "#",
+      url: "/home",
       icon: Home,
       isActive: true,
     },

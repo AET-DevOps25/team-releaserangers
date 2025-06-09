@@ -18,7 +18,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   add: async (course: CourseCreationForm) => {
     course.userId = "1" // TODO: Assuming a static user ID for now
     set(() => ({ isLoading: true }))
-    const response = await fetch("http://localhost:8080/courses", {
+    const response = await fetch("http://localhost/courses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +36,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourses: async () => {
     set({ isLoading: true })
     try {
-      const response = await fetch("http://localhost:8080/courses")
+      const response = await fetch("http://localhost/courses")
       if (!response.ok) {
         throw new Error("Failed to fetch courses")
       }
@@ -55,7 +55,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourse: async (courseId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost:8080/courses/${courseId}`)
+      const response = await fetch(`http://localhost/courses/${courseId}`)
       if (!response.ok) {
         throw new Error("Failed to fetch course")
       }
@@ -88,7 +88,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   updateCourse: async (courseId: string, courseUpdate: Partial<Course>) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost:8080/courses/${courseId}`, {
+      const response = await fetch(`http://localhost/courses/${courseId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchChapter: async (courseId: string, chapterId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost:8080/chapters/${chapterId}`)
+      const response = await fetch(`http://localhost/chapters/${chapterId}`)
       if (!response.ok) {
         throw new Error("Failed to fetch chapter")
       }
