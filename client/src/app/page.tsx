@@ -34,7 +34,7 @@ export default function LandingPage() {
               <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Pricing
               </Link>
-              <Link href="/course/1" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Link href="/home" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Dashboard
               </Link>
             </div>

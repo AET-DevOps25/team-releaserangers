@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Loader2, Plus } from "lucide-react"
 
@@ -14,7 +14,13 @@ import { Textarea } from "@/components/ui/textarea"
 import useCourseStore from "@/hooks/course-store"
 import { EmojiPickerComponent } from "./emoji-picker"
 
-export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
+export enum ButtonType {
+  Default,
+  Plus,
+  QuickStats,
+}
+
+export function CourseCreationDialog({ buttonType = ButtonType.Default }: { buttonType?: ButtonType }) {
   const { add } = useCourseStore()
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -50,15 +56,23 @@ export function CourseCreationDialog({ isPlusIcon }: { isPlusIcon?: boolean }) {
     }
   }
 
+  useEffect(() => {
+    console.log(buttonType)
+  }, [buttonType])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {isPlusIcon ? (
+        {buttonType === ButtonType.Plus ? (
           <Plus className="h-4 w-4" />
         ) : (
-          <Button variant="outline" size="sm" className="gap-2 m-2">
+          <Button
+            variant="outline"
+            size={buttonType === ButtonType.QuickStats ? "default" : "sm"}
+            className={buttonType === ButtonType.QuickStats ? "w-full justify-start gap-2" : "gap-2 m-2"}
+          >
             <BookOpen className="h-4 w-4" />
-            <span>New Course</span>
+            New Course
           </Button>
         )}
       </DialogTrigger>

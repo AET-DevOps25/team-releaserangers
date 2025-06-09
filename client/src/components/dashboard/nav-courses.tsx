@@ -13,7 +13,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import { CourseCreationDialog } from "./course-creation-dialog"
+import { ButtonType, CourseCreationDialog } from "./course-creation-dialog"
 import useCourseStore from "@/hooks/course-store"
 import { Suspense, useEffect } from "react"
 import Link from "next/link"
@@ -33,7 +33,7 @@ export function NavCourses() {
         <span>Courses</span>
         {courses.length !== 0 && (
           <div>
-            <CourseCreationDialog isPlusIcon={true} />
+            <CourseCreationDialog buttonType={ButtonType.Plus} />
           </div>
         )}
       </SidebarGroupLabel>
@@ -53,7 +53,7 @@ export function NavCourses() {
             ))}
           {!isLoading && courses.length === 0 && (
             <SidebarMenuItem>
-              <CourseCreationDialog isPlusIcon={false} />
+              <CourseCreationDialog />
             </SidebarMenuItem>
           )}
           <Suspense
