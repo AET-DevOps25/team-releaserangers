@@ -72,7 +72,7 @@ resource "aws_security_group" "app_server_sg" {
 }
 resource "aws_instance" "app_server" {
   ami                         = data.aws_ami.ubuntu_server_24_04.id
-  instance_type               = "t2.micro"
+  instance_type               = var.instance_type
   key_name                    = "vockey"
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.app_server_sg.id]

@@ -2,9 +2,12 @@
 
 ## Get Credentials
 
-1. Launch the AWS Academy lab and hit **AWS Details** to get your
+1. Install AWS CLI if it is not already installed. You can follow the
+   instructions on the [AWS CLI installation
+   page](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
+2. Launch the AWS Academy lab and hit **AWS Details** to get your
    `aws_access_key_id` and `aws_secret_access_key`.
-2. Copy the whole block of text and paste it into `~/.aws/credentials` file, if
+3. Copy the whole block of text and paste it into `~/.aws/credentials` file, if
    it does not exist, create it.
    The file should look like this:
    ```
@@ -12,7 +15,7 @@
    aws_access_key_id = YOUR_ACCESS_KEY_ID
    aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
    ```
-3. Download the private key file and save it in a secure location. Make sure to
+4. Download the private key file and save it in a secure location. Make sure to
    set the permissions to read/write for the owner only:
    ```bash
    chmod 400 /path/to/your/private-key.pem
