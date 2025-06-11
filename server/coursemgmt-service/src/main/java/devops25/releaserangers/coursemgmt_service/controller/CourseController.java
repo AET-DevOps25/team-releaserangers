@@ -4,12 +4,16 @@ import devops25.releaserangers.coursemgmt_service.model.Chapter;
 import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
+import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/courses")
@@ -17,23 +21,39 @@ public class CourseController {
     private final CourseService courseService;
     private final ChapterService chapterService;
 
+
+    @Autowired
+    private AuthUtils authUtils;
+
     public CourseController(CourseService courseService, ChapterService chapterService) {
         this.courseService = courseService;
         this.chapterService = chapterService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        List<Course> courses = courseService.getAllCourses();
-        if (courses.isEmpty()) {
-            return ResponseEntity.noContent().build();
+    private ResponseEntity<Course> validateUserAndGetCourse(String courseId, String authHeader) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+        if (userIDOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(null);
         }
-        return ResponseEntity.ok(courses);
+        String userID = userIDOpt.get();
+        Course course = courseService.getCourseById(courseId);
+        if (course == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!course.getUserId().equals(userID)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(course);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Course>> getCoursesByUser(@PathVariable String userId) {
-        List<Course> courses = courseService.getCoursesByUserId(userId);
+    @GetMapping
+    public ResponseEntity<List<Course>> getCourses(@RequestHeader("Authorization") String authHeader) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+        if (userIDOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(null);
+        }
+        String userID = userIDOpt.get();
+        List<Course> courses = courseService.getCoursesByUserId(userID);
         if (courses.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -41,16 +61,16 @@ public class CourseController {
     }
 
     @GetMapping("/{courseId}")
-    public ResponseEntity<Course> getCourseById(@PathVariable String courseId) {
-        Course course = courseService.getCourseById(courseId);
-        if (course == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(course);
+    public ResponseEntity<Course> getCourseById(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
+        return validateUserAndGetCourse(courseId, authHeader);
     }
 
     @GetMapping("/{courseId}/chapters")
-    public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId) {
+    public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+        if (!courseResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
+        }
         List<Chapter> chapters = chapterService.getChaptersByCourseId(courseId);
         if (chapters.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -59,15 +79,27 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
+    public ResponseEntity<Course> createCourse(@RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+        if (userIDOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(null);
+        }
+        String userID = userIDOpt.get();
+        course.setUserId(userID);
         return ResponseEntity.ok(courseService.saveCourse(course));
     }
 
     @PostMapping("/{courseId}/chapters")
     public ResponseEntity<Chapter> createChapterInCourse(
             @PathVariable String courseId,
-            @RequestBody Chapter request) {
-        request.setCourse(courseService.getCourseById(courseId));
+            @RequestBody Chapter request,
+            @RequestHeader("Authorization") String authHeader) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+        if (!courseResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
+        }
+        Course course = courseResponse.getBody();
+        request.setCourse(course);
 
         Chapter created = chapterService.saveChapter(request);
         return ResponseEntity.ok(created);
@@ -75,21 +107,23 @@ public class CourseController {
 
 
     @PutMapping("/{courseId}")
-    public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course) {
-        Course existingCourse = courseService.getCourseById(courseId);
-        if (existingCourse == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+        if (!courseResponse.getStatusCode().is2xxSuccessful()) {
+            return courseResponse;
         }
+        Course existingCourse = Objects.requireNonNull(courseResponse.getBody());
         BeanUtils.copyProperties(course, existingCourse, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(courseService.saveCourse(existingCourse));
     }
 
     @PatchMapping("/{courseId}")
-    public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course) {
-        Course existingCourse = courseService.getCourseById(courseId);
-        if (existingCourse == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+        if (!courseResponse.getStatusCode().is2xxSuccessful()) {
+            return courseResponse;
         }
+        Course existingCourse = courseResponse.getBody();
         try {
             PatchUtils.applyPatch(course, existingCourse);
             return ResponseEntity.ok(courseService.saveCourse(existingCourse));
@@ -99,8 +133,12 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseId}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable String courseId) {
-        Course existingCourse = courseService.getCourseById(courseId);
+    public ResponseEntity<Void> deleteCourse(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+        if (!courseResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(courseResponse.getStatusCode()).build();
+        }
+        Course existingCourse = courseResponse.getBody();
         if (existingCourse == null) {
             return ResponseEntity.notFound().build();
         }
