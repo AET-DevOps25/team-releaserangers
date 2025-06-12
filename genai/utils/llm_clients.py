@@ -69,7 +69,7 @@ class OpenWebUILLM(LLM):
             "temperature": 0.5,
             "max_tokens": 100000,
         }
-        print(f"HEADERS:{headers}, MESSAGES:{messages}, PAYLOAD:{payload}")
+       
         try:
             response = requests.post(
                 self.api_url,
@@ -122,7 +122,7 @@ async def summarize_with_llm(lecture_content: str) -> str:
                 - Code blocks, formulas, or other notation if they appear in the notes
             - The title must summarize the central topic.
             - Pick a relevant emoji: e.g., 📘, 🧠, 📐, 💻, 🧪 — avoid informal or irrelevant ones.
-            - Return the JSON with all newlines escaped as \\n
+            - Return a valid JSON object, with all newlines inside string values escaped as \\n
 
             Input Lecture Notes:
             --------------------
@@ -131,7 +131,6 @@ async def summarize_with_llm(lecture_content: str) -> str:
 
             Now, generate a clear, well-organized **Markdown-formatted** summary based on the content above. The output should be suitable for exam preparation.
             Respond in the following **JSON format**:
-            ```json
             {{
             "chapter_title": "Generated title here",
             "summary_markdown": "Markdown summary here",
@@ -145,5 +144,4 @@ async def summarize_with_llm(lecture_content: str) -> str:
 
     # Use LangChain to create the summary
     summary = summary_chain.invoke(lecture_content)
-    print(summary)
     return summary
