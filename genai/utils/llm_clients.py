@@ -5,11 +5,8 @@ from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain_core.prompts import PromptTemplate
 
-
-
 # Environment configuration
 CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
-print(CHAIR_API_KEY)
 API_URL = "https://gpu.aet.cit.tum.de/api/chat/completions"
 
 class OpenWebUILLM(LLM):
