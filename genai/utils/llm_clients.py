@@ -75,8 +75,8 @@ class OpenWebUILLM(LLM):
                 timeout=180
             )
             response.raise_for_status()
-            
             result = response.json()
+            print(result)
             
             # Extract the response content
             if "choices" in result and len(result["choices"]) > 0:
