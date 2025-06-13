@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AudioWaveform, Command, Home, Inbox, MessageCircleQuestion, Search, Settings2, Sparkles, Trash2 } from "lucide-react"
+import { AudioWaveform, Command, Home, Inbox, MessageCircleQuestion, Search, Sparkles, Trash2 } from "lucide-react"
 
 import { NavFavorites } from "@/components/dashboard/nav-favorites"
 import { NavMain } from "@/components/dashboard/nav-main"
@@ -43,7 +43,7 @@ const data = {
     },
     {
       title: "Home",
-      url: "/home",
+      url: "/dashboard",
       icon: Home,
       isActive: true,
     },
@@ -55,11 +55,6 @@ const data = {
     },
   ],
   navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-    },
     {
       title: "Trash",
       url: "#",
