@@ -57,6 +57,13 @@ Our application helps students to study efficient by leveraging LLM generated sm
   JWT_SECRET=<your_jwt_secret>
   ```
 
+- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
+
 ### How to Use
 
 ---
