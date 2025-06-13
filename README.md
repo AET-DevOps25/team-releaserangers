@@ -82,7 +82,7 @@ Make sure to create a .env file from the .env.example and add your API Key.
     ```bash
     cd genai
     python3 main.py
-3. Using Docker:
+- Using Docker:
     ```bash
     cd genai
     docker build -t llm .
