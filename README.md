@@ -66,6 +66,10 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
 ### How to Use
 
+```bash
+docker compose up --build
+```
+
 ---
 
 ## Tech Stack
