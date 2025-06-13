@@ -12,10 +12,10 @@ These endpoints are accessible externally and are routed to the respective micro
 
 | Path Prefix      | Proxied To                                 |
 |------------------|---------------------------------------------|
-| `/auth/`         | `http://authentication-service:8080/`       |
-| `/courses/`      | `http://coursemgmt-service:8080/courses/`   |
-| `/chapters/`     | `http://coursemgmt-service:8080/chapters/`  |
-| `/upload/`       | `http://upload-service:8080/`               |
+| `/auth`         | `http://authentication-service:8080`       |
+| `/courses`      | `http://coursemgmt-service:8080/courses`   |
+| `/chapters`     | `http://coursemgmt-service:8080/chapters`  |
+| `/upload`       | `http://upload-service:8080`               |
 
 ---
 
@@ -24,8 +24,7 @@ These endpoints are accessible externally and are routed to the respective micro
 ### Authentication Service
 - Base URL: `http://localhost/auth/`
 - **Endpoints:**
-  - `POST /auth/api/auth/signin` — Authenticate user and receive JWT token
-  - `POST /auth/api/auth/signup` — Register a new user
+  - *(To be filled: List all upload-related endpoints here)*
 
 ### Course Management Service
 - Base URLs: `http://localhost/courses/`, `http://localhost/chapters/`
@@ -56,7 +55,7 @@ These endpoints are accessible externally and are routed to the respective micro
   - *(To be filled: List all upload-related endpoints here)*
 
 ### Summary Service
-- Base URL: `http://127.0.0.1:8000/summarize`
+- Base URL: `http://127.0.0.1:8082/summarize`
 - **Endpoints:**
   - `POST /summarize` — Summarize provided content
 
