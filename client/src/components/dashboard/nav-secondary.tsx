@@ -1,14 +1,8 @@
 import React from "react"
 import { type LucideIcon } from "lucide-react"
 
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SettingsDialog } from "./settings-dialog"
 
 export function NavSecondary({
   items,
@@ -25,6 +19,11 @@ export function NavSecondary({
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
+          <SidebarMenuItem key={"settings"}>
+            <SidebarMenuButton asChild>
+              <SettingsDialog triggerVariant="default" className="w-full justify-start" />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>

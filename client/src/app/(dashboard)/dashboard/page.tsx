@@ -1,3 +1,5 @@
+"use client"
+
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
@@ -8,8 +10,23 @@ import { QuickStats } from "@/components/dashboard/quick-stats"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
 import { NavActionsHome } from "@/components/dashboard/nav-actions-home"
+import useUserStore from "@/hooks/user-store"
+import { useEffect } from "react"
 
 export default function HomePage() {
+  const { fetchUser } = useUserStore()
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        await fetchUser()
+      } catch (error) {
+        console.error("Failed to load user data:", error)
+      }
+    }
+    loadUser()
+  }, [fetchUser])
+
   return (
     <SidebarProvider>
       <AppSidebar />

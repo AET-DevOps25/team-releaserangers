@@ -7,7 +7,7 @@ export function EmojiPickerComponent({ emoji, onEmojiSelect }: { emoji: string; 
   const [isOpen, setIsOpen] = useState(false)
   return (
     <>
-      <Popover onOpenChange={setIsOpen} open={isOpen}>
+      <Popover onOpenChange={setIsOpen} modal={true} open={isOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="h-10 w-10 p-0">
             {emoji}

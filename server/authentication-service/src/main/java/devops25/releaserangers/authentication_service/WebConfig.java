@@ -1,4 +1,4 @@
-package devops25.releaserangers.coursemgmt_service;
+package devops25.releaserangers.authentication_service;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

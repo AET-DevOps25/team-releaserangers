@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Loader2, Plus } from "lucide-react"
 
@@ -55,10 +55,6 @@ export function CourseCreationDialog({ buttonType = ButtonType.Default }: { butt
       setSubmitting(false)
     }
   }
-
-  useEffect(() => {
-    console.log(buttonType)
-  }, [buttonType])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

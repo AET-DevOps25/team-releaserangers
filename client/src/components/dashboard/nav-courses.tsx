@@ -22,10 +22,8 @@ export function NavCourses() {
   const { courses, isLoading, fetchCourses } = useCourseStore()
 
   useEffect(() => {
-    if (!courses.length) {
-      fetchCourses().catch((error) => console.error("Failed to fetch courses:", error))
-    }
-  }, [courses.length, fetchCourses])
+    fetchCourses().catch((error) => console.error("Failed to fetch courses:", error))
+  }, [fetchCourses])
 
   return (
     <SidebarGroup>

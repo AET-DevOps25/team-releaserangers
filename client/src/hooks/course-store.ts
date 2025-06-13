@@ -16,7 +16,6 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   isLoading: true,
   set: (courses: Course[]) => set({ courses }),
   add: async (course: CourseCreationForm) => {
-    course.userId = "1" // TODO: Assuming a static user ID for now
     set(() => ({ isLoading: true }))
     const response = await fetch("http://localhost/courses", {
       method: "POST",
@@ -24,6 +23,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify(course),
+      credentials: "include",
     })
     if (!response.ok) {
       throw new Error("Failed to add course")
@@ -36,7 +36,12 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourses: async () => {
     set({ isLoading: true })
     try {
-      const response = await fetch("http://localhost/courses")
+      const response = await fetch("http://localhost/courses", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
       if (!response.ok) {
         throw new Error("Failed to fetch courses")
       }
@@ -55,7 +60,12 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourse: async (courseId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/courses/${courseId}`)
+      const response = await fetch(`http://localhost/courses/${courseId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
       if (!response.ok) {
         throw new Error("Failed to fetch course")
       }
@@ -94,6 +104,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify(courseUpdate),
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -117,7 +128,12 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchChapter: async (courseId: string, chapterId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/chapters/${chapterId}`)
+      const response = await fetch(`http://localhost/chapters/${chapterId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
       if (!response.ok) {
         throw new Error("Failed to fetch chapter")
       }
