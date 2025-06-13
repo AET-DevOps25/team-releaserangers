@@ -4,15 +4,16 @@ on:
   push:
     branches: ["**"]
 
+defaults:
+  run:
+    working-directory: ./client
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Navigate to client directory
-        run: cd client
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
