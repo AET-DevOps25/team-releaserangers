@@ -4,13 +4,7 @@ import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.core.io.ByteArrayResource;
 
 import java.io.IOException;
 import java.util.Arrays;
