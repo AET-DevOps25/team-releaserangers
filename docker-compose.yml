@@ -9,6 +9,7 @@ services:
       - authentication-service
       - coursemgmt-service
       - upload-service
+      - client
 
   authentication-service:
     build:
@@ -52,7 +53,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     restart: unless-stopped
-    expose:
+    ports:
       - "3000:3000"
     depends_on:
       - authentication-service
