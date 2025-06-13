@@ -77,7 +77,7 @@ Make sure to create a .env file from the .env.example and add your API Key.
 - Using uvicorn directly:
     ```bash
     cd genai
-    uvicorn main:app --host 127.0.0.1 --port 8082   
+    uvicorn main:app --host 0.0.0.0 --port 8082   
 - Using python3:
     ```bash
     cd genai
