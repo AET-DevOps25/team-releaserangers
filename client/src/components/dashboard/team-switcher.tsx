@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
+import useUserStore from "@/hooks/user-store"
 
 export function TeamSwitcher({
   teams,
@@ -25,9 +26,16 @@ export function TeamSwitcher({
   }[]
 }) {
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const router = useRouter()
+  const { signOut } = useUserStore()
 
   if (!activeTeam) {
     return null
+  }
+
+  const logout = async () => {
+    await signOut()
+    router.push("/")
   }
 
   return (
@@ -62,14 +70,12 @@ export function TeamSwitcher({
               <div className="text-muted-foreground font-medium">Add team</div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/" className="gap-2 p-2 flex cursor-pointer items-center">
-                <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                  <activeTeam.logo className="size-4" />
-                </div>
-                <div className="text-muted-foreground font-medium">Logout</div>
-                <DropdownMenuShortcut>⌘M</DropdownMenuShortcut>
-              </Link>
+            <DropdownMenuItem className="gap-2 p-2" onClick={logout}>
+              <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                <activeTeam.logo className="size-4" />
+              </div>
+              <div className="text-muted-foreground font-medium">Logout</div>
+              <DropdownMenuShortcut>⌘M</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

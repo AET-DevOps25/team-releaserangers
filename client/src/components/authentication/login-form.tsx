@@ -1,12 +1,59 @@
+"use client"
+
 import type React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { z } from "zod"
 import Link from "next/link"
+import useUserStore from "@/hooks/user-store"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter()
+  const { signIn } = useUserStore()
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
+  const [formError, setFormError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const formSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+  })
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setErrors({})
+    setFormError(null)
+    try {
+      setIsLoading(true)
+      await formSchema.parseAsync({ email, password })
+      await signIn(email, password)
+      router.push("/dashboard")
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { email?: string; password?: string } = {}
+        error.errors.forEach((err) => {
+          if (err.path[0] === "email") fieldErrors.email = err.message
+          if (err.path[0] === "password") fieldErrors.password = err.message
+        })
+        setErrors(fieldErrors)
+      } else {
+        setFormError("Login failed. Please try again.")
+        console.error("Login failed:", error)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -15,7 +62,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
           <CardDescription>Login with your Apple or Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit} className="grid gap-6">
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
@@ -43,7 +90,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="m@example.com" required />
+                  <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  {errors.email && <span className="text-xs text-red-500">{errors.email}</span>}
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
@@ -52,10 +100,19 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {errors.password && <span className="text-xs text-red-500">{errors.password}</span>}
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
+                {formError && <div className="text-xs text-red-500 text-center">{formError}</div>}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    "Continue"
+                  )}
                 </Button>
               </div>
               <div className="text-center text-sm">

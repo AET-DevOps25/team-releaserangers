@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -5,8 +7,62 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import useUserStore from "@/hooks/user-store"
+import z from "zod"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 export function SignupForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter()
+  const { signUp } = useUserStore()
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string }>({})
+  const [formError, setFormError] = useState<string | null>(null)
+
+  const formSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+    confirmPassword: z.string().min(8, "Confirm Password must be at least 8 characters long"),
+  })
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setErrors({})
+    setFormError(null)
+    try {
+      await formSchema.parseAsync({ name, email, password, confirmPassword })
+      if (password !== confirmPassword) {
+        setFormError("Passwords do not match")
+        return
+      }
+      setIsLoading(true)
+      await signUp(name, email, password)
+      router.push("/dashboard")
+    } catch (error) {
+      setIsLoading(false)
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { name?: string; email?: string; password?: string; confirmPassword?: string } = {}
+        error.errors.forEach((err) => {
+          if (err.path[0] === "name") fieldErrors.name = err.message
+          if (err.path[0] === "email") fieldErrors.email = err.message
+          if (err.path[0] === "password") fieldErrors.password = err.message
+          if (err.path[0] === "confirmPassword") fieldErrors.confirmPassword = err.message
+        })
+        setErrors(fieldErrors)
+      } else {
+        setFormError("Sign up failed. Please try again.")
+        console.error("Sign up failed:", error)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -15,7 +71,7 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
           <CardDescription>Sign up with your Apple or Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
@@ -43,22 +99,34 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" type="text" placeholder="John Doe" required />
+                  <Input id="name" type="text" placeholder="John Doe" required value={name} onChange={(e) => setName(e.target.value)} />
+                  {errors.name && <span className="text-xs text-red-500">{errors.name}</span>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="m@example.com" required />
+                  <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  {errors.email && <span className="text-xs text-red-500">{errors.email}</span>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" required />
+                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {errors.password && <span className="text-xs text-red-500">{errors.password}</span>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input id="confirm-password" type="password" required />
+                  <Input id="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                  {errors.confirmPassword && <span className="text-xs text-red-500">{errors.confirmPassword}</span>}
                 </div>
-                <Button type="submit" className="w-full">
-                  Create Account
+                {formError && <div className="text-xs text-red-500 text-center">{formError}</div>}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Account"
+                  )}
                 </Button>
               </div>
               <div className="text-center text-sm">

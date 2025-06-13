@@ -1,10 +1,12 @@
 "use client"
 
+import useUserStore from "@/hooks/user-store"
 import { Calendar, Clock } from "lucide-react"
 
 export function WelcomeSection() {
   const currentTime = new Date()
   const hour = currentTime.getHours()
+  const { user } = useUserStore()
 
   const getGreeting = () => {
     if (hour < 12) return "Good morning"
@@ -24,7 +26,9 @@ export function WelcomeSection() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}, Jonathan! 👋</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {getGreeting()}, {user?.name || "User"}! 👋
+        </h1>
         <p className="text-muted-foreground mt-2">Ready to continue your learning journey today?</p>
       </div>
 
