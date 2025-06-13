@@ -9,6 +9,7 @@ services:
       - authentication-service
       - coursemgmt-service
       - upload-service
+      - client
 
   authentication-service:
     build:
@@ -17,6 +18,9 @@ services:
       - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres-db
 
   coursemgmt-service:
     build:
@@ -44,6 +48,20 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - authentication-service
+      - coursemgmt-service
+      - upload-service
 
 volumes:
   postgres-data:

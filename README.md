@@ -8,21 +8,21 @@ This is a university project designed to enhance students learning experience by
 
 This project is maintained by:
 
-- **Florian Charrot (FC)**  
-- **Jonathan Müller (JM)**  
+- **Florian Charrot (FC)**
+- **Jonathan Müller (JM)**
 - **Luis Leutbecher (LL)**
 
---- 
+---
 
 ## Student Responsibilities
 
-| Week | Title                   | Student     | Description            | Status        | Impediments       | Promises         | 
-|------|-------------------------|-------------|------------------------|---------------|-------------------|------------------|
-| CW19 | Draft Problem Statement | Everyone    |                        |               |                   |                  |
-| CW20 | Create UML Models, Initial Backlog | Everyone |                        |               |                   |                  |
-| CW21 |                         |             |                        |               |                   |                  |
-| CW22 |                         |             |                        |               |                   |                  |
-| CW23 |                         |             |                        |               |                   |                  |
+| Week | Title                              | Student  | Description | Status | Impediments | Promises |
+| ---- | ---------------------------------- | -------- | ----------- | ------ | ----------- | -------- |
+| CW19 | Draft Problem Statement            | Everyone |             |        |             |          |
+| CW20 | Create UML Models, Initial Backlog | Everyone |             |        |             |          |
+| CW21 |                                    |          |             |        |             |          |
+| CW22 |                                    |          |             |        |             |          |
+| CW23 |                                    |          |             |        |             |          |
 
 ## Subsystem Ownership
 
@@ -46,11 +46,29 @@ This project is maintained by:
 Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up to date overview of the current course content.
 
 ---
-## Usage Guide 
+
+## Usage Guide
 
 ### How to Install
 
+- create a `.env` file in the root directory of the project
+- add the following environment variables:
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
+
 ### How to Use
+
+```bash
+docker compose up --build
+```
 
 ---
 
