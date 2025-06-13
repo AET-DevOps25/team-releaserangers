@@ -74,7 +74,7 @@ Make sure to create a .env file from the .env.example and add your API Key.
 ### Start the Server
 
 ### Start the LLM Service
-1. Using uvicorn directly:
+- Using uvicorn directly:
     ```bash
     cd genai
     uvicorn main:app --host 0.0.0.0 --port 8082   
