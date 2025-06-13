@@ -5,12 +5,15 @@ import devops25.releaserangers.authentication_service.repository.UserRepository;
 import devops25.releaserangers.authentication_service.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,7 +39,17 @@ public class AuthController {
                     )
             );
             String token = jwtUtils.generateToken(user.getEmail());
-            return ResponseEntity.ok().body("JWT Token: " + token);
+            User authenticatedUser = userRepository.findByEmail(user.getEmail());
+            ResponseCookie responseCookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(false) // TODO Set to true if using HTTPS
+                    .path("/") // Set the path for the cookie
+                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .maxAge(3600) // Set cookie expiration time (1 hour)
+                    .build();
+            return ResponseEntity.ok()
+                .header("Set-Cookie", responseCookie.toString())
+                .body(authenticatedUser);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
@@ -51,7 +64,7 @@ public class AuthController {
         User newUser = new User(
                 null,
                 user.getEmail(),
-                user.getFullName(),
+                user.getName(),
                 encoder.encode(user.getPassword()),
                 null, // createdAt will be set automatically
                 null  // updatedAt will be set automatically
@@ -67,19 +80,27 @@ public class AuthController {
                     )
             );
             String token = jwtUtils.generateToken(user.getEmail());
-            return ResponseEntity.ok().body("User registered successfully! JWT Token: " + token);
+            ResponseCookie responseCookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(false) // TODO Set to true if using HTTPS
+                    .path("/") // Set the path for the cookie
+                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .maxAge(3600) // Set cookie expiration time (1 hour)
+                    .build();
+            return ResponseEntity.ok()
+                .header("Set-Cookie", responseCookie.toString())
+                .body(newUser);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 
     @GetMapping("/user")
-    public ResponseEntity<User> getUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public ResponseEntity<User> getUserDetails(@CookieValue("token") String token) {
+        if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        String email = authentication.getName();
+        String email = jwtUtils.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -88,12 +109,11 @@ public class AuthController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUserDetails(@RequestBody User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public ResponseEntity<?> updateUserDetails(@RequestBody User user, @CookieValue("token") String token) {
+        if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = authentication.getName();
+        String email = jwtUtils.getUsernameFromToken(token);
         User existingUser = userRepository.findByEmail(email);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -104,35 +124,53 @@ public class AuthController {
             }
             existingUser.setEmail(user.getEmail());
         }
-        if (user.getFullName() != null) {
-            existingUser.setFullName(user.getFullName());
+        if (user.getName() != null) {
+            existingUser.setName(user.getName());
         }
         if (user.getPassword() != null) {
             existingUser.setPassword(encoder.encode(user.getPassword()));
         }
         userRepository.save(existingUser);
-        return ResponseEntity.ok("User details updated successfully");
+        return ResponseEntity.ok(existingUser);
     }
 
     @DeleteMapping("/user")
-    public ResponseEntity<?> deleteUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public ResponseEntity<?> deleteUser(@CookieValue("token") String token) {
+        if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = authentication.getName();
+        String email = jwtUtils.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         userRepository.delete(user);
-        return ResponseEntity.ok("User deleted successfully");
+        // Invalidate the cookie by setting it to expire
+        ResponseCookie responseCookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false) // TODO Set to true if using HTTPS
+                .path("/") // Set the path for the cookie
+                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .maxAge(0) // Set cookie expiration time to 0 to delete it
+                .build();
+        return ResponseEntity.ok()
+                .header("Set-Cookie", responseCookie.toString())
+                .body("User deleted successfully");
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser() {
-        // Actual logout happens by removing the JWT token from the client side.
-        return ResponseEntity.ok("User logged out successfully");
+    @PostMapping("/signout")
+    public ResponseEntity<String> signoutUser() {
+        // invalidate the cookie by setting it to expire
+        ResponseCookie responseCookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false) // TODO Set to true if using HTTPS
+                .path("/") // Set the path for the cookie
+                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .maxAge(0) // Set cookie expiration time to 0 to delete it
+                .build();
+        return ResponseEntity.ok()
+                .header("Set-Cookie", responseCookie.toString())
+                .body("User logged out successfully");
     }
 
     @GetMapping("/validate")

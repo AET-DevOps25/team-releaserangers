@@ -30,8 +30,8 @@ public class ChapterController {
         this.courseService = courseService;
     }
 
-    private ResponseEntity<Chapter> validateUserAndGetChapter(String chapterId, String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+    private ResponseEntity<Chapter> validateUserAndGetChapter(String chapterId, String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -47,8 +47,8 @@ public class ChapterController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Chapter>> getChapters(@RequestHeader("Authorization") String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+    public ResponseEntity<List<Chapter>> getChapters(@CookieValue("token") String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -63,14 +63,14 @@ public class ChapterController {
     }
 
     @GetMapping("/{chapter_id}")
-    public ResponseEntity<Chapter> getChapterById(@PathVariable String chapter_id, @RequestHeader("Authorization") String authHeader) {
-        return validateUserAndGetChapter(chapter_id, authHeader);
+    public ResponseEntity<Chapter> getChapterById(@PathVariable String chapter_id, @CookieValue("token") String token) {
+        return validateUserAndGetChapter(chapter_id, token);
     }
 
     @PostMapping
     public ResponseEntity<Chapter> createChapter(@RequestBody Chapter chapterRequest,
-                                                 @RequestHeader("Authorization") String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+                                                 @CookieValue("token") String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -97,8 +97,8 @@ public class ChapterController {
     @PutMapping("/{chapter_id}")
     public ResponseEntity<Chapter> updateChapter(@PathVariable String chapter_id,
                                                  @RequestBody Chapter chapterRequest,
-                                                 @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, authHeader);
+                                                 @CookieValue("token") String token) {
+        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
@@ -110,8 +110,8 @@ public class ChapterController {
 
     @PatchMapping("/{chapter_id}")
     public ResponseEntity<Chapter> patchChapter(@PathVariable String chapter_id, @RequestBody Chapter patch,
-                                                @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, authHeader);
+                                                @CookieValue("token") String token) {
+        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
@@ -127,8 +127,8 @@ public class ChapterController {
 
     @DeleteMapping("/{chapter_id}")
     public ResponseEntity<Void> deleteChapterById(@PathVariable String chapter_id,
-                                                  @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, authHeader);
+                                                  @CookieValue("token") String token) {
+        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(validationResponse.getStatusCode()).build();
         }

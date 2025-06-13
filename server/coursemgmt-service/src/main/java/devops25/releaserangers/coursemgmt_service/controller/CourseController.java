@@ -30,8 +30,8 @@ public class CourseController {
         this.chapterService = chapterService;
     }
 
-    private ResponseEntity<Course> validateUserAndGetCourse(String courseId, String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+    private ResponseEntity<Course> validateUserAndGetCourse(String courseId, String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -47,8 +47,8 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getCourses(@RequestHeader("Authorization") String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+    public ResponseEntity<List<Course>> getCourses(@CookieValue("token") String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -61,13 +61,13 @@ public class CourseController {
     }
 
     @GetMapping("/{courseId}")
-    public ResponseEntity<Course> getCourseById(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
-        return validateUserAndGetCourse(courseId, authHeader);
+    public ResponseEntity<Course> getCourseById(@PathVariable String courseId, @CookieValue("token") String token) {
+        return validateUserAndGetCourse(courseId, token);
     }
 
     @GetMapping("/{courseId}/chapters")
-    public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+    public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId, @CookieValue("token") String token) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
         }
@@ -79,8 +79,8 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(authHeader);
+    public ResponseEntity<Course> createCourse(@RequestBody Course course, @CookieValue("token") String token) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -93,8 +93,8 @@ public class CourseController {
     public ResponseEntity<Chapter> createChapterInCourse(
             @PathVariable String courseId,
             @RequestBody Chapter request,
-            @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+            @CookieValue("token") String token) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
         }
@@ -107,8 +107,8 @@ public class CourseController {
 
 
     @PutMapping("/{courseId}")
-    public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+    public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course, @CookieValue("token") String token) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return courseResponse;
         }
@@ -118,8 +118,8 @@ public class CourseController {
     }
 
     @PatchMapping("/{courseId}")
-    public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course, @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+    public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course, @CookieValue("token") String token) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return courseResponse;
         }
@@ -133,8 +133,8 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseId}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable String courseId, @RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, authHeader);
+    public ResponseEntity<Void> deleteCourse(@PathVariable String courseId, @CookieValue("token") String token) {
+        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).build();
         }

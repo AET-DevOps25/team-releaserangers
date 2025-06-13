@@ -19,7 +19,7 @@ public class AuthUtils {
 
     public Optional<String> validateAndGetUserId(String authHeader) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", authHeader);
+        headers.add("Authorization", "Bearer " + authHeader);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         try {
             ResponseEntity<String> response = restTemplate.exchange(AUTH_SERVICE_VALIDATE_URL, HttpMethod.GET, entity, String.class);
