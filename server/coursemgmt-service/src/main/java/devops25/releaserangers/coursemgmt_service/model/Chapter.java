@@ -1,5 +1,6 @@
 package devops25.releaserangers.coursemgmt_service.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -27,9 +28,10 @@ public class Chapter {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "course_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference
     private Course course;
 
-    @Column(name = "chapter_content")
+    @Column(name = "chapter_content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "chapter_emoji")
