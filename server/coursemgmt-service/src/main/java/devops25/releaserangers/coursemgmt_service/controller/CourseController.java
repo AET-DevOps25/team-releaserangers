@@ -105,7 +105,6 @@ public class CourseController {
         return ResponseEntity.ok(created);
     }
 
-
     @PutMapping("/{courseId}")
     public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course, @CookieValue("token") String token) {
         ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
