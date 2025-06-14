@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { formatDistanceToNow } from "date-fns"
+import useCourseStore from "@/hooks/course-store"
 
 const data = [
   [
@@ -89,14 +90,28 @@ const data = [
 
 export function NavActionsCourse({ course }: { course: Course }) {
   const [isOpen, setIsOpen] = React.useState(false)
+  const [isFavorite, setIsFavorite] = React.useState(course.isFavorite)
+  const { updateCourse } = useCourseStore()
+
+  const handleFavorite = async () => {
+    try {
+      const value = !isFavorite
+      setIsFavorite(value)
+      await updateCourse(course.id, {
+        isFavorite: value,
+      })
+    } catch (error) {
+      console.error("Failed to update favorite status:", error)
+    }
+  }
 
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="text-muted-foreground hidden font-medium md:inline-block">
-        <span>Edited {formatDistanceToNow(new Date(course.updatedAt), { addSuffix: true })}</span>
+        <span>Edited {formatDistanceToNow(new Date(course.updatedAt.endsWith("Z") ? course.updatedAt : course.updatedAt + "Z"), { addSuffix: true })}</span>
       </div>
-      <Button variant="ghost" size="icon" className="h-7 w-7">
-        <Star />
+      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleFavorite}>
+        {isFavorite ? <Star fill="var(--color-yellow-500)" stroke="var(--color-yellow-500)" /> : <Star className="text-muted-foreground" />}
       </Button>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>

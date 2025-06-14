@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { formatDistanceToNow } from "date-fns"
+import useCourseStore from "@/hooks/course-store"
+import { useParams } from "next/navigation"
 
 const data = [
   [
@@ -88,15 +90,31 @@ const data = [
 ]
 
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
+  const params = useParams<{ courseId: string; chapterId: string }>()
+  const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const [isOpen, setIsOpen] = React.useState(false)
+  const [isFavorite, setIsFavorite] = React.useState(chapter.isFavorite)
+  const { updateChapter } = useCourseStore()
+
+  const handleFavorite = async () => {
+    try {
+      const value = !isFavorite
+      setIsFavorite(value)
+      await updateChapter(courseId, chapter.id, {
+        isFavorite: value,
+      })
+    } catch (error) {
+      console.error("Failed to update favorite status:", error)
+    }
+  }
 
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="text-muted-foreground hidden font-medium md:inline-block">
-        <span>Edited {formatDistanceToNow(new Date(chapter.updatedAt), { addSuffix: true })}</span>
+        <span>Edited {formatDistanceToNow(new Date(chapter.updatedAt.endsWith("Z") ? chapter.updatedAt : chapter.updatedAt + "Z"), { addSuffix: true })}</span>
       </div>
-      <Button variant="ghost" size="icon" className="h-7 w-7">
-        <Star />
+      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleFavorite}>
+        {isFavorite ? <Star fill="var(--color-yellow-500)" stroke="var(--color-yellow-500)" /> : <Star className="text-muted-foreground" />}
       </Button>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
