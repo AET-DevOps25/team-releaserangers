@@ -1,6 +1,6 @@
 apiVersion: v2
-name: team-release-ranger
-description: Helm chart for team-release-ranger DevOps project
+name: team-releaseranger
+description: Helm chart for team-releaseranger DevOps project
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

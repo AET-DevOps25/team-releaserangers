@@ -1,0 +1,536 @@
+{
+	"info": {
+		"_postman_id": "0da07db9-f81c-4c83-ae95-987eb7e94a0c",
+		"name": "ReleaseRangers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45214083",
+		"_collection_link": "https://jonathan-9340134.postman.co/workspace/Jonathan's-Workspace~32ce4567-10f4-47fd-8278-575065928559/collection/45214083-0da07db9-f81c-4c83-ae95-987eb7e94a0c?action=share&source=collection_link&creator=45214083"
+	},
+	"item": [
+		{
+			"name": "CourseManagement",
+			"item": [
+				{
+					"name": "courses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTY1Njk5OCwiZXhwIjoxNzQ5NjYwNTk4fQ.fpNTXI0c9oO33Z9fuP4GV5yWCEOCt12AMBv4yYVxSL4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/83c5d090-7c1b-4b6b-b4b9-959229ed0322",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"83c5d090-7c1b-4b6b-b4b9-959229ed0322"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}/chapters",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTY0ODg5NCwiZXhwIjoxNzQ5NjUyNDk0fQ.JLn8DOwtl3o1_m155dbqW8a0VRIrMCllN84Lnz7jwIc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/feef38ff-4a71-456c-b49b-54b3adeff79a/chapters",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"feef38ff-4a71-456c-b49b-54b3adeff79a",
+								"chapters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "chapters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{chapterId}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}/e886f4b8-0550-4468-bae3-e4f581bc7bfa",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							],
+							"path": [
+								"e886f4b8-0550-4468-bae3-e4f581bc7bfa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "course",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTY0Mjg4NSwiZXhwIjoxNzQ5NjQ2NDg1fQ.vyKa_uuBq0aEp8RI1hYrU4yTY20c3t0v9NZYhN9p2Nk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Another Course\",\n    \"description\": \"This is a description\",\n    \"emoji\": \"🤝\",\n    \"isFavorite\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}/chapters",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Amazing Chapter\",\n    \"content\": \"This is a description\",\n    \"emoji\": \"🤝\",\n    \"isFavorite\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/200be3df-475c-4de9-83a5-aa2f6cc580b8/chapters",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"200be3df-475c-4de9-83a5-aa2f6cc580b8",
+								"chapters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "chapter",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTY1NDU1NywiZXhwIjoxNzQ5NjU4MTU3fQ.ClLlbhwkomzLgMqUnIlkaKwkcnlsIU_aTgAwXCQYqTo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Amazing Chapter\",\n     \"course\":   {\n        \"id\": \"b90d453b-cd28-413f-acc7-9a4ce22d2186\",\n        \"userId\": \"1\",\n        \"name\": \"Great Course\",\n        \"description\": \"This is a description\",\n        \"emoji\": \"🤝\",\n        \"isFavorite\": false,\n        \"createdAt\": \"2025-05-23T00:25:18.537189\",\n        \"updatedAt\": \"2025-05-23T00:25:18.537306\"\n    },\n    \"content\": \"lorem ipsum\",\n    \"emoji\": \"🤝\",\n    \"isFavorite\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"userId\": \"1\",\n        \"name\": \"Great Course\",\n        \"description\": \"This is a description\",\n        \"emoji\": \"🤝\",\n        \"isFavorite\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/b16dea25-606f-4ade-8f83-7a7bf4e6faf9",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"b16dea25-606f-4ade-8f83-7a7bf4e6faf9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{chapterId}",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Amazing Chapter\",\n    \"course\": {\"id\": \"b90d453b-cd28-413f-acc7-9a4ce22d2186\"},\n    \"content\": \"new content1\",\n    \"emoji\": null,\n    \"isFavorite\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}/17424ce8-d813-4dd0-bbfd-ddfa07d492d2",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							],
+							"path": [
+								"17424ce8-d813-4dd0-bbfd-ddfa07d492d2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isFavorite\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/b16dea25-606f-4ade-8f83-7a7bf4e6faf9",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"b16dea25-606f-4ade-8f83-7a7bf4e6faf9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{chapterId}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isFavorite\": false,\n  \"content\": \"# Markdown Test\\n## Markdown Test\\n### Markdown Test\\nMarkdown Test\\n# Getting Started with Project Management\\n\\n**bold text**\\n\\n*italicized text*\\n\\n> blockquote\\n\\n1. First item\\n2. Second item\\n3. Third item\\n\\n- First item\\n- Second item\\n- Third item\\n\\n---\\n\\nWelcome to your _project management_ workspace. Here you can track tasks, set deadlines, and collaborate with your team.\\n\\n## Key Features\\n\\n- **Task Tracking**: Create, assign, and monitor tasks\\n- **Deadline Management**: Set and track important deadlines\\n- **Team Collaboration**: Work together seamlessly\\n- **Progress Reporting**: Generate reports on project progress\\n\\n## Quick Tips\\n\\n1. Use **tags** to categorize your tasks\\n2. Set up **recurring tasks** for regular activities\\n3. Utilize the **calendar view** for timeline visualization\\n4. Create **templates** for common project types\\n\\n> \\\"Good planning without good working is nothing.\\\" — Dwight D. Eisenhower\\n\\n## Next Steps\\n\\n- [] Set up your first project\\n- [] Invite team members\\n- [] Set up your first project\\n- [] Invite team members\\n- [] Set up your first project\\n- [] Invite team members\\n- [] Set up your first project\\n- [] Invite team members\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}/e886f4b8-0550-4468-bae3-e4f581bc7bfa",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							],
+							"path": [
+								"e886f4b8-0550-4468-bae3-e4f581bc7bfa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{courseId}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-courses}}/b90d453b-cd28-413f-acc7-9a4ce22d2186",
+							"host": [
+								"{{coursemgmt-service-courses}}"
+							],
+							"path": [
+								"b90d453b-cd28-413f-acc7-9a4ce22d2186"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "{chapterId}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-chapters}}/17424ce8-d813-4dd0-bbfd-ddfa07d492d2",
+							"host": [
+								"{{coursemgmt-service-chapters}}"
+							],
+							"path": [
+								"17424ce8-d813-4dd0-bbfd-ddfa07d492d2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "signUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"email\",\n    \"password\": \"password\",\n    \"fullName\": \"fullName\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authentication-service}}/signup",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"email1\",\n    \"password\": \"email1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authentication-service}}/signin",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signOut",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJpYXQiOjE3NDk3NzM2NjAsImV4cCI6MTc0OTc3NzI2MH0.fHfQCTG8aCErAVrb_Pvbbw5uXFGDP6l-po04J1jT8KI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{authentication-service}}/signout",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTYwODIxMiwiZXhwIjoxNzQ5NjExODEyfQ.CrjDS7Dfs3Zym5JPTvDMUEpdp_YDFoViX_2niahqjtw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{authentication-service}}/user",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbCIsImlhdCI6MTc0OTYwNTk5MSwiZXhwIjoxNzQ5NjA5NTkxfQ.7D9s95TsCI7rXsTxv30sUJBMssxRorqPRbNWYMKet9k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"email1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authentication-service}}/user",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbDEiLCJpYXQiOjE3NDk2MDYwNzksImV4cCI6MTc0OTYwOTY3OX0.YVirdi_ArY6wqCi6XDK-GNElYjU6VdzEWiiLOrdZtAs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{authentication-service}}/user",
+							"host": [
+								"{{authentication-service}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

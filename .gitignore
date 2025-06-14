@@ -185,7 +185,6 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -377,3 +376,9 @@ sketch
 # gitignore template for Vue.js projects
 #
 # Recommended template: Node.gitignore
+
+# Ansible
+ansible/inventory.ini
+
+# Bruno
+api-collections/ReleaseRangers

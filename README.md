@@ -8,21 +8,21 @@ This is a university project designed to enhance students learning experience by
 
 This project is maintained by:
 
-- **Florian Charrot (FC)**  
-- **Jonathan Müller (JM)**  
+- **Florian Charrot (FC)**
+- **Jonathan Müller (JM)**
 - **Luis Leutbecher (LL)**
 
---- 
+---
 
 ## Student Responsibilities
 
-| Week | Title                   | Student     | Description            | Status        | Impediments       | Promises         | 
-|------|-------------------------|-------------|------------------------|---------------|-------------------|------------------|
-| CW19 | Draft Problem Statement | Everyone    |                        |               |                   |                  |
-| CW20 | Create UML Models, Initial Backlog | Everyone |                        |               |                   |                  |
-| CW21 |                         |             |                        |               |                   |                  |
-| CW22 |                         |             |                        |               |                   |                  |
-| CW23 |                         |             |                        |               |                   |                  |
+| Week | Title                              | Student  | Description | Status | Impediments | Promises |
+| ---- | ---------------------------------- | -------- | ----------- | ------ | ----------- | -------- |
+| CW19 | Draft Problem Statement            | Everyone |             |        |             |          |
+| CW20 | Create UML Models, Initial Backlog | Everyone |             |        |             |          |
+| CW21 |                                    |          |             |        |             |          |
+| CW22 |                                    |          |             |        |             |          |
+| CW23 |                                    |          |             |        |             |          |
 
 ## Subsystem Ownership
 
@@ -51,6 +51,18 @@ Our application helps students to study efficient by leveraging LLM generated sm
 ### Clone the Repository
 
 ### Client Setup
+- create a `.env` file in the root directory of the project
+- add the following environment variables:
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
 
 ### Server Setup
 
@@ -87,6 +99,14 @@ Make sure to create a .env file from the .env.example and add your API Key.
     cd genai
     docker build -t llm .
     docker run --env-file .env -p 8082:8082 llm 
+
+## How to Use with Docker
+
+```bash
+docker compose up --build
+```
+
+
 ---
 
 ## Tech Stack

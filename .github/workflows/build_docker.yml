@@ -68,3 +68,12 @@ jobs:
           file: ./server/upload-service/Dockerfile
           push: true
           tags: ghcr.io/aet-devops25/team-releaserangers/upload-service:latest
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ./client
+          file: ./client/Dockerfile
+          push: true
+          tags: ghcr.io/aet-devops25/team-releaserangers/client:latest
