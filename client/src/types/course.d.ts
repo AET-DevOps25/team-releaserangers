@@ -25,3 +25,11 @@ interface Chapter {
   createdAt: string
   updatedAt: string
 }
+
+interface Favorite {
+  id: string
+  type: "course" | "chapter"
+  courseId?: string
+  title: string
+  emoji: string
+}
