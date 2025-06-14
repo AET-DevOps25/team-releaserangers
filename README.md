@@ -89,7 +89,7 @@ Make sure to create a .env file from the .env.example and add your API Key.
 - Using uvicorn directly:
     ```bash
     cd genai
-    uvicorn main:app --host 0.0.0.0 --port 8082   
+    uvicorn main:app --host 0.0.0.0 --port 8084   
 - Using python3:
     ```bash
     cd genai
@@ -98,7 +98,7 @@ Make sure to create a .env file from the .env.example and add your API Key.
     ```bash
     cd genai
     docker build -t llm .
-    docker run --env-file .env -p 8082:8082 llm 
+    docker run --env-file .env -p 8084:8084 llm 
 
 ## How to Use with Docker
 
