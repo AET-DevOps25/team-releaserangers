@@ -11,6 +11,7 @@ jobs:
         service:
           - nginx-gateway
           - coursemgmt-service
+          - genai-service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -77,3 +78,12 @@ jobs:
           file: ./client/Dockerfile
           push: true
           tags: ghcr.io/aet-devops25/team-releaserangers/client:latest
+
+      - name: Build and push genai-service image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ./genai
+          file: ./genai/Dockerfile
+          push: true
+          tags: ghcr.io/aet-devops25/team-releaserangers/genai-service:latest
