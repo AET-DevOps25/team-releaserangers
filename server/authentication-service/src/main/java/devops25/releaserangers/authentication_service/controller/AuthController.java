@@ -94,7 +94,10 @@ public class AuthController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<User> getUserDetails(@CookieValue("token") String token) {
+    public ResponseEntity<User> getUserDetails(@CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
@@ -107,7 +110,10 @@ public class AuthController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUserDetails(@RequestBody User user, @CookieValue("token") String token) {
+    public ResponseEntity<?> updateUserDetails(@RequestBody User user, @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
@@ -133,7 +139,10 @@ public class AuthController {
     }
 
     @DeleteMapping("/user")
-    public ResponseEntity<?> deleteUser(@CookieValue("token") String token) {
+    public ResponseEntity<?> deleteUser(@CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
