@@ -101,7 +101,7 @@ public class UploadService {
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         for (File file : existingFiles) {
-            body.add("files", new ByteArrayResource(file.getData()) {
+            body.add("file", new ByteArrayResource(file.getData()) {
                 @Override
                 public String getFilename() {
                     return file.getFilename();
@@ -114,6 +114,6 @@ public class UploadService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity("http://localhost/summarize", requestEntity, String.class);
+        restTemplate.postForEntity("http://genai-service:8000/summarize", requestEntity, String.class);
     }
 }
