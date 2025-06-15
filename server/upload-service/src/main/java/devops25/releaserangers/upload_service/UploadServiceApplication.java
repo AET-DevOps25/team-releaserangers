@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UploadServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UploadServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UploadServiceApplication.class, args);
+    }
 }
