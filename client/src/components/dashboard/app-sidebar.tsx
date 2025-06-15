@@ -10,7 +10,7 @@ import { NavCourses } from "@/components/dashboard/nav-courses"
 import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
-import coursesData from "../../../mock/coursesData"
+import useCourseStore from "@/hooks/course-store"
 
 const data = {
   teams: [
@@ -69,7 +69,12 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const favorites = coursesData.flatMap((course) => course.chapters).filter((chapter) => chapter.isFavorite)
+  const { fetchFavorites, favorites } = useCourseStore()
+
+  React.useEffect(() => {
+    fetchFavorites()
+  }, [fetchFavorites])
+
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
