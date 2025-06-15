@@ -88,3 +88,18 @@ services:
       - authentication-service
       - coursemgmt-service
       - upload-service
+
+  genai-service:
+    image: ghcr.io/aet-devops25/team-releaserangers/genai-service:latest
+    restart: unless-stopped
+    env_file:
+      - ./genai/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.genai-service.rule=Host(`${GENAI_HOST}`)"
+      - "traefik.http.services.genai-service.loadbalancer.server.port=8000"
+      - "traefik.http.routers.genai-service.entrypoints=websecure"
+      - "traefik.http.routers.genai-service.tls.certresolver=letsencrypt"
+    depends_on:
+      - coursemgmt-service
+      - upload-service

@@ -111,6 +111,30 @@
 					"response": []
 				},
 				{
+					"name": "favorites",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJpYXQiOjE3NDk5MTQ2NTMsImV4cCI6MTc0OTkxODI1M30.sIpSh_IEuzz48TehGsCac4MJOKM-6KN2KWxFsWLvmzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{coursemgmt-service-favorites}}",
+							"host": [
+								"{{coursemgmt-service-favorites}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "course",
 					"request": {
 						"auth": {
@@ -296,12 +320,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{coursemgmt-service-chapters}}/e886f4b8-0550-4468-bae3-e4f581bc7bfa",
+							"raw": "{{coursemgmt-service-chapters}}/fbdde25c-5eac-479c-8f3d-5e6e57086b2b",
 							"host": [
 								"{{coursemgmt-service-chapters}}"
 							],
 							"path": [
-								"e886f4b8-0550-4468-bae3-e4f581bc7bfa"
+								"fbdde25c-5eac-479c-8f3d-5e6e57086b2b"
 							]
 						}
 					},
@@ -379,7 +403,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"email1\",\n    \"password\": \"email1\"\n}",
+							"raw": "{\n    \"email\": \"email@email.com\",\n    \"password\": \"12345678\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

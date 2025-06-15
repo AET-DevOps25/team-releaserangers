@@ -46,11 +46,11 @@ This project is maintained by:
 Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up to date overview of the current course content.
 
 ---
+## Setup Instructions
 
-## Usage Guide
+### Clone the Repository
 
-### How to Install
-
+### Client Setup
 - create a `.env` file in the root directory of the project
 - add the following environment variables:
   ```bash
@@ -64,11 +64,48 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
   Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
 
-### How to Use
+### Server Setup
+
+### LLM Service Setup
+Make sure to create a .env file from the .env.example and add your API Key.
+1. Navigate to the <code>genai</code> directory:
+   
+   ```bash
+   cd genai
+2. Install Dependencies:
+   ````bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip3 install -r requirements.txt
+## Running the Application
+
+### Start the Database
+
+### Start the Client
+
+### Start the Server
+
+### Start the LLM Service
+- Using uvicorn directly:
+    ```bash
+    cd genai
+    uvicorn main:app --host 0.0.0.0 --port 8084   
+- Using python3:
+    ```bash
+    cd genai
+    python3 main.py
+- Using Docker:
+    ```bash
+    cd genai
+    docker build -t llm .
+    docker run --env-file .env -p 8084:8084 llm 
+
+## How to Use with Docker
 
 ```bash
 docker compose up --build
 ```
+
 
 ---
 
