@@ -18,7 +18,7 @@ import java.util.List;
 public class UploadController {
     private final UploadService uploadService;
 
-    @PostMapping
+    @PostMapping("/single")
     public ResponseEntity<?> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("courseId") String courseId
@@ -37,6 +37,30 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process file: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> uploadMultipleFiles(
+            @RequestParam("file") MultipartFile[] files,
+            @RequestParam("courseId") String courseId
+    ) {
+        try {
+            List<File> uploadedFiles = uploadService.handleUploadedFiles(files, courseId);
+            List<FileMetadataDTO> dtos = uploadedFiles.stream().map(uploaded -> new FileMetadataDTO(
+                    uploaded.getId(),
+                    uploaded.getFilename(),
+                    uploaded.getContentType(),
+                    uploaded.getCourseId(),
+                    uploaded.getUploadedAt()
+            )).toList();
+            return ResponseEntity.ok(dtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process files: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
         }

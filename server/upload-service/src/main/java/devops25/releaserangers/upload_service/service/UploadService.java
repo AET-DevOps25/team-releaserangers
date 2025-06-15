@@ -3,20 +3,24 @@ package devops25.releaserangers.upload_service.service;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UploadService {
     private final FileRepository fileRepository;
-    private static final List<String> ALLOWED_TYPES = Arrays.asList(
-            "application/pdf", "text/markdown"
-    );
+    private static final List<String> ALLOWED_TYPES = List.of("application/pdf");
 
     public UploadService(FileRepository fileRepository) {
         this.fileRepository = fileRepository;
@@ -24,7 +28,7 @@ public class UploadService {
 
     public File handleFileUpload(MultipartFile file, String courseId) throws IOException {
         if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
-            throw new IllegalArgumentException("Only PDF or Markdown files are allowed.");
+            throw new IllegalArgumentException("Only PDF files are allowed.");
         }
         File fileEntity = new File();
         fileEntity.setFilename(file.getOriginalFilename());
@@ -52,6 +56,30 @@ public class UploadService {
         return fileEntity;
     }
 
+    public List<File> handleUploadedFiles(MultipartFile[] files, String courseId) throws IOException {
+        if (files == null || files.length == 0) {
+            throw new IllegalArgumentException("No files provided.");
+        }
+        for (MultipartFile file : files) {
+            if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
+                throw new IllegalArgumentException("All files must be non-empty PDFs.");
+            }
+        }
+        List<File> uploadedFiles = new java.util.ArrayList<>();
+        for (MultipartFile file : files) {
+            File fileEntity = new File();
+            fileEntity.setFilename(file.getOriginalFilename());
+            fileEntity.setContentType(file.getContentType());
+            fileEntity.setData(file.getBytes());
+            fileEntity.setCourseId(courseId);
+            fileRepository.save(fileEntity);
+            uploadedFiles.add(fileEntity);
+        }
+
+        forwardAllFilesForCourse(courseId);
+        return uploadedFiles;
+    }
+
     public List<FileMetadataDTO> getAllFiles() {
         return fileRepository.findAll().stream()
             .map(f -> new FileMetadataDTO(
@@ -66,5 +94,26 @@ public class UploadService {
 
     public void deleteAllFiles() {
         fileRepository.deleteAll();
+    }
+
+    public void forwardAllFilesForCourse(String courseId) {
+        List<File> existingFiles = fileRepository.findByCourseId(courseId);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        for (File file : existingFiles) {
+            body.add("files", new ByteArrayResource(file.getData()) {
+                @Override
+                public String getFilename() {
+                    return file.getFilename();
+                }
+            });
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost/summarize", requestEntity, String.class);
     }
 }
