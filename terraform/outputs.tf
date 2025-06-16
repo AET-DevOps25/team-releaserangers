@@ -10,5 +10,15 @@ output "instance_ami" {
 
 output "instance_public_ip" {
   description = "Public IP address of the EC2 instance"
-  value       = aws_instance.app_server.public_ip
+  value       = aws_eip.app_server_eip.public_ip
+}
+
+output "ec2_eip" {
+  description = "Elastic IP address of the EC2 instance."
+  value       = aws_eip.app_server_eip.public_ip
+}
+
+output "instance_username" {
+  description = "Username for SSH access to the EC2 instance"
+  value       = "ubuntu"
 }
