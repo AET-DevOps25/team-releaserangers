@@ -379,3 +379,6 @@ sketch
 
 # Ansible
 ansible/inventory.ini
+
+# Bruno
+api-collections/ReleaseRangers
