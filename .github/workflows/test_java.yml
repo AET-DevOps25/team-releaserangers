@@ -1,0 +1,30 @@
+name: Test Java Services
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - authentication-service
+          - coursemgmt-service
+          - upload-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run ${{ matrix.service }} tests
+        working-directory: server/${{ matrix.service }}
+        run: mvn -B clean package --file pom.xml --no-transfer-progress
