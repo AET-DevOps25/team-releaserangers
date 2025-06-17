@@ -4,6 +4,8 @@ from typing import List, Any, Optional
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain_core.prompts import PromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from models.summary import SummarySchema
 
 # Environment configuration
 CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
@@ -76,7 +78,7 @@ class OpenWebUILLM(LLM):
             )
             response.raise_for_status()
             result = response.json()
-            print(result)
+            #print(result)
             
             # Extract the response content
             if "choices" in result and len(result["choices"]) > 0:
@@ -96,9 +98,13 @@ async def summarize_with_llm(lecture_content: str) -> str:
     # Initialize the LLM
     llm = OpenWebUILLM()
 
+    # Create a parser to enforce json output
+    parser = PydanticOutputParser(pydantic_object=SummarySchema)
+
     # Create the prompt template
     summary_prompt = PromptTemplate(
     input_variables=["lecture_text"],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
     template="""
             You are an academic summarization assistant. Your task is to process a student's raw lecture notes and generate:
             1. A concise and descriptive **chapter title** (max 10 words).
@@ -121,23 +127,19 @@ async def summarize_with_llm(lecture_content: str) -> str:
             - Pick a relevant emoji: e.g., 📘, 🧠, 📐, 💻, 🧪 — avoid informal or irrelevant ones.
             - Return a valid JSON object, with all newlines inside string values escaped as \\n
 
+            {format_instructions}
+
             Input Lecture Notes:
             --------------------
             {lecture_text}
             --------------------
 
             Now, generate a clear, well-organized **Markdown-formatted** summary based on the content above. The output should be suitable for exam preparation.
-            Respond in the following **JSON format**:
-            {{
-            "chapter_title": "Generated title here",
-            "summary_markdown": "Markdown summary here",
-            "emoji": "🎓",
-            }}
             """
             )
     
     # Create the chain using the new RunnableSequence
-    summary_chain = summary_prompt | llm
+    summary_chain = summary_prompt | llm | parser
 
     # Use LangChain to create the summary
     summary = summary_chain.invoke(lecture_content)
