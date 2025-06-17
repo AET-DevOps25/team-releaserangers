@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "uploaded_files")
@@ -29,7 +31,11 @@ public class File {
     @Column(nullable = false)
     private String courseId;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime uploadedAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
 

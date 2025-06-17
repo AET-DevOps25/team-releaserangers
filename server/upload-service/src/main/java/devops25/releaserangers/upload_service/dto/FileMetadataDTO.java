@@ -14,6 +14,6 @@ public class FileMetadataDTO {
     private final String filename;
     private final String contentType;
     private final String courseId;
-    private final LocalDateTime uploadedAt;
+    private final LocalDateTime createdAt;
 }
 

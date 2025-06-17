@@ -56,24 +56,24 @@ public class UploadService {
 
     public List<FileMetadataDTO> getAllFiles() {
         return fileRepository.findAll().stream()
-                .map(f -> new FileMetadataDTO(
-                        f.getId(),
-                        f.getFilename(),
-                        f.getContentType(),
-                        f.getCourseId(),
-                        f.getUploadedAt()
-                ))
-                .collect(Collectors.toList());
+            .map(f -> new FileMetadataDTO(
+                f.getId(),
+                f.getFilename(),
+                f.getContentType(),
+                f.getCourseId(),
+                f.getCreatedAt()
+            ))
+            .collect(Collectors.toList());
     }
 
     public List<FileMetadataDTO> getFilesByCourseId(String courseId) {
-        return fileRepository.findByCourseId(courseId).stream()
+        return fileRepository.findByCourseIdWithoutData(courseId).stream()
                 .map(f -> new FileMetadataDTO(
                         f.getId(),
                         f.getFilename(),
                         f.getContentType(),
                         f.getCourseId(),
-                        f.getUploadedAt()
+                        f.getCreatedAt()
                 ))
                 .collect(Collectors.toList());
     }
@@ -83,7 +83,7 @@ public class UploadService {
     }
 
     public void deleteFilesByCourseId(String courseId) {
-        List<File> files = fileRepository.findByCourseId(courseId);
+        List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
         fileRepository.deleteAll(files);
     }
 

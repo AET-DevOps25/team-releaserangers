@@ -24,12 +24,15 @@ public class UploadController {
     @Autowired
     private AuthUtils authUtils;
 
-    @PostMapping
+    @PostMapping("/{courseId}")
     public ResponseEntity<?> uploadMultipleFiles(
-            @CookieValue("token") String token,
+            @CookieValue(value = "token", required = false) String token,
             @RequestParam("file") MultipartFile[] files,
-            @RequestParam("courseId") String courseId
+            @PathVariable("courseId") String courseId
     ) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
@@ -42,7 +45,7 @@ public class UploadController {
                     upload.getFilename(),
                     upload.getContentType(),
                     upload.getCourseId(),
-                    upload.getUploadedAt()
+                    upload.getCreatedAt()
             )).toList();
             return ResponseEntity.ok(dtos);
         } catch (IllegalArgumentException e) {
@@ -55,27 +58,41 @@ public class UploadController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllFiles(@CookieValue("token") String token) {
+    public ResponseEntity<?> getAllFiles(@CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
 
         try {
-            return ResponseEntity.ok(uploadService.getAllFiles());
+            List<FileMetadataDTO> files = uploadService.getAllFiles();
+            if (files.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(files);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch files: " + e.getMessage());
         }
     }
 
-    @GetMapping("/course/{courseId}")
-    public ResponseEntity<?> getFilesByCourseId(@CookieValue("token") String token, @PathVariable String courseId) {
+    @GetMapping("/{courseId}")
+    public ResponseEntity<?> getFilesByCourseId(@CookieValue(value = "token", required = false) String token, @PathVariable String courseId) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
+
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
         try {
             List<FileMetadataDTO> files = uploadService.getFilesByCourseId(courseId);
+            if (files.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
             return ResponseEntity.ok(files);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch files for course: " + e.getMessage());
@@ -83,7 +100,10 @@ public class UploadController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteAllFiles(@CookieValue("token") String token) {
+    public ResponseEntity<?> deleteAllFiles(@CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
@@ -91,21 +111,24 @@ public class UploadController {
 
         try {
             uploadService.deleteAllFiles();
-            return ResponseEntity.ok().body(List.of());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete files: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{courseId}")
-    public ResponseEntity<?> deleteFilesByCourseId(@CookieValue("token") String token, @PathVariable String courseId) {
+    public ResponseEntity<?> deleteFilesByCourseId(@CookieValue(value = "token", required = false) String token, @PathVariable String courseId) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
         try {
             uploadService.deleteFilesByCourseId(courseId);
-            return ResponseEntity.ok().body(List.of());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete files for course: " + e.getMessage());
         }
