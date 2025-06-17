@@ -7,7 +7,7 @@ import { NavFavorites } from "@/components/dashboard/nav-favorites"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavSecondary } from "@/components/dashboard/nav-secondary"
 import { NavCourses } from "@/components/dashboard/nav-courses"
-import { TeamSwitcher } from "@/components/dashboard/team-switcher"
+import { AppActions } from "@/components/dashboard/app-actions"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
 import useCourseStore from "@/hooks/course-store"
@@ -78,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <AppActions />
         <NavMain items={data.navMain} />
         {/* <CourseCreationDialog /> */}
       </SidebarHeader>
