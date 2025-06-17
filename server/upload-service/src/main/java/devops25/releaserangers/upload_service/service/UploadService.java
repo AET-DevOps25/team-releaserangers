@@ -56,14 +56,14 @@ public class UploadService {
 
     public List<FileMetadataDTO> getAllFiles() {
         return fileRepository.findAll().stream()
-            .map(f -> new FileMetadataDTO(
-                f.getId(),
-                f.getFilename(),
-                f.getContentType(),
-                f.getCourseId(),
-                f.getUploadedAt()
-            ))
-            .collect(Collectors.toList());
+                .map(f -> new FileMetadataDTO(
+                        f.getId(),
+                        f.getFilename(),
+                        f.getContentType(),
+                        f.getCourseId(),
+                        f.getUploadedAt()
+                ))
+                .collect(Collectors.toList());
     }
 
     public List<FileMetadataDTO> getFilesByCourseId(String courseId) {
@@ -91,6 +91,7 @@ public class UploadService {
         List<File> existingFiles = fileRepository.findByCourseId(courseId);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("courseId", courseId);
         for (File file : existingFiles) {
             body.add("file", new ByteArrayResource(file.getData()) {
                 @Override
@@ -100,7 +101,6 @@ public class UploadService {
             });
         }
 
-        body.add("courseId", courseId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
