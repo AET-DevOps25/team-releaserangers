@@ -68,6 +68,20 @@ public class UploadController {
         }
     }
 
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<?> getFilesByCourseId(@CookieValue("token") String token, @PathVariable String courseId) {
+        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        if (userIDOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(null);
+        }
+        try {
+            List<FileMetadataDTO> files = uploadService.getFilesByCourseId(courseId);
+            return ResponseEntity.ok(files);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch files for course: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping
     public ResponseEntity<?> deleteAllFiles(@CookieValue("token") String token) {
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);

@@ -66,6 +66,18 @@ public class UploadService {
             .collect(Collectors.toList());
     }
 
+    public List<FileMetadataDTO> getFilesByCourseId(String courseId) {
+        return fileRepository.findByCourseId(courseId).stream()
+                .map(f -> new FileMetadataDTO(
+                        f.getId(),
+                        f.getFilename(),
+                        f.getContentType(),
+                        f.getCourseId(),
+                        f.getUploadedAt()
+                ))
+                .collect(Collectors.toList());
+    }
+
     public void deleteAllFiles() {
         fileRepository.deleteAll();
     }
