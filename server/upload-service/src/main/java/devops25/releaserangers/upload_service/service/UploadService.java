@@ -70,6 +70,11 @@ public class UploadService {
         fileRepository.deleteAll();
     }
 
+    public void deleteFilesByCourseId(String courseId) {
+        List<File> files = fileRepository.findByCourseId(courseId);
+        fileRepository.deleteAll(files);
+    }
+
     public void forwardFilesToSummaryService(String courseId) {
         List<File> existingFiles = fileRepository.findByCourseId(courseId);
 
