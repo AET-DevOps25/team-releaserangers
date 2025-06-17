@@ -9,11 +9,10 @@ import { RecentCourses } from "@/components/dashboard/recent-courses"
 import { QuickStats } from "@/components/dashboard/quick-stats"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
-import { NavActionsHome } from "@/components/dashboard/nav-actions-home"
 import useUserStore from "@/hooks/user-store"
 import { useEffect } from "react"
 
-export default function HomePage() {
+export default function DashboardPage() {
   const { fetchUser } = useUserStore()
 
   useEffect(() => {
@@ -42,9 +41,6 @@ export default function HomePage() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-          </div>
-          <div className="ml-auto px-3">
-            <NavActionsHome />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-6">
