@@ -15,8 +15,14 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "ssh_private_key" {
-  description = "Private SSH key for accessing the EC2 instance"
+variable "ssh_public_key" {
+  description = "Public SSH key for accessing the EC2 instance"
   type        = string
-  default     = ""
+  sensitive   = true
+}
+
+variable "ssh_private_key" {
+  description = "Path to private SSH key file for accessing the EC2 instance"
+  type        = string
+  sensitive   = true
 }

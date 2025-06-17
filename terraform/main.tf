@@ -70,10 +70,24 @@ resource "aws_security_group" "app_server_sg" {
     Name = "${var.env_prefix}-app-server-sg"
   }
 }
+
+resource "aws_key_pair" "app_server_key" {
+  key_name   = "${var.env_prefix}-app-server-key"
+  public_key = var.ssh_public_key
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  tags = {
+    Name = "${var.env_prefix}-app-server-key"
+  }
+}
+
 resource "aws_instance" "app_server" {
   ami                         = data.aws_ami.ubuntu_server_24_04.id
   instance_type               = var.instance_type
-  key_name                    = "vockey"
+  key_name                    = aws_key_pair.app_server_key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.app_server_sg.id]
 
@@ -82,13 +96,31 @@ resource "aws_instance" "app_server" {
   }
 }
 
+resource "aws_eip" "app_server_eip" {
+  domain = "vpc"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  tags = {
+    Name = "${var.env_prefix}-${var.instance_name}-eip"
+  }
+}
+
+resource "aws_eip_association" "app_server_eip_assoc" {
+  instance_id   = aws_instance.app_server.id
+  allocation_id = aws_eip.app_server_eip.id
+  depends_on    = [aws_instance.app_server, aws_eip.app_server_eip]
+}
+
 resource "null_resource" "configure_instance" {
-  depends_on = [aws_instance.app_server]
+  depends_on = [aws_instance.app_server, aws_eip_association.app_server_eip_assoc]
 
   provisioner "local-exec" {
     command = <<-EOT
       # Wait for SSH to become available
-      while ! nc -z ${aws_instance.app_server.public_ip} 22; do
+      while ! nc -z ${aws_eip.app_server_eip.public_ip} 22; do
         echo "Waiting for SSH connection..."
         sleep 10
       done
@@ -96,16 +128,24 @@ resource "null_resource" "configure_instance" {
       # Create inventory file
       cat > ../ansible/inventory.ini <<EOF
       [app_server]
-      ${aws_instance.app_server.public_ip}
+      ${aws_eip.app_server_eip.public_ip}
       EOF
+      
+      # Create temporary private key file
+      PRIVATE_KEY_FILE=$(mktemp)
+      echo '${nonsensitive(var.ssh_private_key)}' > $PRIVATE_KEY_FILE
+      chmod 600 $PRIVATE_KEY_FILE
       
       # Run Ansible playbook with host key checking disabled
       ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
         -i ../ansible/inventory.ini \
         -u ubuntu \
-        --private-key=${var.ssh_private_key} \
+        --private-key=$PRIVATE_KEY_FILE \
         --extra-vars 'ansible_python_interpreter=/usr/bin/python3' \
         ../ansible/playbook.yml
+        
+      # Clean up the temporary private key file
+      rm -f $PRIVATE_KEY_FILE
     EOT
   }
 }
