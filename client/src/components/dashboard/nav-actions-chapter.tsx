@@ -1,23 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  ArrowDown,
-  ArrowUp,
-  Bell,
-  Copy,
-  CornerUpLeft,
-  CornerUpRight,
-  FileText,
-  GalleryVerticalEnd,
-  LineChart,
-  Link,
-  MoreHorizontal,
-  Settings2,
-  Star,
-  Trash,
-  Trash2,
-} from "lucide-react"
+import { ArrowDown, ArrowUp, Link, MoreHorizontal, Settings2, Star, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -26,75 +10,46 @@ import { formatDistanceToNow } from "date-fns"
 import useCourseStore from "@/hooks/course-store"
 import { useParams } from "next/navigation"
 
-const data = [
-  [
-    {
-      label: "Customize Page",
-      icon: Settings2,
-    },
-    {
-      label: "Turn into wiki",
-      icon: FileText,
-    },
-  ],
-  [
-    {
-      label: "Copy Link",
-      icon: Link,
-    },
-    {
-      label: "Duplicate",
-      icon: Copy,
-    },
-    {
-      label: "Move to",
-      icon: CornerUpRight,
-    },
-    {
-      label: "Move to Trash",
-      icon: Trash2,
-    },
-  ],
-  [
-    {
-      label: "Undo",
-      icon: CornerUpLeft,
-    },
-    {
-      label: "View analytics",
-      icon: LineChart,
-    },
-    {
-      label: "Version History",
-      icon: GalleryVerticalEnd,
-    },
-    {
-      label: "Show delete pages",
-      icon: Trash,
-    },
-    {
-      label: "Notifications",
-      icon: Bell,
-    },
-  ],
-  [
-    {
-      label: "Import",
-      icon: ArrowUp,
-    },
-    {
-      label: "Export",
-      icon: ArrowDown,
-    },
-  ],
-]
-
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
   const params = useParams<{ courseId: string; chapterId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(chapter.isFavorite)
   const { updateChapter } = useCourseStore()
+
+  const data = [
+    [
+      {
+        label: "Customize Chapter",
+        icon: Settings2,
+        action: () => handleCustomizeChapter(),
+      },
+    ],
+    [
+      {
+        label: "Copy Link",
+        icon: Link,
+        action: () => handleCopyLink(),
+      },
+      {
+        label: "Delete Chapter",
+        icon: Trash2,
+        action: () => handleDeleteChapter(),
+      },
+    ],
+    [
+      {
+        label: "Import",
+        icon: ArrowUp,
+        action: () => handleImport(),
+      },
+      {
+        label: "Export",
+        icon: ArrowDown,
+        action: () => handleExport(),
+      },
+    ],
+  ]
 
   const handleFavorite = async () => {
     try {
@@ -106,6 +61,27 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
     } catch (error) {
       console.error("Failed to update favorite status:", error)
     }
+  }
+
+  const handleCustomizeChapter = () => {
+    // Logic to customize the chapter
+    console.log("Customize Chapter clicked")
+  }
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setIsOpen(false)
+  }
+  const handleDeleteChapter = () => {
+    // Logic to move the chapter to trash
+    console.log("Move to Trash clicked")
+  }
+  const handleImport = () => {
+    // Logic to import chapter data
+    console.log("Import clicked")
+  }
+  const handleExport = () => {
+    // Logic to export chapter data
+    console.log("Export clicked")
   }
 
   return (
@@ -131,7 +107,7 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
                     <SidebarMenu>
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
-                          <SidebarMenuButton>
+                          <SidebarMenuButton onClick={item.action}>
                             <item.icon /> <span>{item.label}</span>
                           </SidebarMenuButton>
                         </SidebarMenuItem>

@@ -12,15 +12,24 @@ import useCourseStore from "@/hooks/course-store"
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Loading from "./loading"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 export default function CoursePage() {
   const params = useParams<{ courseId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
-  const { fetchCourse } = useCourseStore()
+  const { fetchCourse, courses } = useCourseStore()
   const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const existingCourse = courses.find((c) => c.id === courseId)
+    if (existingCourse) {
+      setCourse(existingCourse)
+      setLoading(false)
+      return
+    }
+
     async function loadCourse() {
       try {
         const courseData = await fetchCourse(courseId)
@@ -33,7 +42,7 @@ export default function CoursePage() {
     }
 
     loadCourse()
-  }, [courseId, fetchCourse])
+  }, [courseId, fetchCourse, courses])
 
   if (loading) {
     return <Loading />
@@ -74,7 +83,14 @@ export default function CoursePage() {
             </Breadcrumb>
           </div>
           <div className="ml-auto flex items-center gap-4 px-3">
-            {hasChapters && <AddContentButton />}
+            {hasChapters && (
+              <AddContentButton>
+                <Button size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  <span>Add Content</span>
+                </Button>
+              </AddContentButton>
+            )}
             <NavActionsCourse course={course} />
           </div>
         </header>
@@ -91,10 +107,6 @@ export default function CoursePage() {
             {hasChapters ? (
               <div className="space-y-8">
                 <ChapterList chapters={course.chapters} courseId={course.id} />
-                {/* <div className="mt-8">
-                  <h2 className="text-xl font-semibold mb-4">Add New Chapter</h2>
-                  <UploadDropzone compact />
-                </div> */}
               </div>
             ) : (
               <div className="space-y-6">

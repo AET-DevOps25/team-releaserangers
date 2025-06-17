@@ -1,94 +1,49 @@
 "use client"
 
 import * as React from "react"
-import {
-  ArrowDown,
-  ArrowUp,
-  Bell,
-  Copy,
-  CornerUpLeft,
-  CornerUpRight,
-  FileText,
-  GalleryVerticalEnd,
-  LineChart,
-  Link,
-  MoreHorizontal,
-  Settings2,
-  Star,
-  Trash,
-  Trash2,
-} from "lucide-react"
+import { ArrowDown, ArrowUp, Link, MoreHorizontal, Settings2, Star, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { formatDistanceToNow } from "date-fns"
+import { DeleteCourseDialog } from "./delete-course-dialog"
+import { CustomizeCourseDialog } from "./customize-course-dialog"
 import useCourseStore from "@/hooks/course-store"
-
-const data = [
-  [
-    {
-      label: "Customize Page",
-      icon: Settings2,
-    },
-    {
-      label: "Turn into wiki",
-      icon: FileText,
-    },
-  ],
-  [
-    {
-      label: "Copy Link",
-      icon: Link,
-    },
-    {
-      label: "Duplicate",
-      icon: Copy,
-    },
-    {
-      label: "Move to",
-      icon: CornerUpRight,
-    },
-    {
-      label: "Move to Trash",
-      icon: Trash2,
-    },
-  ],
-  [
-    {
-      label: "Undo",
-      icon: CornerUpLeft,
-    },
-    {
-      label: "View analytics",
-      icon: LineChart,
-    },
-    {
-      label: "Version History",
-      icon: GalleryVerticalEnd,
-    },
-    {
-      label: "Show delete pages",
-      icon: Trash,
-    },
-    {
-      label: "Notifications",
-      icon: Bell,
-    },
-  ],
-  [
-    {
-      label: "Import",
-      icon: ArrowUp,
-    },
-    {
-      label: "Export",
-      icon: ArrowDown,
-    },
-  ],
-]
+import { AddContentButton } from "./add-content-button"
 
 export function NavActionsCourse({ course }: { course: Course }) {
+  const data = [
+    [
+      {
+        label: "Customize Course",
+        icon: Settings2,
+      },
+    ],
+    [
+      {
+        label: "Copy Link",
+        icon: Link,
+        action: () => handleCopyLink(),
+      },
+      {
+        label: "Delete Course",
+        icon: Trash2,
+      },
+    ],
+    [
+      {
+        label: "Add Content",
+        icon: ArrowUp,
+      },
+      {
+        label: "Export",
+        icon: ArrowDown,
+        action: () => handleExport(),
+      },
+    ],
+  ]
+
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(course.isFavorite)
   const { updateCourse } = useCourseStore()
@@ -103,6 +58,15 @@ export function NavActionsCourse({ course }: { course: Course }) {
     } catch (error) {
       console.error("Failed to update favorite status:", error)
     }
+  }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setIsOpen(false)
+  }
+  const handleExport = () => {
+    // Logic to export course data
+    console.log("Export clicked")
   }
 
   return (
@@ -128,9 +92,29 @@ export function NavActionsCourse({ course }: { course: Course }) {
                     <SidebarMenu>
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
-                          <SidebarMenuButton>
-                            <item.icon /> <span>{item.label}</span>
-                          </SidebarMenuButton>
+                          {item.label === "Customize Course" ? (
+                            <CustomizeCourseDialog course={course}>
+                              <SidebarMenuButton>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </CustomizeCourseDialog>
+                          ) : item.label === "Delete Course" ? (
+                            <DeleteCourseDialog course={course}>
+                              <SidebarMenuButton>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </DeleteCourseDialog>
+                          ) : item.label === "Add Content" ? (
+                            <AddContentButton>
+                              <SidebarMenuButton>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </AddContentButton>
+                          ) : (
+                            <SidebarMenuButton onClick={item.action}>
+                              <item.icon /> <span>{item.label}</span>
+                            </SidebarMenuButton>
+                          )}
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>

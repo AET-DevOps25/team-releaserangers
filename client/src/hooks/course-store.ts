@@ -2,20 +2,30 @@ import { create } from "zustand"
 
 interface CourseStore {
   courses: Course[]
-  favorites?: Favorite[]
+  favorites: Favorite[]
   isLoading: boolean
   set: (courses: Course[]) => void
   add: (course: CourseCreationForm) => Promise<string>
   fetchCourses: () => Promise<void>
   fetchCourse: (courseId: string) => Promise<Course>
   updateCourse: (courseId: string, course: Partial<Course>) => Promise<Course>
+  deleteCourse: (courseId: string) => Promise<void>
   fetchChapter: (courseId: string, chapterId: string) => Promise<Chapter>
+  deleteChapter: (courseId: string, chapterId: string) => Promise<void>
   updateChapter: (courseId: string, chapterId: string, chapter: Partial<Chapter>) => Promise<Chapter>
   fetchFavorites: () => Promise<Favorite[]>
 }
 
+// Utility to handle 401 and redirect to /login
+function handleUnauthorized() {
+  if (typeof window !== "undefined") {
+    window.location.href = "/login"
+  }
+}
+
 const useCourseStore = create<CourseStore>()((set, get) => ({
   courses: [] as Course[],
+  favorites: [] as Favorite[],
   isLoading: true,
   set: (courses: Course[]) => set({ courses }),
   add: async (course: CourseCreationForm) => {
@@ -28,6 +38,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
       body: JSON.stringify(course),
       credentials: "include",
     })
+    if (response.status === 401) {
+      handleUnauthorized()
+      set({ isLoading: false })
+      return Promise.reject("Unauthorized access")
+    }
     if (!response.ok) {
       throw new Error("Failed to add course")
     }
@@ -45,6 +60,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         },
         credentials: "include",
       })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch courses")
       }
@@ -69,6 +89,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         },
         credentials: "include",
       })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch course")
       }
@@ -109,7 +134,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         body: JSON.stringify(courseUpdate),
         credentials: "include",
       })
-
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
       if (!response.ok) {
         throw new Error("Failed to update course")
       }
@@ -129,6 +158,36 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
       throw error
     }
   },
+  deleteCourse: async (courseId: string) => {
+    set({ isLoading: true })
+    try {
+      const response = await fetch(`http://localhost/courses/${courseId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
+      if (!response.ok) {
+        throw new Error("Failed to delete course")
+      }
+
+      set((state) => ({
+        courses: state.courses.filter((course) => course.id !== courseId),
+        isLoading: false,
+      }))
+      await get().fetchFavorites()
+    } catch (error) {
+      console.error("Error deleting course:", error)
+      set({ isLoading: false })
+      throw error
+    }
+  },
   fetchChapter: async (courseId: string, chapterId: string) => {
     set({ isLoading: true })
     try {
@@ -138,6 +197,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         },
         credentials: "include",
       })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch chapter")
       }
@@ -179,6 +243,44 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
       throw error
     }
   },
+  deleteChapter: async (courseId: string, chapterId: string) => {
+    set({ isLoading: true })
+    try {
+      const response = await fetch(`http://localhost/chapters/${chapterId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
+      if (!response.ok) {
+        throw new Error("Failed to delete chapter")
+      }
+
+      set((state) => ({
+        courses: state.courses.map((course) => {
+          if (course.id === courseId) {
+            return {
+              ...course,
+              chapters: course.chapters?.filter((chapter) => chapter.id !== chapterId),
+            }
+          }
+          return course
+        }),
+        isLoading: false,
+      }))
+      await get().fetchFavorites()
+    } catch (error) {
+      console.error("Error deleting chapter:", error)
+      set({ isLoading: false })
+      throw error
+    }
+  },
   updateChapter: async (courseId: string, chapterId: string, chapterUpdate: Partial<Chapter>) => {
     set({ isLoading: true })
     try {
@@ -190,6 +292,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         body: JSON.stringify(chapterUpdate),
         credentials: "include",
       })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
 
       if (!response.ok) {
         throw new Error("Failed to update chapter")
@@ -226,6 +333,11 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         },
         credentials: "include",
       })
+      if (response.status === 401) {
+        handleUnauthorized()
+        set({ isLoading: false })
+        return Promise.reject("Unauthorized access")
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch favorites")
       }

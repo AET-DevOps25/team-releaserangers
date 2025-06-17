@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AudioWaveform, Command, Home, Inbox, MessageCircleQuestion, Search, Sparkles, Trash2 } from "lucide-react"
+import { Home, Inbox, MessageCircleQuestion, Search, Sparkles } from "lucide-react"
 
 import { NavFavorites } from "@/components/dashboard/nav-favorites"
 import { NavMain } from "@/components/dashboard/nav-main"
@@ -13,23 +13,6 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/component
 import useCourseStore from "@/hooks/course-store"
 
 const data = {
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: Command,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Search",
@@ -56,11 +39,6 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Trash",
-      url: "#",
-      icon: Trash2,
-    },
-    {
       title: "Help",
       url: "#",
       icon: MessageCircleQuestion,
@@ -69,11 +47,23 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { fetchFavorites, favorites } = useCourseStore()
+  const { fetchFavorites, fetchCourses } = useCourseStore()
+  const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
-    fetchFavorites()
-  }, [fetchFavorites])
+    const loadData = async () => {
+      setIsLoading(true)
+      try {
+        await fetchFavorites()
+        await fetchCourses()
+      } catch (error) {
+        console.error("Failed to load data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [fetchFavorites, fetchCourses])
 
   return (
     <Sidebar className="border-r-0" {...props}>
@@ -83,8 +73,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <CourseCreationDialog /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites favorites={favorites} />
-        <NavCourses />
+        <NavFavorites isLoading={isLoading} />
+        <NavCourses isLoading={isLoading} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />
