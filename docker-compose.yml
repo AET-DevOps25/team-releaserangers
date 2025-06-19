@@ -12,6 +12,15 @@ services:
       - client
       - genai-service
 
+  postgres-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   authentication-service:
     build:
       context: ./server/authentication-service
@@ -40,15 +49,20 @@ services:
       - "8083:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
 
-  postgres-db:
+  genai-service:
     build:
-      context: .
-      dockerfile: Dockerfile.db
+      context: ./genai
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./genai/.env
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - "8084:8000"
+    depends_on:
+      - coursemgmt-service
+      - upload-service
 
   client:
     build:
@@ -61,17 +75,6 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - authentication-service
-      - coursemgmt-service
-      - upload-service
-  genai-service:
-    build:
-      context: ./genai
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file: ./genai/.env
-    ports:
-      - "8084:8000"
-    depends_on:
       - coursemgmt-service
       - upload-service
 
