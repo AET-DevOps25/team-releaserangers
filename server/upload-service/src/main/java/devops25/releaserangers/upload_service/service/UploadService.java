@@ -9,12 +9,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ public class UploadService {
         this.fileRepository = fileRepository;
     }
 
+    @Transactional
     public List<File> handleUploadedFiles(MultipartFile[] files, String courseId) throws IOException {
         if (files == null || files.length == 0) {
             throw new IllegalArgumentException("No files provided. Please upload at least one PDF file.");
@@ -41,17 +44,60 @@ public class UploadService {
         }
         List<File> uploadedFiles = new java.util.ArrayList<>();
         for (MultipartFile file : files) {
-            File fileEntity = new File();
-            fileEntity.setFilename(file.getOriginalFilename());
-            fileEntity.setContentType(file.getContentType());
-            fileEntity.setData(file.getBytes());
-            fileEntity.setCourseId(courseId);
-            fileRepository.save(fileEntity);
-            uploadedFiles.add(fileEntity);
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null) {
+                throw new IllegalArgumentException("File name cannot be null.");
+            }
+            File existingFile = fileRepository.findByFilename(originalFilename);
+            byte[] fileBytes = file.getBytes();
+            if (existingFile == null) {
+                // No file with this name exists, save as is
+                uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
+                System.out.println(originalFilename + " has been uploaded.");
+            } else if (Arrays.equals(existingFile.getData(), fileBytes)) {
+                // File exists and content is the same, update
+                System.out.println("File with name " + existingFile.getFilename() + " already exists and has the same content. Updating the existing file.");
+                fileRepository.updateFile(existingFile.getId(), originalFilename, file.getContentType(), fileBytes, courseId);
+                System.out.println(originalFilename + " has been updated.");
+                uploadedFiles.add(fileRepository.findByFilename(originalFilename));
+            } else {
+                // File exists but content is different, save with unique name
+                System.out.println(Arrays.toString(existingFile.getData()) + "\n\n");
+                System.out.println(Arrays.toString(fileBytes) + "\n\n");
+                String uniqueFilename = generateUniqueFilename(originalFilename);
+                uploadedFiles.add(saveFile(uniqueFilename, file.getContentType(), fileBytes, courseId));
+                System.out.println(uniqueFilename + " has been uploaded.");
+            }
         }
-
         forwardFilesToSummaryService(courseId);
         return uploadedFiles;
+    }
+
+    private File saveFile(String filename, String contentType, byte[] data, String courseId) {
+        File fileEntity = new File();
+        fileEntity.setFilename(filename);
+        fileEntity.setContentType(contentType);
+        fileEntity.setData(data);
+        fileEntity.setCourseId(courseId);
+        fileRepository.save(fileEntity);
+        return fileEntity;
+    }
+
+    private String generateUniqueFilename(String originalFilename) {
+        int suffix = 1;
+        String baseName = originalFilename;
+        String extension = "";
+        int dotIndex = originalFilename.lastIndexOf('.');
+        if (dotIndex != -1) {
+            baseName = originalFilename.substring(0, dotIndex);
+            extension = originalFilename.substring(dotIndex);
+        }
+        String candidate = originalFilename;
+        while (fileRepository.findByFilename(candidate) != null) {
+            candidate = baseName + "_" + suffix + extension;
+            suffix++;
+        }
+        return candidate;
     }
 
     public List<FileMetadataDTO> getAllFiles() {
@@ -100,7 +146,6 @@ public class UploadService {
                 }
             });
         }
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
