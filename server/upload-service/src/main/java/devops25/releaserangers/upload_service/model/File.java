@@ -37,5 +37,16 @@ public class File {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-}
 
+    @Override
+    public String toString() {
+        return "File{" +
+                "id='" + id + '\'' +
+                ", filename='" + filename + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", courseId='" + courseId + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+}
