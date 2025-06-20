@@ -47,7 +47,10 @@ public class ChapterController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Chapter>> getChapters(@CookieValue("token") String token) {
+    public ResponseEntity<List<Chapter>> getChapters(@CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).body(null);
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
@@ -63,13 +66,19 @@ public class ChapterController {
     }
 
     @GetMapping("/{chapter_id}")
-    public ResponseEntity<Chapter> getChapterById(@PathVariable String chapter_id, @CookieValue("token") String token) {
+    public ResponseEntity<Chapter> getChapterById(@PathVariable String chapter_id, @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).body(null);
+        }
         return validateUserAndGetChapter(chapter_id, token);
     }
 
     @PostMapping
     public ResponseEntity<Chapter> createChapter(@RequestBody Chapter chapterRequest,
-                                                 @CookieValue("token") String token) {
+                                                 @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).body(null);
+        }
         Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
@@ -97,7 +106,10 @@ public class ChapterController {
     @PutMapping("/{chapter_id}")
     public ResponseEntity<Chapter> updateChapter(@PathVariable String chapter_id,
                                                  @RequestBody Chapter chapterRequest,
-                                                 @CookieValue("token") String token) {
+                                                 @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).body(null);
+        }
         ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
@@ -110,7 +122,10 @@ public class ChapterController {
 
     @PatchMapping("/{chapter_id}")
     public ResponseEntity<Chapter> patchChapter(@PathVariable String chapter_id, @RequestBody Chapter patch,
-                                                @CookieValue("token") String token) {
+                                                @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).body(null);
+        }
         ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
@@ -127,7 +142,10 @@ public class ChapterController {
 
     @DeleteMapping("/{chapter_id}")
     public ResponseEntity<Void> deleteChapterById(@PathVariable String chapter_id,
-                                                  @CookieValue("token") String token) {
+                                                  @CookieValue(value = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(401).build();
+        }
         ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(validationResponse.getStatusCode()).build();

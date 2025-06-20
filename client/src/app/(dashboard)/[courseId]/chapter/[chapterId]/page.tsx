@@ -43,6 +43,22 @@ export default function ChapterPage() {
     return <Loading />
   }
 
+  if (!chapter || !course) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-lg font-semibold">Chapter not found</p>
+              <p className="text-muted-foreground">The requested chapter could not be loaded</p>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />

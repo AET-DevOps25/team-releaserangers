@@ -15,15 +15,11 @@ import {
 } from "@/components/ui/sidebar"
 import { ButtonType, CourseCreationDialog } from "./course-creation-dialog"
 import useCourseStore from "@/hooks/course-store"
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
 import Link from "next/link"
 
-export function NavCourses() {
-  const { courses, isLoading, fetchCourses } = useCourseStore()
-
-  useEffect(() => {
-    fetchCourses().catch((error) => console.error("Failed to fetch courses:", error))
-  }, [fetchCourses])
+export function NavCourses({ isLoading }: { isLoading: boolean }) {
+  const { courses } = useCourseStore()
 
   return (
     <SidebarGroup>
