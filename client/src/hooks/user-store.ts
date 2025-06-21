@@ -1,6 +1,7 @@
 "use client"
 
 import { create } from "zustand"
+import { SIGNIN_ENDPOINT, SIGNOUT_ENDPOINT, SIGNUP_ENDPOINT, USER_ENDPOINT } from "../../server/endpoints"
 
 interface UserStore {
   user: User | null
@@ -18,7 +19,7 @@ const useUserStore = create<UserStore>()((set) => ({
   setUser: (user: User | null) => set({ user }),
   fetchUser: async () => {
     try {
-      const response = await fetch("http://localhost/auth/user", {
+      const response = await fetch(USER_ENDPOINT, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +38,7 @@ const useUserStore = create<UserStore>()((set) => ({
   },
   updateUser: async (userUpdates: Partial<User>) => {
     try {
-      const response = await fetch("http://localhost/auth/user", {
+      const response = await fetch(USER_ENDPOINT, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,7 @@ const useUserStore = create<UserStore>()((set) => ({
   },
   deleteUser: async () => {
     try {
-      const response = await fetch("http://localhost/auth/user", {
+      const response = await fetch(USER_ENDPOINT, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +77,7 @@ const useUserStore = create<UserStore>()((set) => ({
   },
   signUp: async (name: string, email: string, password: string) => {
     try {
-      const response = await fetch("http://localhost/auth/signup", {
+      const response = await fetch(SIGNUP_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +97,7 @@ const useUserStore = create<UserStore>()((set) => ({
   },
   signIn: async (email: string, password: string) => {
     try {
-      const response = await fetch("http://localhost/auth/signin", {
+      const response = await fetch(SIGNIN_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +117,7 @@ const useUserStore = create<UserStore>()((set) => ({
   },
   signOut: async () => {
     try {
-      const response = await fetch("http://localhost/auth/signout", {
+      const response = await fetch(SIGNOUT_ENDPOINT, {
         method: "POST",
         credentials: "include",
       })
