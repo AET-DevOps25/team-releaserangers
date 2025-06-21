@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { CHAPTER_ENDPOINT, COURSE_ENDPOINT, COURSES_ENDPOINT, FAVORITES_ENDPOINT } from "../../server/endpoints"
 
 interface CourseStore {
   courses: Course[]
@@ -30,7 +31,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   set: (courses: Course[]) => set({ courses }),
   add: async (course: CourseCreationForm) => {
     set(() => ({ isLoading: true }))
-    const response = await fetch("http://localhost/courses", {
+    const response = await fetch(COURSES_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourses: async () => {
     set({ isLoading: true })
     try {
-      const response = await fetch("http://localhost/courses", {
+      const response = await fetch(COURSES_ENDPOINT, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -83,7 +84,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchCourse: async (courseId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/courses/${courseId}`, {
+      const response = await fetch(COURSE_ENDPOINT(courseId), {
         headers: {
           "Content-Type": "application/json",
         },
@@ -126,7 +127,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   updateCourse: async (courseId: string, courseUpdate: Partial<Course>) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/courses/${courseId}`, {
+      const response = await fetch(COURSE_ENDPOINT(courseId), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +162,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   deleteCourse: async (courseId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/courses/${courseId}`, {
+      const response = await fetch(COURSE_ENDPOINT(courseId), {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -191,7 +192,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchChapter: async (courseId: string, chapterId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/chapters/${chapterId}`, {
+      const response = await fetch(CHAPTER_ENDPOINT(chapterId), {
         headers: {
           "Content-Type": "application/json",
         },
@@ -246,7 +247,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   deleteChapter: async (courseId: string, chapterId: string) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/chapters/${chapterId}`, {
+      const response = await fetch(CHAPTER_ENDPOINT(chapterId), {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -284,7 +285,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   updateChapter: async (courseId: string, chapterId: string, chapterUpdate: Partial<Chapter>) => {
     set({ isLoading: true })
     try {
-      const response = await fetch(`http://localhost/chapters/${chapterId}`, {
+      const response = await fetch(CHAPTER_ENDPOINT(chapterId), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -327,7 +328,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
   fetchFavorites: async () => {
     set({ isLoading: true })
     try {
-      const response = await fetch("http://localhost/favorites", {
+      const response = await fetch(FAVORITES_ENDPOINT, {
         headers: {
           "Content-Type": "application/json",
         },
