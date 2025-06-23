@@ -11,6 +11,7 @@ import { DeleteCourseDialog } from "./delete-course-dialog"
 import { CustomizeCourseDialog } from "./customize-course-dialog"
 import useCourseStore from "@/hooks/course-store"
 import { AddContentButton } from "./add-content-button"
+import { useFavorites } from "@/hooks/useFavorites"
 
 export function NavActionsCourse({ course }: { course: Course }) {
   const data = [
@@ -47,6 +48,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(course.isFavorite)
   const { updateCourse } = useCourseStore()
+  const { refetch } = useFavorites()
 
   const handleFavorite = async () => {
     try {
@@ -55,6 +57,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
       await updateCourse(course.id, {
         isFavorite: value,
       })
+      if (refetch) refetch()
     } catch (error) {
       console.error("Failed to update favorite status:", error)
     }
