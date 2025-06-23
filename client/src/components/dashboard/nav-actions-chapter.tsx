@@ -9,6 +9,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu
 import { formatDistanceToNow } from "date-fns"
 import useCourseStore from "@/hooks/course-store"
 import { useParams } from "next/navigation"
+import { useFavorites } from "@/hooks/useFavorites"
 
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
   const params = useParams<{ courseId: string; chapterId: string }>()
@@ -16,6 +17,7 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(chapter.isFavorite)
   const { updateChapter } = useCourseStore()
+  const { refetch } = useFavorites()
 
   const data = [
     [
@@ -58,6 +60,7 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
       await updateChapter(courseId, chapter.id, {
         isFavorite: value,
       })
+      if (refetch) refetch()
     } catch (error) {
       console.error("Failed to update favorite status:", error)
     }

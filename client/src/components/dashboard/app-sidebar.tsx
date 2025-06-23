@@ -47,14 +47,13 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { fetchFavorites, fetchCourses } = useCourseStore()
+  const { fetchCourses } = useCourseStore()
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
     const loadData = async () => {
       setIsLoading(true)
       try {
-        await fetchFavorites()
         await fetchCourses()
       } catch (error) {
         console.error("Failed to load data:", error)
@@ -63,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     }
     loadData()
-  }, [fetchFavorites, fetchCourses])
+  }, [fetchCourses])
 
   return (
     <Sidebar className="border-r-0" {...props}>
@@ -73,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <CourseCreationDialog /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites isLoading={isLoading} />
+        <NavFavorites />
         <NavCourses isLoading={isLoading} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

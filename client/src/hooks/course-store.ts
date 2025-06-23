@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { CHAPTER_ENDPOINT, COURSE_ENDPOINT, COURSES_ENDPOINT, FAVORITES_ENDPOINT } from "../../server/endpoints"
+import { CHAPTER_ENDPOINT, COURSE_ENDPOINT, COURSES_ENDPOINT } from "../server/endpoints"
 
 interface CourseStore {
   courses: Course[]
@@ -14,7 +14,7 @@ interface CourseStore {
   fetchChapter: (courseId: string, chapterId: string) => Promise<Chapter>
   deleteChapter: (courseId: string, chapterId: string) => Promise<void>
   updateChapter: (courseId: string, chapterId: string, chapter: Partial<Chapter>) => Promise<Chapter>
-  fetchFavorites: () => Promise<Favorite[]>
+  setFavorites: (favorites: Favorite[]) => void
 }
 
 // Utility to handle 401 and redirect to /login
@@ -150,7 +150,6 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         courses: state.courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)),
         isLoading: false,
       }))
-      await get().fetchFavorites()
 
       return updatedCourse
     } catch (error) {
@@ -182,7 +181,6 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         courses: state.courses.filter((course) => course.id !== courseId),
         isLoading: false,
       }))
-      await get().fetchFavorites()
     } catch (error) {
       console.error("Error deleting course:", error)
       set({ isLoading: false })
@@ -275,7 +273,6 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         }),
         isLoading: false,
       }))
-      await get().fetchFavorites()
     } catch (error) {
       console.error("Error deleting chapter:", error)
       set({ isLoading: false })
@@ -317,7 +314,6 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
         }),
         isLoading: false,
       }))
-      await get().fetchFavorites()
       return updatedChapter
     } catch (error) {
       console.error("Error updating chapter:", error)
@@ -325,36 +321,7 @@ const useCourseStore = create<CourseStore>()((set, get) => ({
       throw error
     }
   },
-  fetchFavorites: async () => {
-    set({ isLoading: true })
-    try {
-      const response = await fetch(FAVORITES_ENDPOINT, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      })
-      if (response.status === 401) {
-        handleUnauthorized()
-        set({ isLoading: false })
-        return Promise.reject("Unauthorized access")
-      }
-      if (!response.ok) {
-        throw new Error("Failed to fetch favorites")
-      }
-      if (response.status === 204) {
-        set({ favorites: [], isLoading: false })
-        return []
-      }
-      const data: Favorite[] = await response.json()
-      set({ isLoading: false, favorites: data })
-      return data
-    } catch (error) {
-      console.error("Error fetching favorites:", error)
-      set({ isLoading: false })
-      throw error
-    }
-  },
+  setFavorites: (favorites: Favorite[]) => set({ favorites }),
 }))
 
 export default useCourseStore
