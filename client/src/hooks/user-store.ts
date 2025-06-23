@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import { SIGNIN_ENDPOINT, SIGNOUT_ENDPOINT, SIGNUP_ENDPOINT, USER_ENDPOINT } from "../../server/endpoints"
+import { SIGNIN_ENDPOINT, SIGNOUT_ENDPOINT, SIGNUP_ENDPOINT, USER_ENDPOINT } from "../server/endpoints"
 
 interface UserStore {
   user: User | null
