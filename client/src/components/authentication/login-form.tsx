@@ -8,14 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { z } from "zod"
 import Link from "next/link"
-import useUserStore from "@/hooks/user-store"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { useSignIn } from "@/hooks/authAPI"
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter()
-  const { signIn } = useUserStore()
+  const { signIn } = useSignIn()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

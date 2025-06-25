@@ -20,12 +20,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import useUserStore from "@/hooks/user-store"
 import { useRouter } from "next/navigation"
 import z from "zod"
+import { useDeleteUser, useUpdateUser, useUser } from "@/hooks/authAPI"
 
 export function AccountSettings() {
-  const { user, deleteUser, updateUser } = useUserStore()
+  const { user } = useUser()
+  const { updateUser } = useUpdateUser()
+  const { deleteUser } = useDeleteUser()
   const [isLoadingUpdateProfile, setIsLoadingUpdateProfile] = useState(false)
   const [isLoadingUpdatePassword, setIsLoadingUpdatePassword] = useState(false)
   const [isLoadingDeleteAccount, setIsLoadingDeleteAccount] = useState(false)

@@ -6,11 +6,11 @@ import { ChevronDown, Command, LogOut } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { useRouter } from "next/navigation"
-import useUserStore from "@/hooks/user-store"
+import { useSignOut } from "@/hooks/authAPI"
 
 export function AppActions() {
   const router = useRouter()
-  const { signOut } = useUserStore()
+  const { signOut } = useSignOut()
 
   const logout = async () => {
     await signOut()
