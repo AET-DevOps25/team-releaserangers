@@ -41,14 +41,14 @@ export function CourseCreationDialog({ buttonType = ButtonType.Default }: { butt
     setSubmitting(true)
 
     try {
-      const id = await createCourse({
+      const course = await createCourse({
         name: formData.title,
         description: formData.description,
         emoji: formData.emoji,
       })
       setOpen(false)
       setFormData({ title: "", description: "", emoji: "📖" })
-      router.push(`/${id}`)
+      router.push(`/${course.id}`)
     } catch (error) {
       console.error("Failed to create course:", error)
     } finally {
