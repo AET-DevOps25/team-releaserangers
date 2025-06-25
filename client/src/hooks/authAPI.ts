@@ -1,18 +1,10 @@
 import { SIGNIN_ENDPOINT, SIGNOUT_ENDPOINT, SIGNUP_ENDPOINT, USER_ENDPOINT } from "@/server/endpoints"
 import { authenticatedFetcher } from "./authenticated-fetcher"
 import useSWR, { mutate } from "swr"
-import { useEffect, useState } from "react"
-import useUserStore from "./user-store"
+import { useState } from "react"
 
 export function useUser() {
-  const { setUser } = useUserStore()
   const { data, error, isLoading } = useSWR<User>(USER_ENDPOINT, authenticatedFetcher)
-
-  useEffect(() => {
-    if (data) {
-      setUser(data)
-    }
-  }, [data, setUser])
 
   return {
     user: data || null,
@@ -25,7 +17,6 @@ export function useUser() {
 }
 
 export function useUpdateUser() {
-  const { setUser } = useUserStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -47,7 +38,6 @@ export function useUpdateUser() {
       }
       const updatedUser = await response.json()
       mutate(USER_ENDPOINT, updatedUser, false)
-      setUser(updatedUser)
       return updatedUser
     } catch (err) {
       console.error("Error updating user:", err)
@@ -62,7 +52,6 @@ export function useUpdateUser() {
 }
 
 export function useDeleteUser() {
-  const { setUser } = useUserStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -82,7 +71,6 @@ export function useDeleteUser() {
         throw new Error(response.statusText)
       }
       mutate(USER_ENDPOINT, null, false)
-      setUser(null)
     } catch (err) {
       console.error("Error deleting user:", err)
       setError(err as Error)
@@ -96,7 +84,6 @@ export function useDeleteUser() {
 }
 
 export function useSignUp() {
-  const { setUser } = useUserStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -118,7 +105,6 @@ export function useSignUp() {
       }
       const user = await response.json()
       mutate(USER_ENDPOINT, user, false)
-      setUser(user)
       return user
     } catch (err) {
       console.error("Error signing up:", err)
@@ -133,7 +119,6 @@ export function useSignUp() {
 }
 
 export function useSignIn() {
-  const { setUser } = useUserStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -155,7 +140,6 @@ export function useSignIn() {
       }
       const user = await response.json()
       mutate(USER_ENDPOINT, user, false)
-      setUser(user)
       return user
     } catch (err) {
       console.error("Error signing in:", err)
@@ -170,7 +154,6 @@ export function useSignIn() {
 }
 
 export function useSignOut() {
-  const { setUser } = useUserStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -187,7 +170,6 @@ export function useSignOut() {
         throw new Error(response.statusText)
       }
       mutate(USER_ENDPOINT, null, false)
-      setUser(null)
     } catch (err) {
       console.error("Error signing out:", err)
       setError(err as Error)
