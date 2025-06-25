@@ -1,23 +1,15 @@
 import { CHAPTER_ENDPOINT } from "@/server/endpoints"
 import useSWR, { mutate } from "swr"
 import { authenticatedFetcher } from "./authenticated-fetcher"
-import useCourseDataStore from "./course-store"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { handleUnauthorized } from "./handle-unauthorized"
 
 export function useChapter(courseId: string, chapterId: string) {
-  const { setChapter } = useCourseDataStore()
   const { data, error, isLoading } = useSWR<Chapter>(CHAPTER_ENDPOINT(chapterId), authenticatedFetcher)
 
   // if (!data.chapters) {
   //   data.chapters = []
   // }
-
-  useEffect(() => {
-    if (data) {
-      setChapter(courseId, data)
-    }
-  }, [data, setChapter, courseId])
 
   return {
     chapter: data || null,
@@ -30,7 +22,6 @@ export function useChapter(courseId: string, chapterId: string) {
 }
 
 export function useUpdateChapter() {
-  const { setChapter } = useCourseDataStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -57,7 +48,6 @@ export function useUpdateChapter() {
       }
       const updatedChapter = await response.json()
       mutate(CHAPTER_ENDPOINT(chapterId), updatedChapter, false)
-      setChapter(courseId, updatedChapter)
     } catch (err) {
       console.error("Error updating chapter:", err)
       setError(err as Error)
@@ -74,7 +64,6 @@ export function useUpdateChapter() {
 }
 
 export function useDeleteChapter() {
-  const { deleteChapter: deleteChapterFromStore } = useCourseDataStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -99,7 +88,6 @@ export function useDeleteChapter() {
         throw new Error(response.statusText)
       }
       mutate(CHAPTER_ENDPOINT(chapterId), null, false)
-      deleteChapterFromStore(courseId, chapterId)
     } catch (err) {
       console.error("Error deleting chapter:", err)
       setError(err as Error)

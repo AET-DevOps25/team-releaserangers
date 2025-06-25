@@ -1,19 +1,11 @@
 import { COURSE_ENDPOINT, COURSES_ENDPOINT } from "@/server/endpoints"
 import useSWR, { mutate } from "swr"
 import { authenticatedFetcher } from "./authenticated-fetcher"
-import { useState, useEffect } from "react"
-import useCourseDataStore from "./course-store"
+import { useState } from "react"
 import { handleUnauthorized } from "./handle-unauthorized"
 
 export function useCourses() {
-  const { setCourses } = useCourseDataStore()
   const { data, error, isLoading } = useSWR<Course[], Error>(COURSES_ENDPOINT, authenticatedFetcher)
-
-  useEffect(() => {
-    if (data) {
-      setCourses(data)
-    }
-  }, [data, setCourses])
 
   return {
     courses: data || [],
@@ -26,14 +18,7 @@ export function useCourses() {
 }
 
 export function useCourse(courseId: string) {
-  const { setCourse } = useCourseDataStore()
   const { data, error, isLoading } = useSWR<Course>(COURSE_ENDPOINT(courseId), authenticatedFetcher)
-
-  useEffect(() => {
-    if (data) {
-      setCourse(data)
-    }
-  }, [data, setCourse])
 
   return {
     course: data || null,
@@ -46,7 +31,6 @@ export function useCourse(courseId: string) {
 }
 
 export function useUpdateCourse() {
-  const { setCourse } = useCourseDataStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -72,7 +56,6 @@ export function useUpdateCourse() {
       const updatedCourse: Course = await response.json()
       // mutate
       mutate(COURSE_ENDPOINT(courseId), updatedCourse, false) // Optimistically update the cache
-      setCourse(updatedCourse) // Update the course in the store
       return updatedCourse
     } catch (err) {
       const error = err as Error
@@ -92,7 +75,6 @@ export function useUpdateCourse() {
 }
 
 export function useDeleteCourse() {
-  const { deleteCourse: deleteCourseFromStore } = useCourseDataStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -115,7 +97,6 @@ export function useDeleteCourse() {
         throw new Error(response.statusText)
       }
       mutate(COURSES_ENDPOINT) // Revalidate the courses list
-      deleteCourseFromStore(courseId) // Remove the course from the store
     } catch (error) {
       console.error("Error deleting course:", error)
       setError(error as Error)
@@ -133,7 +114,6 @@ export function useDeleteCourse() {
 }
 
 export function useCreateCourse() {
-  const { setCourses } = useCourseDataStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -160,8 +140,6 @@ export function useCreateCourse() {
 
       // Update the courses list in the cache
       mutate(COURSES_ENDPOINT)
-      const { courses } = useCourseDataStore.getState()
-      setCourses([...courses, newCourse])
       return newCourse
     } catch (err) {
       const error = err as Error
