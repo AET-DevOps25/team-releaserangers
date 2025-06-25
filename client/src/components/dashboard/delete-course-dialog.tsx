@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import useCourseStore from "@/hooks/course-store"
+import { useDeleteCourse } from "@/hooks/courseAPI"
 
 interface DeleteCourseDialogProps {
   course: Course
@@ -22,7 +22,7 @@ export function DeleteCourseDialog({ course, children }: DeleteCourseDialogProps
   const [open, setOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [confirmationText, setConfirmationText] = useState("")
-  const { deleteCourse } = useCourseStore()
+  const { deleteCourse } = useDeleteCourse()
 
   const isConfirmationValid = confirmationText === course.name
 

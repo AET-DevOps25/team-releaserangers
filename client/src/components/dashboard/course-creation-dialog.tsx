@@ -11,8 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import useCourseStore from "@/hooks/course-store"
 import { EmojiPickerComponent } from "./emoji-picker"
+import { useCreateCourse } from "@/hooks/courseAPI"
 
 export enum ButtonType {
   Default,
@@ -21,7 +21,7 @@ export enum ButtonType {
 }
 
 export function CourseCreationDialog({ buttonType = ButtonType.Default }: { buttonType?: ButtonType }) {
-  const { add } = useCourseStore()
+  const { createCourse } = useCreateCourse()
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -41,14 +41,14 @@ export function CourseCreationDialog({ buttonType = ButtonType.Default }: { butt
     setSubmitting(true)
 
     try {
-      const id = await add({
+      const course = await createCourse({
         name: formData.title,
         description: formData.description,
         emoji: formData.emoji,
       })
       setOpen(false)
       setFormData({ title: "", description: "", emoji: "📖" })
-      router.push(`/${id}`)
+      router.push(`/${course.id}`)
     } catch (error) {
       console.error("Failed to create course:", error)
     } finally {
