@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { EmojiPickerComponent } from "./emoji-picker"
-import useCourseStore from "@/hooks/course-store"
+import { useUpdateCourse } from "@/hooks/courseAPI"
 
 interface CustomizeCourseDialogProps {
   course: Course
@@ -26,7 +26,7 @@ export function CustomizeCourseDialog({ course, children }: CustomizeCourseDialo
     description: course.description,
     emoji: course.emoji,
   })
-  const { updateCourse } = useCourseStore()
+  const { updateCourse } = useUpdateCourse()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target

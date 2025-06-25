@@ -2,7 +2,7 @@
 
 import { BookOpen, Clock, Target, TrendingUp } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import useCourseStore from "@/hooks/course-store"
+import useCourseDataStore from "@/hooks/course-store"
 import { useState, useEffect } from "react"
 
 // use state to manage course length
@@ -32,7 +32,7 @@ const stats = [
 ]
 
 export function QuickStats() {
-  const { courses } = useCourseStore()
+  const { courses } = useCourseDataStore()
   const [courseLength, setCourseLength] = useState(courses.length)
 
   useEffect(() => {

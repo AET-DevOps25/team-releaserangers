@@ -5,20 +5,15 @@ import Link from "next/link"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import useCourseStore from "@/hooks/course-store"
 import { useFavorites } from "@/hooks/useFavorites"
-import { useEffect } from "react"
+import { useUpdateCourse } from "@/hooks/courseAPI"
+import { useUpdateChapter } from "@/hooks/chapterAPI"
 
 export function NavFavorites() {
   const { isMobile } = useSidebar()
-  const { setFavorites, updateCourse, updateChapter, favorites: storeFavorites } = useCourseStore()
   const { favorites, error, isLoading, refetch } = useFavorites()
-
-  useEffect(() => {
-    if (favorites && favorites.length > 0 && !error) {
-      setFavorites(favorites)
-    }
-  }, [favorites, setFavorites, storeFavorites])
+  const { updateCourse } = useUpdateCourse()
+  const { updateChapter } = useUpdateChapter()
 
   const handleFavorite = async (item: Favorite) => {
     try {
