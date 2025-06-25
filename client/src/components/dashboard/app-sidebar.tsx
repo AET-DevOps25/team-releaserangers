@@ -10,8 +10,6 @@ import { NavCourses } from "@/components/dashboard/nav-courses"
 import { AppActions } from "@/components/dashboard/app-actions"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
-import useCourseStore from "@/hooks/course-store"
-
 const data = {
   navMain: [
     {
@@ -47,23 +45,6 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { fetchCourses } = useCourseStore()
-  const [isLoading, setIsLoading] = React.useState(true)
-
-  React.useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      try {
-        await fetchCourses()
-      } catch (error) {
-        console.error("Failed to load data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [fetchCourses])
-
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
@@ -73,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavFavorites />
-        <NavCourses isLoading={isLoading} />
+        <NavCourses />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />
