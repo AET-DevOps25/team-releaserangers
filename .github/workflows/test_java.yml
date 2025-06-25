@@ -11,8 +11,8 @@ jobs:
       matrix:
         service:
           - authentication-service
-# TODO         - coursemgmt-service
-# TODO         - upload-service
+          - coursemgmt-service
+          # - upload-service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
