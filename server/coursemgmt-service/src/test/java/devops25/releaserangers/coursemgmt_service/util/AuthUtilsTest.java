@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class AuthUtilsTest {
+
     @Mock
     private RestTemplate restTemplate;
     @InjectMocks
@@ -60,4 +61,3 @@ class AuthUtilsTest {
         assertTrue(result.isEmpty());
     }
 }
-

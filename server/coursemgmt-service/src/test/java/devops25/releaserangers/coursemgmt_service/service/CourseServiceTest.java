@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 class CourseServiceTest {
+
     @Mock
     private CourseRepository courseRepository;
     @InjectMocks
@@ -96,4 +97,3 @@ class CourseServiceTest {
         verify(courseRepository, never()).delete(any());
     }
 }
-

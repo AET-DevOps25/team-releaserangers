@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FavoritesController.class)
 class FavoritesControllerIntegrationTest {
+
     @Autowired
     private MockMvc mockMvc;
     @MockBean
