@@ -68,13 +68,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup Docker Compose
+        uses: docker/setup-compose-action@v1
 
       - name: Set up .env file
         run: |
           cd ..
-          echo "JWT_SECRET=${{ 'test-secret-key' }}" > .env
+          echo "JWT_SECRET=test-secret-key" > .env
           echo "Creating .env for genai service"
           mkdir -p ./genai
           echo "CHAIR_API_KEY=${{ secrets.CHAIR_API_KEY || 'dummy-key' }}" > ./genai/.env
@@ -82,7 +82,7 @@ jobs:
       - name: Start Docker Compose services
         run: |
           cd ..
-          docker-compose up -d
+          docker compose up -d
           echo "Waiting for services to be ready..."
           sleep 30  # Give services time to initialize
 

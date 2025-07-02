@@ -78,7 +78,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
       </Button>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7">
+          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7" data-testid="nav-actions-course-button">
             <MoreHorizontal />
           </Button>
         </PopoverTrigger>
