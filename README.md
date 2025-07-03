@@ -119,6 +119,27 @@ docker compose up --build
 
 ---
 
+## Database Schema
+
+Our application uses PostgreSQL as the primary database with tables distributed across three microservices:
+
+![Database Schema](docs/database_schema.png)
+
+### Schema Documentation
+
+- **Visual Diagram**: [database_schema.png](docs/database_schema.png)
+- **DBML File**: [database_schema.dbml](docs/database_schema.dbml) - Import this into [dbdiagram.io](https://dbdiagram.io) for interactive editing
+- **Detailed Documentation**: [database_schema.md](docs/database_schema.md)
+
+### Key Tables
+
+- **users** (Authentication Service): User accounts and authentication
+- **courses** (Course Management): Course information and metadata  
+- **chapters** (Course Management): Individual learning chapters within courses
+- **uploaded_files** (Upload Service): File uploads associated with courses
+
+---
+
 ## Architecture Overview
 
 ### Top Level Architecture
