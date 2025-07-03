@@ -1,5 +1,4 @@
-// Database schema for DevOps 2025 - Team ReleaseRangers
-// This represents the database structure for the learning management system
+// Database schema
 
 Table users {
   id bigserial [primary key, note: 'Auto-incrementing user ID']
@@ -42,7 +41,7 @@ Table uploaded_files {
   id varchar [primary key, note: 'UUID for file identification']
   filename varchar [not null, note: 'Original filename of uploaded file']
   content_type varchar [not null, note: 'MIME type of the file']
-  data bytea [not null, note: 'Binary file data stored in database']
+  data oid [not null, note: 'Binary file data stored in database']
   course_id varchar [not null, note: 'References the associated course']
   created_at timestamp [not null, default: `now()`, note: 'File upload timestamp']
   updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
@@ -51,34 +50,9 @@ Table uploaded_files {
 }
 
 // Relationships
-Ref: courses.user_id > users.id [note: 'Each course belongs to a user (soft reference)']
-Ref: chapters.course_id > courses.course_id [delete: cascade, note: 'Each chapter belongs to a course']
-Ref: uploaded_files.course_id > courses.course_id [note: 'Each file is associated with a course (soft reference)']
-
-// Notes about the schema
-Note: '''
-# Database Schema Notes
-
-## Architecture
-This is a microservices architecture with the following services:
-- **authentication-service**: Manages users table
-- **coursemgmt-service**: Manages courses and chapters tables  
-- **upload-service**: Manages uploaded_files table
-
-## Relationships
-- Users create multiple Courses (1:N)
-- Courses contain multiple Chapters (1:N with cascade delete)
-- Courses can have multiple uploaded Files (1:N)
-
-## Data Types
-- Primary keys use UUID (except users which uses auto-increment)
-- Timestamps automatically managed by Hibernate
-- File data stored as binary blobs in database
-- Soft references between microservices (no foreign key constraints across services)
-
-## Key Features
-- Favorite marking for both courses and chapters
-- Audit trails with created_at/updated_at timestamps
-- Cascade delete from courses to chapters
-- Support for emoji representations
-'''
+// Each course belongs to a user (soft reference)
+Ref: courses.user_id > users.id
+// Each chapter belongs to a course (cascade delete)
+Ref: chapters.course_id > courses.course_id [delete: cascade]
+// Each file is associated with a course (soft reference)
+Ref: uploaded_files.course_id > courses.course_id
