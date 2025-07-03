@@ -22,3 +22,13 @@ output "instance_username" {
   description = "Username for SSH access to the EC2 instance"
   value       = "ubuntu"
 }
+
+output "ebs_volume_id" {
+  description = "ID of the EBS volume for PostgreSQL data"
+  value       = aws_ebs_volume.postgres_data.id
+}
+
+output "ebs_volume_device" {
+  description = "Device name of the attached EBS volume"
+  value       = aws_volume_attachment.postgres_data_attachment.device_name
+}

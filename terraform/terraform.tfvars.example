@@ -3,3 +3,8 @@ instance_name   = "ReleaseRangersAppServer"
 instance_type   = "t2.micro"
 ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3..."
 ssh_private_key = "path/to/your/private/key.pem"
+
+# EBS Volume Configuration for PostgreSQL data
+ebs_volume_size      = 20     # Size in GB
+ebs_volume_type      = "gp3"  # gp3, gp2, io1, io2, st1, sc1
+ebs_volume_encrypted = true   # Encrypt the volume for security

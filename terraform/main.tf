@@ -96,6 +96,23 @@ resource "aws_instance" "app_server" {
   }
 }
 
+resource "aws_ebs_volume" "postgres_data" {
+  availability_zone = aws_instance.app_server.availability_zone
+  size              = var.ebs_volume_size
+  type              = var.ebs_volume_type
+  encrypted         = var.ebs_volume_encrypted
+
+  tags = {
+    Name = "${var.env_prefix}-postgres-data-volume"
+  }
+}
+
+resource "aws_volume_attachment" "postgres_data_attachment" {
+  device_name = "/dev/sdf"
+  volume_id   = aws_ebs_volume.postgres_data.id
+  instance_id = aws_instance.app_server.id
+}
+
 resource "aws_eip" "app_server_eip" {
   domain = "vpc"
 
