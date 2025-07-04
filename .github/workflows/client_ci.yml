@@ -87,6 +87,8 @@ jobs:
           sleep 30  # Give services time to initialize
           # Check if services are running
           docker compose ps
+          # For debugging purposes show external url of the client service
+          docker 
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -115,9 +117,18 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Run Playwright tests against Docker services
+        env:
+          PLAYWRIGHT_BASE_URL: "http://localhost:3000"
         run: |
           # Configure playwright to use the dockerized application URL
           pnpm exec playwright test
+
+      - name: Print client logs on failure
+        if: failure()
+        run: |
+          cd ..
+          echo "==== Docker Compose Client Logs ===="
+          docker compose logs client
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
