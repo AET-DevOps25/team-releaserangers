@@ -17,7 +17,7 @@ router = APIRouter()
         )
 async def summarize_pdf(
     courseId: str = Form(...),
-    # existingChapterSummary: str = Form(...), # will be JSON string
+    existingChapterSummary: str = Form(...), # will be JSON string
     files: List[UploadFile] = File(...),
     token: Optional[str] = Cookie(None)
 ):
@@ -37,12 +37,11 @@ async def summarize_pdf(
     if token is None:
         raise HTTPException(status_code=401, detail="Missing Cookie")
     # Parse existing summary JSON
-    '''
+
     try:
         existing_summary_data = json.loads(existingChapterSummary)
     except json.JSONDecodeError as e:
         raise Exception(f"Invalid JSON in existingChapterSummary: {str(e)}")
-    '''
 
     summaries = []
     for file in files:
