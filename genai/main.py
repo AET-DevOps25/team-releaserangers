@@ -20,21 +20,6 @@ if __name__ == "__main__":
     Honors PORT environment variable (default: 8084).
     Reload=True enables live-reload during development.
     """
-    from langchain_anthropic import ChatAnthropic
-
-    # Create the chat model
-    chat = ChatAnthropic(
-        model="claude-3-opus-20240229",
-        temperature=0
-    )
-
-    # Make a test call
-    response = chat.invoke("Hello Anthropic, can you confirm this works?")
-
-    print("Anthropic test response:")
-    print(response.content)
-
-
     import uvicorn
 
     port = int(os.getenv("PORT", 8000))
