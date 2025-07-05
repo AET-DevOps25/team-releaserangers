@@ -196,7 +196,7 @@ public class UploadService {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("courseId", courseId);
         for (File file : uploadedFiles) {
-            body.add("file", new ByteArrayResource(file.getData()) {
+            body.add("files", new ByteArrayResource(file.getData()) {
                 @Override
                 public String getFilename() {
                     return file.getFilename();
@@ -210,8 +210,13 @@ public class UploadService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
+        if (token != null) {
+            headers.add(HttpHeaders.COOKIE, "token=" + token);
+        }
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        System.out.println("Request Entity: " + requestEntity);
         RestTemplate summaryRestTemplate = new RestTemplate();
         summaryRestTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
     }
