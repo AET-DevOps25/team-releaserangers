@@ -1,13 +1,16 @@
+import os
 import json
 import time
 import re
 import httpx
-from fastapi import APIRouter, Cookie, UploadFile, File, Form, Header, HTTPException
+from fastapi import APIRouter, Cookie, UploadFile, File, Form, HTTPException
 from typing import List, Optional
 from services import pdf_parser, summarizer
 from models.summary import SummaryResponse
 
 router = APIRouter()
+
+COURSE_MANAGEMENT_URL = os.getenv("COURSE_MANAGEMENT_URL", "http://localhost:8081")
 
 @router.post(
         "/summarize",
