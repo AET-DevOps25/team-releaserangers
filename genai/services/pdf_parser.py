@@ -42,8 +42,10 @@ async def extract_markdown_langchain(file: UploadFile) -> str:
     )
 
     docs = loader.load()
-    return docs
+    markdown = "\n\n".join([doc.page_content for doc in docs])
+    return markdown
 
+# Currently not used
 async def extract_markdown(file: UploadFile) -> str:
  # Read the uploaded file into memory
     file_bytes = await file.read()
