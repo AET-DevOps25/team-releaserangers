@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Security audit
+        run: pnpm audit
+
       - name: Lint
         run: pnpm lint
 

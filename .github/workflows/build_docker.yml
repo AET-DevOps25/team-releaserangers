@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
     strategy:
       matrix:
         include:
@@ -66,3 +67,5 @@ jobs:
           file: ${{ matrix.file }}
           push: true
           tags: ghcr.io/aet-devops25/team-releaserangers/${{ matrix.service }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -39,7 +39,7 @@ public class UploadController {
         }
 
         try {
-            List<File> uploadedFiles = uploadService.handleUploadedFiles(files, courseId);
+            List<File> uploadedFiles = uploadService.handleUploadedFiles(files, courseId, token);
             List<FileMetadataDTO> dtos = uploadedFiles.stream().map(upload -> new FileMetadataDTO(
                     upload.getId(),
                     upload.getFilename(),
