@@ -1,13 +1,15 @@
 package devops25.releaserangers.authentication_service.controller;
 
 import devops25.releaserangers.authentication_service.model.User;
-import devops25.releaserangers.authentication_service.repository.UserRepository;
 import devops25.releaserangers.authentication_service.security.JwtUtil;
+import devops25.releaserangers.authentication_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +22,7 @@ public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
     @Autowired
     PasswordEncoder encoder;
     @Autowired
@@ -37,7 +39,7 @@ public class AuthController {
                     )
             );
             String token = jwtUtils.generateToken(user.getEmail());
-            User authenticatedUser = userRepository.findByEmail(user.getEmail());
+            User authenticatedUser = userService.findByEmail(user.getEmail());
             ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(false) // TODO Set to true if using HTTPS
@@ -55,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userService.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
         // Create new user's account
@@ -67,7 +69,7 @@ public class AuthController {
                 null, // createdAt will be set automatically
                 null  // updatedAt will be set automatically
         );
-        userRepository.save(newUser);
+        userService.registerUser(newUser);
 
         try {
             // Authenticate the user after registration
@@ -102,7 +104,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         String email = jwtUtils.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -118,12 +120,12 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         String email = jwtUtils.getUsernameFromToken(token);
-        User existingUser = userRepository.findByEmail(email);
+        User existingUser = userService.findByEmail(email);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         if (user.getEmail() != null) {
-            if (!existingUser.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
+            if (!existingUser.getEmail().equals(user.getEmail()) && userService.existsByEmail(user.getEmail())) {
                 return ResponseEntity.badRequest().body("Error: Email is already in use!");
             }
             existingUser.setEmail(user.getEmail());
@@ -134,7 +136,7 @@ public class AuthController {
         if (user.getPassword() != null) {
             existingUser.setPassword(encoder.encode(user.getPassword()));
         }
-        userRepository.save(existingUser);
+        userService.updateUser(email, existingUser);
         return ResponseEntity.ok(existingUser);
     }
 
@@ -147,11 +149,11 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         String email = jwtUtils.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-        userRepository.delete(user);
+        userService.deleteUser(email);
         // Invalidate the cookie by setting it to expire
         ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
@@ -187,7 +189,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         String email = authentication.getName();
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
