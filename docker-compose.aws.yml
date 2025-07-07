@@ -117,5 +117,15 @@ services:
       timeout: 5s
       retries: 5
 
+  swagger-ui:
+    image: ghcr.io/aet-devops25/team-releaserangers/swagger-ui:latest
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger-ui.rule=Host(`${SWAGGER_HOST}`)"
+      - "traefik.http.services.swagger-ui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.swagger-ui.entrypoints=websecure"
+      - "traefik.http.routers.swagger-ui.tls.certresolver=letsencrypt"
+
 volumes:
   postgres-data:
