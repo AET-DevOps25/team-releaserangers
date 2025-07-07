@@ -1,5 +1,6 @@
 package devops25.releaserangers.coursemgmt_service.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,6 +41,10 @@ public class Course {
     @Column(name = "course_is_favorite")
     @Value("false")
     private Boolean isFavorite;
+
+    @OneToMany(mappedBy = "course")
+    @JsonManagedReference
+    private List<Chapter> chapters;
 
     @CreationTimestamp
     @Column(updatable = false)
