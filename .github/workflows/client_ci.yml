@@ -70,10 +70,11 @@ jobs:
 
       - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
+        with:
+          working-directory: .
 
       - name: Set up .env file
         run: |
-          cd ..
           echo "JWT_SECRET=test-secret-key" > .env
           echo "Creating .env for genai service"
           mkdir -p ./genai
@@ -81,13 +82,14 @@ jobs:
 
       - name: Start Docker Compose services
         run: |
-          cd ..
           docker compose up -d
           echo "Waiting for services to be ready..."
           sleep 30  # Give services time to initialize
 
       - name: Verify Docker Compose services
         run: |
+          #  check working-directory:
+          ls -la
           # Check if services are running
           docker compose ps -a
           # check logs for any issues
