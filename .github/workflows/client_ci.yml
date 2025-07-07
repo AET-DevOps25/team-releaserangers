@@ -85,10 +85,13 @@ jobs:
           docker compose up -d
           echo "Waiting for services to be ready..."
           sleep 30  # Give services time to initialize
+
+      - name: Verify Docker Compose services
+        run: |
           # Check if services are running
-          docker compose ps
-          # For debugging purposes show external url of the client service
-          docker 
+          docker compose ps -a
+          # check logs for any issues
+          docker compose logs
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
