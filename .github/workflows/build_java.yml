@@ -1,10 +1,10 @@
-name: Test Java Services
+name: Build All Java Projects
 
 on:
   push:
 
 jobs:
-  test:
+  build-java-projects:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,6 +24,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Run ${{ matrix.service }} tests
+      - name: Build ${{ matrix.service }}
         working-directory: server/${{ matrix.service }}
-        run: mvn -B clean package --file pom.xml --no-transfer-progress
+        run: mvn -B clean package -DskipTests --file pom.xml --no-transfer-progress

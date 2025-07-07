@@ -1,8 +1,8 @@
 package devops25.releaserangers.upload_service.service;
 
+import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
-import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -23,13 +23,15 @@ import java.util.stream.Collectors;
 @Service
 public class UploadService {
     private final FileRepository fileRepository;
+    private final RestTemplate restTemplate;
     private static final List<String> ALLOWED_TYPES = List.of("application/pdf");
 
     @Value("${summary.service.url}")
     private String summaryServiceUrl;
 
-    public UploadService(FileRepository fileRepository) {
+    public UploadService(FileRepository fileRepository, RestTemplate restTemplate) {
         this.fileRepository = fileRepository;
+        this.restTemplate = restTemplate;
     }
 
     @Transactional
@@ -151,7 +153,6 @@ public class UploadService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
     }
 }
