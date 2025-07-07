@@ -78,5 +78,12 @@ services:
       - coursemgmt-service
       - upload-service
 
+  swagger-ui:
+    build:
+      context: ./api-collections
+      dockerfile: Dockerfile.swagger-ui
+    ports:
+      - "8088:8080"
+
 volumes:
   postgres-data:
