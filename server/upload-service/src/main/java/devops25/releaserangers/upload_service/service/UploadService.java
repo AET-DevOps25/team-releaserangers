@@ -47,8 +47,8 @@ public class UploadService {
         List<File> uploadedFiles = new java.util.ArrayList<>();
         for (MultipartFile file : files) {
             String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null) {
-                throw new IllegalArgumentException("File name cannot be null.");
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                throw new IllegalArgumentException("File name cannot be empty or null.");
             }
             File existingFile = fileRepository.findByFilename(originalFilename);
             byte[] fileBytes = file.getBytes();
