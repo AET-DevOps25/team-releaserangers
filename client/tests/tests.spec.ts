@@ -1,5 +1,12 @@
 import { test, expect } from "@playwright/test"
 
+test.beforeEach(async ({ page }, testInfo) => {
+  // Listen for all console events and handle errors
+  page.on("console", (msg) => {
+    if (msg.type() === "error") console.log(`Error text: "${msg.text()}"`)
+  })
+})
+
 test("test_account_creation_password_match", async ({ page }) => {
   await page.goto("/")
   await expect(page.getByRole("button", { name: "Login" })).toBeVisible()
