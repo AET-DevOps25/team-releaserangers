@@ -38,10 +38,10 @@ class UploadServiceTest {
 
     @Test
     void handleUploadedFiles_ThrowsIfNoFiles() {
-        assertThatThrownBy(() -> uploadService.handleUploadedFiles(null, "COURSE1"))
+        assertThatThrownBy(() -> uploadService.handleUploadedFiles(null, "COURSE1", "token"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("No files provided");
-        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[0], "COURSE1"))
+        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[0], "COURSE1", "token"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("No files provided");
     }
@@ -49,7 +49,7 @@ class UploadServiceTest {
     @Test
     void handleUploadedFiles_ThrowsIfNonPdf() {
         MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "dummy".getBytes());
-        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1"))
+        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1", "token"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Currently only PDF file(s) are allowed");
     }
@@ -57,7 +57,7 @@ class UploadServiceTest {
     @Test
     void handleUploadedFiles_ThrowsIfFileNameNull() {
         MockMultipartFile file = new MockMultipartFile("file", null, "application/pdf", "dummy".getBytes());
-        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1"))
+        assertThatThrownBy(() -> uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1", "token"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("File name cannot be empty or null");
     }
@@ -69,7 +69,7 @@ class UploadServiceTest {
         savedFile.setFilename("test.pdf");
         when(fileRepository.save(any(File.class))).thenReturn(savedFile);
         when(restTemplate.postForEntity(anyString(), any(), eq(String.class))).thenReturn(new ResponseEntity<>("dummy summary", org.springframework.http.HttpStatus.OK));
-        List<File> result = uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1");
+        List<File> result = uploadService.handleUploadedFiles(new MockMultipartFile[]{file}, "COURSE1", "token");
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getFilename()).isEqualTo("test.pdf");
         verify(fileRepository, times(1)).save(any(File.class));
