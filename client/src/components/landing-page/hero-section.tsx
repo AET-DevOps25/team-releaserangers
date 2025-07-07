@@ -19,9 +19,9 @@ export function HeroSection() {
                   Get Started
                 </Button>
               </Link>
-              <Link href="#features">
+              <Link href="/swagger-ui/">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Learn More
+                  Learn about API documentation
                 </Button>
               </Link>
             </div>
