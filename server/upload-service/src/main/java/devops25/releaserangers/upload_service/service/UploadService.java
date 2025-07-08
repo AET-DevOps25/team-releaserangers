@@ -96,7 +96,7 @@ public class UploadService {
                 // File exists but content is different, save with unique name
                 final String uniqueFilename = generateUniqueFilename(originalFilename);
                 uploadedFiles.add(saveFile(uniqueFilename, file.getContentType(), fileBytes, courseId));
-                logger.info("{} was renamed to + {} and has been uploaded.", originalFilename, uniqueFilename);
+                logger.info("{} was renamed to {} and has been uploaded.", originalFilename, uniqueFilename);
             }
         }
         forwardFilesToSummaryService(uploadedFiles, courseId, token);
