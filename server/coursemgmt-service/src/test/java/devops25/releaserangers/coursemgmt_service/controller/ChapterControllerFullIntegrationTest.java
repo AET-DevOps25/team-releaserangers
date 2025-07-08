@@ -74,12 +74,18 @@ class ChapterControllerFullIntegrationTest {
     void setup() {
         chapterRepository.deleteAll();
         courseRepository.deleteAll();
+        // Only the good token returns a user, all others return empty
+        when(authUtils.validateAndGetUserId(TOKEN_GOOD)).thenReturn(Optional.of(USER_ID_1));
+        when(authUtils.validateAndGetUserId(anyString())).thenAnswer(invocation -> {
+            String token = invocation.getArgument(0);
+            if (TOKEN_GOOD.equals(token)) return Optional.of(USER_ID_1);
+            return Optional.empty();
+        });
     }
 
     @Test
     @DisplayName("Should create and fetch a chapter for authenticated user (real DB)")
     void createAndFetchChapter_RealDb() throws Exception {
-        when(authUtils.validateAndGetUserId(TOKEN_GOOD)).thenReturn(Optional.of(USER_ID_1));
         Course course = new Course();
         course.setUserId(USER_ID_1);
         course.setName("Course for Chapter");
@@ -128,7 +134,6 @@ class ChapterControllerFullIntegrationTest {
     @Test
     @DisplayName("Should update a chapter for authenticated user (real DB)")
     void updateChapter_RealDb() throws Exception {
-        when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.of(USER_ID_1));
         Course course = new Course();
         course.setUserId(USER_ID_1);
         course.setName("Course for Chapter");
@@ -153,7 +158,6 @@ class ChapterControllerFullIntegrationTest {
     @Test
     @DisplayName("Should delete a chapter for authenticated user (real DB)")
     void deleteChapter_RealDb() throws Exception {
-        when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.of(USER_ID_1));
         Course course = new Course();
         course.setUserId(USER_ID_1);
         course.setName("Course for Chapter");
@@ -171,8 +175,6 @@ class ChapterControllerFullIntegrationTest {
     @Test
     @DisplayName("Should return 403 when accessing another user's chapter")
     void forbiddenAccess_RealDb() throws Exception {
-        // Create course and chapter as USER_ID_1
-        when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.of(USER_ID_1));
         Course course = new Course();
         course.setUserId(USER_ID_1);
         course.setName("Course for Chapter");
@@ -199,7 +201,6 @@ class ChapterControllerFullIntegrationTest {
     @Test
     @DisplayName("Should return 404 when updating non-existent chapter")
     void updateNonExistentChapter_RealDb() throws Exception {
-        when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.of(USER_ID_1));
         Chapter chapter = new Chapter();
         chapter.setId("nonexistent");
         chapter.setTitle("Doesn't exist");
@@ -214,9 +215,96 @@ class ChapterControllerFullIntegrationTest {
     @Test
     @DisplayName("Should return 404 when deleting non-existent chapter")
     void deleteNonExistentChapter_RealDb() throws Exception {
-        when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.of(USER_ID_1));
         mockMvc.perform(delete(ENDPOINT_CHAPTERS + "/nonexistent")
                 .cookie(new Cookie(COOKIE_TOKEN, TOKEN_GOOD)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for create")
+    void unauthorizedCreateChapter() throws Exception {
+        Course course = new Course();
+        course.setUserId(USER_ID_1);
+        course.setName("Course for Chapter");
+        course = courseRepository.save(course);
+        String requestJson = "{" +
+                "\"id\":null," +
+                "\"title\":\"Unauthorized Chapter\"," +
+                "\"content\":null," +
+                "\"emoji\":null," +
+                "\"isFavorite\":null," +
+                "\"createdAt\":null," +
+                "\"updatedAt\":null," +
+                "\"course\":{" +
+                "\"id\":\"" + course.getId() + "\"," +
+                "\"userId\":\"" + course.getUserId() + "\"," +
+                "\"name\":\"" + course.getName() + "\"," +
+                "\"description\":null," +
+                "\"createdAt\":null," +
+                "\"updatedAt\":null," +
+                "\"chapters\":null" +
+                "}" +
+                "}";
+        // No token
+        mockMvc.perform(post(ENDPOINT_CHAPTERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(post(ENDPOINT_CHAPTERS)
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for update")
+    void unauthorizedUpdateChapter() throws Exception {
+        String requestJson = "{" +
+                "\"id\":\"someid\"," +
+                "\"title\":\"Unauthorized Update\"," +
+                "\"content\":null," +
+                "\"emoji\":null," +
+                "\"isFavorite\":null," +
+                "\"createdAt\":null," +
+                "\"updatedAt\":null," +
+                "\"course\":null" +
+                "}";
+        // No token
+        mockMvc.perform(put(ENDPOINT_CHAPTERS + "/someid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(put(ENDPOINT_CHAPTERS + "/someid")
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for delete")
+    void unauthorizedDeleteChapter() throws Exception {
+        // No token
+        mockMvc.perform(delete(ENDPOINT_CHAPTERS + "/someid"))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(delete(ENDPOINT_CHAPTERS + "/someid")
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for fetch")
+    void unauthorizedFetchChapters() throws Exception {
+        // No token
+        mockMvc.perform(get(ENDPOINT_CHAPTERS))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(get(ENDPOINT_CHAPTERS)
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken")))
+                .andExpect(status().isUnauthorized());
     }
 }

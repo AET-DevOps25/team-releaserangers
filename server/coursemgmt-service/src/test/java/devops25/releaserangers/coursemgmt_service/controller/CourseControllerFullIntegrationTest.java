@@ -68,6 +68,13 @@ class CourseControllerFullIntegrationTest {
     @BeforeEach
     void setup() {
         courseRepository.deleteAll();
+        // Only the good token returns a user, all others return empty
+        when(authUtils.validateAndGetUserId(TOKEN_GOOD)).thenReturn(Optional.of(USER_ID_1));
+        when(authUtils.validateAndGetUserId(anyString())).thenAnswer(invocation -> {
+            String token = invocation.getArgument(0);
+            if (TOKEN_GOOD.equals(token)) return Optional.of(USER_ID_1);
+            return Optional.empty();
+        });
     }
 
     @Test
@@ -212,5 +219,69 @@ class CourseControllerFullIntegrationTest {
         mockMvc.perform(delete(ENDPOINT_COURSES + "/nonexistent")
                 .cookie(new Cookie(COOKIE_TOKEN, TOKEN_GOOD)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for create")
+    void unauthorizedCreateCourse() throws Exception {
+        Course course = new Course();
+        course.setUserId(USER_ID_1);
+        course.setName("Unauthorized Course");
+        String requestJson = objectMapper.writeValueAsString(course);
+        // No token
+        mockMvc.perform(post(ENDPOINT_COURSES)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(post(ENDPOINT_COURSES)
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for update")
+    void unauthorizedUpdateCourse() throws Exception {
+        Course course = new Course();
+        course.setUserId(USER_ID_1);
+        course.setName("Unauthorized Update");
+        String requestJson = objectMapper.writeValueAsString(course);
+        // No token
+        mockMvc.perform(put(ENDPOINT_COURSES + "/someid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(put(ENDPOINT_COURSES + "/someid")
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for delete")
+    void unauthorizedDeleteCourse() throws Exception {
+        // No token
+        mockMvc.perform(delete(ENDPOINT_COURSES + "/someid"))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(delete(ENDPOINT_COURSES + "/someid")
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 when no or invalid token is provided for fetch")
+    void unauthorizedFetchCourses() throws Exception {
+        // No token
+        mockMvc.perform(get(ENDPOINT_COURSES))
+                .andExpect(status().isUnauthorized());
+        // Invalid token
+        mockMvc.perform(get(ENDPOINT_COURSES)
+                .cookie(new Cookie(COOKIE_TOKEN, "badtoken")))
+                .andExpect(status().isUnauthorized());
     }
 }
