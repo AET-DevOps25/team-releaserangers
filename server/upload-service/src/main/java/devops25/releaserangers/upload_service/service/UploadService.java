@@ -1,8 +1,11 @@
 package devops25.releaserangers.upload_service.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
-import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -15,11 +18,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,7 +35,6 @@ public class UploadService {
     private static final String NO_FILES_ERROR = "No files provided. Please upload at least one PDF file.";
     private static final String INVALID_TYPE_ERROR = "Currently only PDF file(s) are allowed. Please upload valid PDF file(s).";
     private static final String NULL_FILENAME_ERROR = "File name cannot be null.";
-    private static final String CHAPTERS_PATH = "/courses/%s/chapters";
     private static final String TOKEN_COOKIE = "token=";
     private static final String ERROR_FETCHING_CHAPTERS = "Error fetching chapters from coursemgmt-service: ";
     private static final String ERROR_SERIALIZING_CHAPTERS = "Error serializing chapters response: ";
@@ -77,14 +74,14 @@ public class UploadService {
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
         }
-        List<File> uploadedFiles = new java.util.ArrayList<>();
+        final List<File> uploadedFiles = new java.util.ArrayList<>();
         for (MultipartFile file : files) {
-            String originalFilename = file.getOriginalFilename();
+            final String originalFilename = file.getOriginalFilename();
             if (originalFilename == null) {
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
-            File existingFile = fileRepository.findByFilename(originalFilename);
-            byte[] fileBytes = file.getBytes();
+            final File existingFile = fileRepository.findByFilename(originalFilename);
+            final byte[] fileBytes = file.getBytes();
             if (existingFile == null) {
                 // No file with this name exists, save as is
                 uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
@@ -97,9 +94,9 @@ public class UploadService {
                 uploadedFiles.add(fileRepository.findByFilename(originalFilename));
             } else {
                 // File exists but content is different, save with unique name
-                String uniqueFilename = generateUniqueFilename(originalFilename);
+                final String uniqueFilename = generateUniqueFilename(originalFilename);
                 uploadedFiles.add(saveFile(uniqueFilename, file.getContentType(), fileBytes, courseId));
-                logger.info("{} was renamed to + {} and has been uploaded.", originalFilename, uniqueFilename);
+                logger.info("{} was renamed to {} and has been uploaded.", originalFilename, uniqueFilename);
             }
         }
         forwardFilesToSummaryService(uploadedFiles, courseId, token);
@@ -107,7 +104,7 @@ public class UploadService {
     }
 
     private File saveFile(String filename, String contentType, byte[] data, String courseId) {
-        File fileEntity = new File();
+        final File fileEntity = new File();
         fileEntity.setFilename(filename);
         fileEntity.setContentType(contentType);
         fileEntity.setData(data);
@@ -120,7 +117,7 @@ public class UploadService {
         int suffix = 1;
         String baseName = originalFilename;
         String extension = "";
-        int dotIndex = originalFilename.lastIndexOf('.');
+        final int dotIndex = originalFilename.lastIndexOf('.');
         if (dotIndex != -1) {
             baseName = originalFilename.substring(0, dotIndex);
             extension = originalFilename.substring(dotIndex);
@@ -181,7 +178,7 @@ public class UploadService {
      * @param courseId the course identifier
      */
     public void deleteFilesByCourseId(String courseId) {
-        List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
+        final List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
         fileRepository.deleteAll(files);
     }
 
@@ -193,7 +190,7 @@ public class UploadService {
      * @param token         the authentication token
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("courseId", courseId);
         for (File file : uploadedFiles) {
             body.add("file", new ByteArrayResource(file.getData()) {
@@ -204,15 +201,15 @@ public class UploadService {
             });
         }
 
-        String chaptersJson = fetchChaptersJson(courseId, token);
+        final String chaptersJson = fetchChaptersJson(courseId, token);
         logger.info("Chapters: {}", chaptersJson);
         body.add("existingChapterSummary", chaptersJson);
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        RestTemplate summaryRestTemplate = new RestTemplate();
+        final RestTemplate summaryRestTemplate = new RestTemplate();
         summaryRestTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
     }
 
@@ -224,12 +221,12 @@ public class UploadService {
      * @return the chapters as a JSON string
      */
     private String fetchChaptersJson(final String courseId, final String token) {
-        RestTemplate restTemplate = new RestTemplate();
-        String chaptersUrl = courseMgmtServiceUrl + String.format(CHAPTERS_PATH, courseId);
+        final RestTemplate restTemplate = new RestTemplate();
+        final String chaptersUrl = String.format("%s/courses/%s/chapters", courseMgmtServiceUrl, courseId);
         logger.info("Getting chapters from: {}", chaptersUrl);
-        HttpHeaders getHeaders = new HttpHeaders();
+        final HttpHeaders getHeaders = new HttpHeaders();
         getHeaders.set("Cookie", TOKEN_COOKIE + token);
-        HttpEntity<Void> getEntity = new HttpEntity<>(getHeaders);
+        final HttpEntity<Void> getEntity = new HttpEntity<>(getHeaders);
 
         ResponseEntity<Object[]> chaptersResponse;
         try {
@@ -245,7 +242,7 @@ public class UploadService {
         }
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(chaptersResponse.getBody());
         } catch (Exception e) {
             logger.error(ERROR_SERIALIZING_CHAPTERS, e);

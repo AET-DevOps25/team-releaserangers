@@ -6,6 +6,7 @@ import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +26,19 @@ public class ChapterController {
     @Autowired
     private AuthUtils authUtils;
 
-    public ChapterController(ChapterService chapterService, CourseService courseService) {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
+    public ChapterController(final ChapterService chapterService, final CourseService courseService) {
         this.chapterService = chapterService;
         this.courseService = courseService;
     }
 
     private ResponseEntity<Chapter> validateUserAndGetChapter(String chapterId, String token) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
-        Chapter chapter = chapterService.getChapterById(chapterId);
+        final String userID = userIDOpt.get();
+        final Chapter chapter = chapterService.getChapterById(chapterId);
         if (chapter == null) {
             return ResponseEntity.notFound().build();
         }
@@ -51,12 +53,12 @@ public class ChapterController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
-        List<Chapter> chapters = courseService.getCoursesByUserId(userID).stream()
+        final String userID = userIDOpt.get();
+        final List<Chapter> chapters = courseService.getCoursesByUserId(userID).stream()
                 .flatMap(course -> course.getChapters().stream())
                 .toList();
         if (chapters.isEmpty()) {
@@ -79,21 +81,21 @@ public class ChapterController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
+        final String userID = userIDOpt.get();
         checkForCourseIdAndSetCourse(chapterRequest);
         if (chapterRequest.getCourse() == null || chapterRequest.getCourse().getId() == null) {
             return ResponseEntity.badRequest().body(null);
         }
-        Course course = courseService.getCourseById(chapterRequest.getCourse().getId());
+        final Course course = courseService.getCourseById(chapterRequest.getCourse().getId());
         if (course == null || !course.getUserId().equals(userID)) {
             return ResponseEntity.status(403).body(null);
         }
         chapterRequest.setCourse(course);
-        Chapter created = chapterService.saveChapter(chapterRequest);
+        final Chapter created = chapterService.saveChapter(chapterRequest);
         return ResponseEntity.ok(created);
     }
 
@@ -110,11 +112,11 @@ public class ChapterController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
+        final ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
-        Chapter existingChapter = Objects.requireNonNull(validationResponse.getBody());
+        final Chapter existingChapter = Objects.requireNonNull(validationResponse.getBody());
         checkForCourseIdAndSetCourse(chapterRequest);
         BeanUtils.copyProperties(chapterRequest, existingChapter, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(chapterService.saveChapter(existingChapter));
@@ -126,11 +128,11 @@ public class ChapterController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
+        final ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
-        Chapter patched = Objects.requireNonNull(validationResponse.getBody());
+        final Chapter patched = Objects.requireNonNull(validationResponse.getBody());
         checkForCourseIdAndSetCourse(patch);
         try {
             PatchUtils.applyPatch(patch, patched);
@@ -146,11 +148,11 @@ public class ChapterController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
+        final ResponseEntity<Chapter> validationResponse = validateUserAndGetChapter(chapter_id, token);
         if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(validationResponse.getStatusCode()).build();
         }
-        Chapter existing_chapter = chapterService.getChapterById(chapter_id);
+        final Chapter existing_chapter = chapterService.getChapterById(chapter_id);
         if (existing_chapter == null) {
             return ResponseEntity.notFound().build();
         }

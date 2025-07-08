@@ -1,14 +1,20 @@
 package devops25.releaserangers.coursemgmt_service.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.*;
-
+@SuppressFBWarnings(justification = "Exposing references is acceptable here")
 @Getter
 @Setter
 @NoArgsConstructor

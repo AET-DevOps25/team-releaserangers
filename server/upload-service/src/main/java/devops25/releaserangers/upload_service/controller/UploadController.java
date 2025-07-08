@@ -4,6 +4,7 @@ import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.service.UploadService;
 import devops25.releaserangers.upload_service.util.AuthUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/upload")
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
 @RequiredArgsConstructor
 public class UploadController {
     private final UploadService uploadService;
@@ -33,14 +35,14 @@ public class UploadController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
 
         try {
-            List<File> uploadedFiles = uploadService.handleUploadedFiles(files, courseId, token);
-            List<FileMetadataDTO> dtos = uploadedFiles.stream().map(upload -> new FileMetadataDTO(
+            final List<File> uploadedFiles = uploadService.handleUploadedFiles(files, courseId, token);
+            final List<FileMetadataDTO> dtos = uploadedFiles.stream().map(upload -> new FileMetadataDTO(
                     upload.getId(),
                     upload.getFilename(),
                     upload.getContentType(),
@@ -62,13 +64,13 @@ public class UploadController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
 
         try {
-            List<FileMetadataDTO> files = uploadService.getAllFiles();
+            final List<FileMetadataDTO> files = uploadService.getAllFiles();
             if (files.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -84,12 +86,12 @@ public class UploadController {
             return ResponseEntity.status(401).build();
         }
 
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
         try {
-            List<FileMetadataDTO> files = uploadService.getFilesByCourseId(courseId);
+            final List<FileMetadataDTO> files = uploadService.getFilesByCourseId(courseId);
             if (files.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -104,7 +106,7 @@ public class UploadController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
@@ -122,7 +124,7 @@ public class UploadController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
