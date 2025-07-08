@@ -6,6 +6,7 @@ import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class ChapterController {
     @Autowired
     private AuthUtils authUtils;
 
-    public ChapterController(ChapterService chapterService, CourseService courseService) {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
+    public ChapterController(final ChapterService chapterService, final CourseService courseService) {
         this.chapterService = chapterService;
         this.courseService = courseService;
     }

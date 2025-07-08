@@ -6,6 +6,7 @@ import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class CourseController {
     @Autowired
     private AuthUtils authUtils;
 
-    public CourseController(CourseService courseService, ChapterService chapterService) {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
+    public CourseController(final CourseService courseService, final ChapterService chapterService) {
         this.courseService = courseService;
         this.chapterService = chapterService;
     }
@@ -139,11 +141,17 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
+
         final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return courseResponse;
         }
+
         final Course existingCourse = courseResponse.getBody();
+        if (existingCourse == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         try {
             PatchUtils.applyPatch(course, existingCourse);
             return ResponseEntity.ok(courseService.saveCourse(existingCourse));
