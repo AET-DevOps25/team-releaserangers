@@ -46,18 +46,22 @@ This project is maintained by:
 Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up to date overview of the current course content.
 
 ---
+
 ## Setup Instructions
 
 ### Clone the Repository
 
 ### Client Setup
+
 - create a `.env` file in the root directory of the project
 - add the following environment variables:
+
   ```bash
   JWT_SECRET=<your_jwt_secret>
   ```
 
 - for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
+
   ```bash
   JWT_SECRET=<your_jwt_secret>
   ```
@@ -67,16 +71,22 @@ Our application helps students to study efficient by leveraging LLM generated sm
 ### Server Setup
 
 ### LLM Service Setup
+
 Make sure to create a .env file from the .env.example and add your API Key.
+
 1. Navigate to the <code>genai</code> directory:
-   
+
    ```bash
    cd genai
+   ```
+
 2. Install Dependencies:
-   ````bash
+   ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    pip3 install -r requirements.txt
+   ```
+
 ## Running the Application
 
 ### Start the Database
@@ -86,26 +96,29 @@ Make sure to create a .env file from the .env.example and add your API Key.
 ### Start the Server
 
 ### Start the LLM Service
+
 - Using uvicorn directly:
-    ```bash
-    cd genai
-    uvicorn main:app --host 0.0.0.0 --port 8084   
+  ```bash
+  cd genai
+  uvicorn main:app --host 0.0.0.0 --port 8084
+  ```
 - Using python3:
-    ```bash
-    cd genai
-    python3 main.py
+  ```bash
+  cd genai
+  python3 main.py
+  ```
 - Using Docker:
-    ```bash
-    cd genai
-    docker build -t llm .
-    docker run --env-file .env -p 8084:8084 llm 
+  ```bash
+  cd genai
+  docker build -t llm .
+  docker run --env-file .env -p 8084:8084 llm
+  ```
 
 ## How to Use with Docker
 
 ```bash
 docker compose up --build
 ```
-
 
 ---
 
@@ -116,6 +129,25 @@ docker compose up --build
 - **GenAI Integration**: LangChain
 - **AI models**: OpenAI, LLaMA
 - **Database**: PostgreSQL
+
+---
+
+## Database Schema
+
+Our application uses PostgreSQL as the primary database with tables distributed across three microservices:
+
+![Database Schema](docs/database_schema.png)
+
+### Schema Documentation
+
+- **DBML File**: [database_schema.dbml](docs/database_schema.dbml) - Import this into [dbdiagram.io](https://dbdiagram.io) for interactive editing
+
+### Key Tables
+
+- **users** (Authentication Service): User accounts and authentication
+- **courses** (Course Management): Course information and metadata
+- **chapters** (Course Management): Individual learning chapters within courses
+- **uploaded_files** (Upload Service): File uploads associated with courses
 
 ---
 
