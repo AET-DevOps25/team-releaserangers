@@ -70,29 +70,26 @@ jobs:
 
       - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
-        with:
-          working-directory: .
 
-      - name: Set up .env file
+      - name: Set up and start services
+        working-directory: .
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'default-jwt-secret-key-for-development' }}
+          CHAIR_API_KEY: ${{ secrets.CHAIR_API_KEY || 'dummy-key' }}
         run: |
-          echo "JWT_SECRET=test-secret-key" > .env
-          echo "Creating .env for genai service"
+          # This service still needs its own .env file, so we create it
           mkdir -p ./genai
-          echo "CHAIR_API_KEY=${{ secrets.CHAIR_API_KEY || 'dummy-key' }}" > ./genai/.env
+          echo "CHAIR_API_KEY=${CHAIR_API_KEY}" > ./genai/.env
 
-      - name: Start Docker Compose services
-        run: |
+          # docker-compose will automatically pick up JWT_SECRET from the environment
+          echo "Starting Docker services..."
           docker compose up -d
-          echo "Waiting for services to be ready..."
-          sleep 30  # Give services time to initialize
 
-      - name: Verify Docker Compose services
-        run: |
-          #  check working-directory:
-          ls -la
-          # Check if services are running
+          echo "Waiting for services to be ready..."
+          sleep 30
+
           docker compose ps -a
-          # check logs for any issues
+          echo "==== Docker Compose Logs ===="
           docker compose logs
 
       - name: Setup pnpm
