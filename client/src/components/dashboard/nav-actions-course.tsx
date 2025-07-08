@@ -68,6 +68,10 @@ export function NavActionsCourse({ course }: { course: Course }) {
     console.log("Export clicked")
   }
 
+  React.useEffect(() => {
+    setIsFavorite(course.isFavorite)
+  }, [course.isFavorite])
+
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="text-muted-foreground hidden font-medium md:inline-block">
