@@ -29,7 +29,7 @@ public class Course {
     @Column(name = "course_name", nullable = false)
     private String name;
 
-    @Column(name = "course_description")
+    @Column(name = "course_description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "course_emoji")

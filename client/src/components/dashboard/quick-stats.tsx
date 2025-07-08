@@ -2,8 +2,7 @@
 
 import { BookOpen, Clock, Target, TrendingUp } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import useCourseStore from "@/hooks/course-store"
-import { useState, useEffect } from "react"
+import { useCourses } from "@/hooks/courseAPI"
 
 // use state to manage course length
 
@@ -32,12 +31,7 @@ const stats = [
 ]
 
 export function QuickStats() {
-  const { courses } = useCourseStore()
-  const [courseLength, setCourseLength] = useState(courses.length)
-
-  useEffect(() => {
-    setCourseLength(courses.length)
-  }, [courses])
+  const { courses, isLoading } = useCourses()
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -47,7 +41,13 @@ export function QuickStats() {
           <BookOpen className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{courseLength}</div>
+          {isLoading ? (
+            <div className="animate-pulse">
+              <div className="h-6 w-full max-w-[30px] rounded-md bg-muted mb-2"></div>
+            </div>
+          ) : (
+            <div className="text-2xl font-bold">{courses.length}</div>
+          )}
           <p className="text-xs text-muted-foreground">{"3 in progress"}</p>
           <p className="text-xs text-green-600 mt-1">{"+2 this month"}</p>
         </CardContent>

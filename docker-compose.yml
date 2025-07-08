@@ -73,6 +73,7 @@ services:
       - "3000:3000"
     environment:
       - JWT_SECRET=${JWT_SECRET}
+      - NEXT_PUBLIC_API_URL=http://coursemgmt-service:8080
     depends_on:
       - authentication-service
       - coursemgmt-service

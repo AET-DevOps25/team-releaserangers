@@ -27,7 +27,7 @@ public class UploadController {
     @PostMapping("/{courseId}")
     public ResponseEntity<?> uploadMultipleFiles(
             @CookieValue(value = "token", required = false) String token,
-            @RequestParam("file") MultipartFile[] files,
+            @RequestParam("files") MultipartFile[] files,
             @PathVariable("courseId") String courseId
     ) {
         if (token == null) {
