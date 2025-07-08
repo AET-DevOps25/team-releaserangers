@@ -6,14 +6,14 @@ import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
 import devops25.releaserangers.coursemgmt_service.util.PatchUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses")
@@ -31,12 +31,12 @@ public class CourseController {
     }
 
     private ResponseEntity<Course> validateUserAndGetCourse(String courseId, String token) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
-        Course course = courseService.getCourseById(courseId);
+        final String userID = userIDOpt.get();
+        final Course course = courseService.getCourseById(courseId);
         if (course == null) {
             return ResponseEntity.notFound().build();
         }
@@ -51,12 +51,12 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
-        List<Course> courses = courseService.getCoursesByUserId(userID);
+        final String userID = userIDOpt.get();
+        final List<Course> courses = courseService.getCoursesByUserId(userID);
         if (courses.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -76,11 +76,11 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
+        final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
         }
-        List<Chapter> chapters = chapterService.getChaptersByCourseId(courseId);
+        final List<Chapter> chapters = chapterService.getChaptersByCourseId(courseId);
         if (chapters.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -92,11 +92,11 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
+        final String userID = userIDOpt.get();
         course.setUserId(userID);
         return ResponseEntity.ok(courseService.saveCourse(course));
     }
@@ -109,14 +109,14 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
+        final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).body(null);
         }
-        Course course = courseResponse.getBody();
+        final Course course = courseResponse.getBody();
         request.setCourse(course);
 
-        Chapter created = chapterService.saveChapter(request);
+        final Chapter created = chapterService.saveChapter(request);
         return ResponseEntity.ok(created);
     }
 
@@ -125,11 +125,11 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
+        final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return courseResponse;
         }
-        Course existingCourse = Objects.requireNonNull(courseResponse.getBody());
+        final Course existingCourse = Objects.requireNonNull(courseResponse.getBody());
         BeanUtils.copyProperties(course, existingCourse, "id", "createdAt", "updatedAt");
         return ResponseEntity.ok(courseService.saveCourse(existingCourse));
     }
@@ -139,11 +139,11 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).body(null);
         }
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
+        final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return courseResponse;
         }
-        Course existingCourse = courseResponse.getBody();
+        final Course existingCourse = courseResponse.getBody();
         try {
             PatchUtils.applyPatch(course, existingCourse);
             return ResponseEntity.ok(courseService.saveCourse(existingCourse));
@@ -157,11 +157,11 @@ public class CourseController {
         if (token == null) {
             return ResponseEntity.status(401).build();
         }
-        ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
+        final ResponseEntity<Course> courseResponse = validateUserAndGetCourse(courseId, token);
         if (!courseResponse.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.status(courseResponse.getStatusCode()).build();
         }
-        Course existingCourse = courseResponse.getBody();
+        final Course existingCourse = courseResponse.getBody();
         if (existingCourse == null) {
             return ResponseEntity.notFound().build();
         }
