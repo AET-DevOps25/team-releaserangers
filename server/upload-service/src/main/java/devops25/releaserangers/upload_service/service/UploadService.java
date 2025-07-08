@@ -178,7 +178,7 @@ public class UploadService {
      * @param courseId the course identifier
      */
     public void deleteFilesByCourseId(String courseId) {
-        final List<File> files = fileRepository.findByCourseId(courseId);
+        final List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
         fileRepository.deleteAll(files);
     }
 
