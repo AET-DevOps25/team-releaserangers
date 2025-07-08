@@ -170,3 +170,43 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 ## Monitoring Instructions
 
 ---
+
+## Code Quality: SpotBugs & Checkstyle
+
+### How to Run SpotBugs and Checkstyle
+
+SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the server and each microservice (authentication-service, coursemgmt-service, upload-service).
+
+You can run these tools manually or as part of the Maven build:
+
+- **To run both SpotBugs and Checkstyle for all modules:**
+  ```sh
+  cd server
+  mvn verify
+  ```
+  This will execute both plugins as part of the `verify` phase.
+
+- **To run only SpotBugs:**
+  ```sh
+  mvn spotbugs:check
+  ```
+
+- **To run only Checkstyle:**
+  ```sh
+  mvn checkstyle:check
+  ```
+
+- **To run for a specific microservice:**
+  ```sh
+  cd server/<microservice-folder>
+  mvn verify
+  ```
+  Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
+
+### Maven Phase Integration
+- **Checkstyle** runs during the `validate` and `verify` phases.
+- **SpotBugs** runs during the `verify` phase.
+
+If you run `mvn verify`, both tools will be executed and any violations will fail the build.
+
+---
