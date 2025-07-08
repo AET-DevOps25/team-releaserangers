@@ -1,0 +1,40 @@
+name: Gitleaks Secret and KICS IaC Scan
+
+on:
+  push:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITLEAKS_CONFIG: ./.github/gitleaks.toml
+        with:
+          args: "detect --source=. --no-git --redact"
+  kics:
+    name: KICS IaC Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run KICS Scan
+        uses: checkmarx/kics-github-action@v1.7
+        with:
+          path: .
+          fail_on: high
+          output_path: kics-results
+          output_formats: 'sarif,html'
+      - name: Upload KICS SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: kics-results/results.sarif
