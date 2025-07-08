@@ -58,6 +58,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: ./genai/.env
+    environment:
+      - COURSEMGMT_URL=http://coursemgmt-service:8080
     ports:
       - "8084:8000"
     depends_on:

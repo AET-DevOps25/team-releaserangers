@@ -10,7 +10,7 @@ from models.summary import SummaryResponse
 
 router = APIRouter()
 
-COURSE_MANAGEMENT_URL = os.getenv("COURSE_MANAGEMENT_URL", "http://localhost:8081")
+COURSEMGMT_URL = os.getenv("COURSEMGMT_URL", "http://localhost:8081")
 
 @router.post(
         "/summarize",
@@ -78,11 +78,12 @@ async def summarize_pdf(
             "emoji": summary_json["emoji"],
             "isFavorite": False,
         }
-
+        print(f"{COURSEMGMT_URL}/{courseId}/chapters")
         # Send to chapter backend
         async with httpx.AsyncClient() as client:
+           
             chapter_resp = await client.post(
-                f"http://localhost:8081/courses/{courseId}/chapters",
+                f"{COURSEMGMT_URL}/courses/{courseId}/chapters",
                 #headers={"Authorization": authorization},
                 cookies={"token": token},
                 json=chapter_payload
