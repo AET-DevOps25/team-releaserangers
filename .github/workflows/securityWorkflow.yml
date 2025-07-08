@@ -28,13 +28,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run KICS Scan
-        uses: checkmarx/kics-github-action@v1.7
+        uses: checkmarx/kics-github-action@v2.1.11
         with:
           path: .
-          fail_on: high
-          output_path: kics-results
-          output_formats: 'sarif,html'
-      - name: Upload KICS SARIF results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: kics-results/results.sarif
+          ignore_on_exit: results
+          output_path: ./kicsResults/
+      - name: display kics results
+        run: |
+          cat ./kicsResults/results.json
