@@ -31,15 +31,15 @@ public class FavoritesController {
 
     @GetMapping
     public ResponseEntity<List<FavoriteItemDto>> getFavorites(@CookieValue("token") String token) {
-        Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
+        final Optional<String> userIDOpt = authUtils.validateAndGetUserId(token);
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        String userID = userIDOpt.get();
-        List<FavoriteItemDto> favoriteCourses = courseService.getFavoriteCoursesByUserId(userID);
-        List<FavoriteItemDto> favoriteChapters = chapterService.getFavoriteChaptersByUserId(userID);
+        final String userID = userIDOpt.get();
+        final List<FavoriteItemDto> favoriteCourses = courseService.getFavoriteCoursesByUserId(userID);
+        final List<FavoriteItemDto> favoriteChapters = chapterService.getFavoriteChaptersByUserId(userID);
         // Combine the favorite items from courses and chapters
-        List<FavoriteItemDto> favoriteItems = Stream.concat(favoriteCourses.stream(), favoriteChapters.stream())
+        final List<FavoriteItemDto> favoriteItems = Stream.concat(favoriteCourses.stream(), favoriteChapters.stream())
                 .sorted((item1, item2) -> {
                     if (item1.getType().equals(item2.getType())) {
                         return item1.getTitle().compareTo(item2.getTitle());

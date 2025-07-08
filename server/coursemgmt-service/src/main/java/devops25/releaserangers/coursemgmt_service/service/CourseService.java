@@ -14,10 +14,6 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
-    }
-
     public Course getCourseById(String courseId) {
         return courseRepository.findById(courseId).orElse(null);
     }
@@ -44,7 +40,7 @@ public class CourseService {
     }
 
     public void deleteCourse(Course course) {
-        Course existingCourse = getCourseById(course.getId());
+        final Course existingCourse = getCourseById(course.getId());
         if (existingCourse != null) {
             courseRepository.delete(existingCourse);
         }
