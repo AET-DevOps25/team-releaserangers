@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,7 @@ public class UploadService {
      *
      * @param fileRepository the repository for file persistence
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
     public UploadService(final FileRepository fileRepository, RestTemplate restTemplate) {
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
