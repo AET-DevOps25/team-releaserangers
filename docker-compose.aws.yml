@@ -20,20 +20,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
 
-  nginx-gateway:
-    image: ghcr.io/aet-devops25/team-releaserangers/nginx-gateway:latest
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nginx-gateway.rule=Host(`${NGINX_HOST}`)"
-      - "traefik.http.services.nginx-gateway.loadbalancer.server.port=80"
-      - "traefik.http.routers.nginx-gateway.entrypoints=websecure"
-      - "traefik.http.routers.nginx-gateway.tls.certresolver=letsencrypt"
-    depends_on:
-      - authentication-service
-      - coursemgmt-service
-      - upload-service
-
   authentication-service:
     image: ghcr.io/aet-devops25/team-releaserangers/authentication-service:latest
     restart: unless-stopped
@@ -42,7 +28,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentication-service.rule=Host(`${AUTH_HOST}`)"
+      - "traefik.http.routers.authentication-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
       - "traefik.http.services.authentication-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.authentication-service.entrypoints=websecure"
       - "traefik.http.routers.authentication-service.tls.certresolver=letsencrypt"
@@ -54,7 +40,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.coursemgmt-service.rule=Host(`${COURSE_HOST}`)"
+      - "traefik.http.routers.coursemgmt-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
       - "traefik.http.services.coursemgmt-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.coursemgmt-service.entrypoints=websecure"
       - "traefik.http.routers.coursemgmt-service.tls.certresolver=letsencrypt"
@@ -66,7 +52,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.upload-service.rule=Host(`${UPLOAD_HOST}`)"
+      - "traefik.http.routers.upload-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
       - "traefik.http.services.upload-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.upload-service.entrypoints=websecure"
       - "traefik.http.routers.upload-service.tls.certresolver=letsencrypt"
@@ -76,7 +62,7 @@ services:
     restart: unless-stopped
     environment:
       - JWT_SECRET=${JWT_SECRET}
-      - NEXT_PUBLIC_API_URL=http://localhost
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
     labels:
@@ -100,10 +86,24 @@ services:
       - ./genai/.env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.genai-service.rule=Host(`${GENAI_HOST}`)"
+      - "traefik.http.routers.genai-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
       - "traefik.http.services.genai-service.loadbalancer.server.port=8000"
       - "traefik.http.routers.genai-service.entrypoints=websecure"
       - "traefik.http.routers.genai-service.tls.certresolver=letsencrypt"
     depends_on:
+      - coursemgmt-service
+      - upload-service
+
+  nginx-gateway:
+    image: ghcr.io/aet-devops25/team-releaserangers/nginx-gateway:latest
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gateway.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.services.api-gateway.loadbalancer.server.port=80"
+      - "traefik.http.routers.api-gateway.entrypoints=websecure"
+      - "traefik.http.routers.api-gateway.tls.certresolver=letsencrypt"
+    depends_on:
+      - authentication-service
       - coursemgmt-service
       - upload-service
