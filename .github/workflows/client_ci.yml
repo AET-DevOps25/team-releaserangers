@@ -120,7 +120,7 @@ jobs:
 
       - name: Run Playwright tests against Docker services
         env:
-          PLAYWRIGHT_BASE_URL: "http://client:3000"
+          PLAYWRIGHT_BASE_URL: "http://localhost:3000"
         run: |
           # Configure playwright to use the dockerized application URL
           pnpm exec playwright test
