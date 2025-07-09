@@ -83,7 +83,7 @@ public class UploadControllerIntegrationTest {
     @Test
     void uploadFiles_UnauthorizedWithoutToken() throws Exception {
         // For this test, AuthUtils should not be called, so no need to mock
-        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "dummy content".getBytes());
+        MockMultipartFile file = new MockMultipartFile("files", "test.pdf", "application/pdf", "dummy content".getBytes());
         mockMvc.perform(multipart("/upload/COURSE1").file(file))
                 .andExpect(status().isUnauthorized());
     }
@@ -91,21 +91,21 @@ public class UploadControllerIntegrationTest {
     @Test
     void uploadFiles_UnauthorizedWithInvalidToken() throws Exception {
         when(authUtils.validateAndGetUserId("invalid")).thenReturn(Optional.empty());
-        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "dummy content".getBytes());
+        MockMultipartFile file = new MockMultipartFile("files", "test.pdf", "application/pdf", "dummy content".getBytes());
         mockMvc.perform(multipart("/upload/COURSE1").file(file).cookie(new Cookie("token", "invalid")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void uploadFiles_BadRequestForNonPdf() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "dummy content".getBytes());
+        MockMultipartFile file = new MockMultipartFile("files", "test.txt", "text/plain", "dummy content".getBytes());
         mockMvc.perform(multipart("/upload/COURSE1").file(file).cookie(new Cookie("token", VALID_TOKEN)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void uploadFiles_Successful() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "dummy content".getBytes());
+        MockMultipartFile file = new MockMultipartFile("files", "test.pdf", "application/pdf", "dummy content".getBytes());
         mockMvc.perform(multipart("/upload/COURSE1").file(file).cookie(new Cookie("token", VALID_TOKEN)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].filename", is("test.pdf")))

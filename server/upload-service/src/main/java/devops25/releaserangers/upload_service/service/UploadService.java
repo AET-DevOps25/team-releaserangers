@@ -38,7 +38,6 @@ public class UploadService {
     private static final String NO_FILES_ERROR = "No files provided. Please upload at least one PDF file.";
     private static final String INVALID_TYPE_ERROR = "Currently only PDF file(s) are allowed. Please upload valid PDF file(s).";
     private static final String NULL_FILENAME_ERROR = "File name cannot be empty or null.";
-    private static final String CHAPTERS_PATH = "/courses/%s/chapters";
     private static final String TOKEN_COOKIE = "token=";
     private static final String ERROR_FETCHING_CHAPTERS = "Error fetching chapters from coursemgmt-service: ";
     private static final String ERROR_SERIALIZING_CHAPTERS = "Error serializing chapters response: ";
@@ -214,7 +213,7 @@ public class UploadService {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         if (token != null) {
-            headers.add(HttpHeaders.COOKIE, "token=" + token);
+            headers.set("Authorization", "Bearer " + token);
         }
         final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 

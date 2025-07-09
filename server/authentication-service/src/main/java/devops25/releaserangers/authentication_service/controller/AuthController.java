@@ -40,7 +40,7 @@ public class AuthController {
             );
 
             final String token = jwtUtils.generateToken(user.getEmail());
-            final User authenticatedUser = userRepository.findByEmail(user.getEmail());
+            final User authenticatedUser = userService.findByEmail(user.getEmail());
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(false) // TODO Set to true if using HTTPS
@@ -106,7 +106,7 @@ public class AuthController {
         }
 
         final String email = jwtUtils.getUsernameFromToken(token);
-        final User user = userRepository.findByEmail(email);
+        final User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -123,7 +123,7 @@ public class AuthController {
         }
 
         final String email = jwtUtils.getUsernameFromToken(token);
-        final User existingUser = userRepository.findByEmail(email);
+        final User existingUser = userService.findByEmail(email);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -153,7 +153,7 @@ public class AuthController {
         }
 
         final String email = jwtUtils.getUsernameFromToken(token);
-        final User user = userRepository.findByEmail(email);
+        final User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -194,7 +194,7 @@ public class AuthController {
         }
 
         final String email = authentication.getName();
-        final User user = userRepository.findByEmail(email);
+        final User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
