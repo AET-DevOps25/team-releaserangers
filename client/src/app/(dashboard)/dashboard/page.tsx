@@ -9,23 +9,8 @@ import { RecentCourses } from "@/components/dashboard/recent-courses"
 import { QuickStats } from "@/components/dashboard/quick-stats"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
-import useUserStore from "@/hooks/user-store"
-import { useEffect } from "react"
 
 export default function DashboardPage() {
-  const { fetchUser } = useUserStore()
-
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        await fetchUser()
-      } catch (error) {
-        console.error("Failed to load user data:", error)
-      }
-    }
-    loadUser()
-  }, [fetchUser])
-
   return (
     <SidebarProvider>
       <AppSidebar />

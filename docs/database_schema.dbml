@@ -1,0 +1,58 @@
+// Database schema
+
+Table users {
+  id bigserial [primary key, note: 'Auto-incrementing user ID']
+  email varchar [unique, not null, note: 'User email address (unique)']
+  name varchar [note: 'User full name']
+  password varchar [note: 'Encrypted password']
+  created_at timestamp [not null, default: `now()`, note: 'Account creation timestamp']
+  updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
+  
+  Note: 'User accounts for authentication and authorization'
+}
+
+Table courses {
+  course_id varchar [primary key, note: 'UUID for course identification']
+  user_id varchar [not null, note: 'References the owner of the course']
+  course_name varchar [not null, note: 'Name of the course']
+  course_description text [note: 'Detailed course description']
+  course_emoji varchar [note: 'Emoji representation for the course']
+  course_is_favorite boolean [default: false, note: 'Whether course is marked as favorite']
+  created_at timestamp [not null, default: `now()`, note: 'Course creation timestamp']
+  updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
+  
+  Note: 'Courses created by users to organize learning material'
+}
+
+Table chapters {
+  chapter_id varchar [primary key, note: 'UUID for chapter identification']
+  chapter_title varchar [not null, note: 'Title of the chapter']
+  course_id varchar [not null, note: 'References the parent course']
+  chapter_content text [note: 'Main content of the chapter']
+  chapter_emoji varchar [note: 'Emoji representation for the chapter']
+  chapter_is_favorite boolean [default: false, note: 'Whether chapter is marked as favorite']
+  created_at timestamp [not null, default: `now()`, note: 'Chapter creation timestamp']
+  updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
+  
+  Note: 'Individual chapters within courses containing learning content'
+}
+
+Table uploaded_files {
+  id varchar [primary key, note: 'UUID for file identification']
+  filename varchar [not null, note: 'Original filename of uploaded file']
+  content_type varchar [not null, note: 'MIME type of the file']
+  data oid [not null, note: 'Binary file data stored in database']
+  course_id varchar [not null, note: 'References the associated course']
+  created_at timestamp [not null, default: `now()`, note: 'File upload timestamp']
+  updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
+  
+  Note: 'Files uploaded by users for course content (PDFs, documents, etc.)'
+}
+
+// Relationships
+// Each course belongs to a user (soft reference)
+Ref: courses.user_id > users.id
+// Each chapter belongs to a course (cascade delete)
+Ref: chapters.course_id > courses.course_id [delete: cascade]
+// Each file is associated with a course (soft reference)
+Ref: uploaded_files.course_id > courses.course_id

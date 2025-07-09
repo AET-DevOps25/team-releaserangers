@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=${JWT_SECRET}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authentication-service.rule=Host(`${AUTH_HOST}`)"
@@ -73,6 +74,9 @@ services:
   client:
     image: ghcr.io/aet-devops25/team-releaserangers/client:latest
     restart: unless-stopped
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - NEXT_PUBLIC_API_URL=http://coursemgmt-service:8080
     expose:
       - "3000"
     labels:

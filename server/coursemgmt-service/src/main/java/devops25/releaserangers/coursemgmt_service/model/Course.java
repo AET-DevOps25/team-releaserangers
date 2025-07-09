@@ -1,8 +1,12 @@
 package devops25.releaserangers.coursemgmt_service.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@SuppressFBWarnings(justification = "Exposing references is acceptable here")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,7 +34,7 @@ public class Course {
     @Column(name = "course_name", nullable = false)
     private String name;
 
-    @Column(name = "course_description")
+    @Column(name = "course_description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "course_emoji")
