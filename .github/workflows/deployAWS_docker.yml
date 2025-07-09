@@ -34,6 +34,8 @@ jobs:
             echo "CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
             echo "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
             echo "PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io/api" >> .env.prod
+            cat ./genai/.env.aws >> .env.prod
+            echo "LLM_API_KEY=${{ secrets.LLM_API_KEY }}" >> .env.prod 
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.0.3
