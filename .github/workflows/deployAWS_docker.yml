@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: AWS_EC2
-      url: 'https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io'
+      url: "https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,9 +31,9 @@ jobs:
           script: |
             rm .env.prod
             touch .env.prod
-            echo "CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
-            echo "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
-            echo "PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io/api" >> .env.prod
+            echo "CLIENT_HOST=client.54.83.62.127.nip.io" >> .env.prod
+            echo "SERVER_HOST=api.54.83.62.127.nip.io" >> .env.prod
+            echo "NEXT_PUBLIC_API_URL=http://localhost"
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.0.3
