@@ -212,7 +212,7 @@ public class UploadService {
             headers.add(HttpHeaders.COOKIE, "token=" + token);
         }
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         final RestTemplate summaryRestTemplate = new RestTemplate();
         summaryRestTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
