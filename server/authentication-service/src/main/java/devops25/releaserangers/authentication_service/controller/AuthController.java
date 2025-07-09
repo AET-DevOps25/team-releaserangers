@@ -38,9 +38,10 @@ public class AuthController {
                             user.getPassword()
                     )
             );
-            String token = jwtUtils.generateToken(user.getEmail());
-            User authenticatedUser = userService.findByEmail(user.getEmail());
-            ResponseCookie responseCookie = ResponseCookie.from("token", token)
+
+            final String token = jwtUtils.generateToken(user.getEmail());
+            final User authenticatedUser = userRepository.findByEmail(user.getEmail());
+            final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(false) // TODO Set to true if using HTTPS
                     .path("/") // Set the path for the cookie
@@ -61,7 +62,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
         // Create new user's account
-        User newUser = new User(
+        final User newUser = new User(
                 null,
                 user.getEmail(),
                 user.getName(),
@@ -79,8 +80,8 @@ public class AuthController {
                             user.getPassword()
                     )
             );
-            String token = jwtUtils.generateToken(user.getEmail());
-            ResponseCookie responseCookie = ResponseCookie.from("token", token)
+            final String token = jwtUtils.generateToken(user.getEmail());
+            final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(false) // TODO Set to true if using HTTPS
                     .path("/") // Set the path for the cookie
@@ -103,8 +104,9 @@ public class AuthController {
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        String email = jwtUtils.getUsernameFromToken(token);
-        User user = userService.findByEmail(email);
+
+        final String email = jwtUtils.getUsernameFromToken(token);
+        final User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -119,8 +121,9 @@ public class AuthController {
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = jwtUtils.getUsernameFromToken(token);
-        User existingUser = userService.findByEmail(email);
+
+        final String email = jwtUtils.getUsernameFromToken(token);
+        final User existingUser = userRepository.findByEmail(email);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -148,14 +151,15 @@ public class AuthController {
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = jwtUtils.getUsernameFromToken(token);
-        User user = userService.findByEmail(email);
+
+        final String email = jwtUtils.getUsernameFromToken(token);
+        final User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         userService.deleteUser(email);
         // Invalidate the cookie by setting it to expire
-        ResponseCookie responseCookie = ResponseCookie.from("token", "")
+        final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(false) // TODO Set to true if using HTTPS
                 .path("/") // Set the path for the cookie
@@ -170,7 +174,7 @@ public class AuthController {
     @PostMapping("/signout")
     public ResponseEntity<String> signoutUser() {
         // invalidate the cookie by setting it to expire
-        ResponseCookie responseCookie = ResponseCookie.from("token", "")
+        final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(false) // TODO Set to true if using HTTPS
                 .path("/") // Set the path for the cookie
@@ -184,12 +188,13 @@ public class AuthController {
 
     @GetMapping("/validate")
     public ResponseEntity<String> validateToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof String) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = authentication.getName();
-        User user = userService.findByEmail(email);
+
+        final String email = authentication.getName();
+        final User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }

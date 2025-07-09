@@ -6,5 +6,5 @@ langchain_docling==1.0.0
 pydantic==2.11.5
 python-dotenv==1.1.0
 python-multipart
-Requests==2.32.4
+requests==2.32.4
 uvicorn
