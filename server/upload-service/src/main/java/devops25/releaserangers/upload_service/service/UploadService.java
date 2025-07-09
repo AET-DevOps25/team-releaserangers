@@ -216,7 +216,6 @@ public class UploadService {
         }
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        System.out.println("Request Entity: " + requestEntity);
         RestTemplate summaryRestTemplate = new RestTemplate();
         summaryRestTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
     }
