@@ -4,6 +4,33 @@ This is a university project designed to enhance students learning experience by
 
 ---
 
+# Section Overview
+
+- [Our Team](#our-team)
+- [Student Responsibilities](#student-responsibilities)
+- [Subsystem Ownership](#subsystem-ownership)
+- [Key Features](#key-features)
+- [Project Overview](#project-overview)
+- [Setup Instructions](#setup-instructions)
+  - [Client Setup](#client-setup)
+  - [Server Setup](#server-setup)
+  - [LLM Service Setup](#llm-service-setup)
+- [Running the Application](#running-the-application)
+  - [Start the Database](#start-the-database)
+  - [Start the Client](#start-the-client)
+  - [Start the Server](#start-the-server)
+  - [Start the LLM Service](#start-the-llm-service)
+- [How to Use with Docker](#how-to-use-with-docker)
+- [Tech Stack](#tech-stack)
+- [Database Schema](#database-schema)
+- [Architecture Overview](#architecture-overview)
+- [API documentation](#api-documentation)
+- [CI/CD Instructions](#cicd-instructions)
+- [Monitoring Instructions](#monitoring-instructions)
+- [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
+
+---
+
 ## Our Team
 
 This project is maintained by:
