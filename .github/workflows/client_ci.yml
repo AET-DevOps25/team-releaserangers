@@ -4,10 +4,6 @@ on:
   push:
     branches: ["**"]
 
-defaults:
-  run:
-    working-directory: ./client
-
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest
@@ -29,6 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./client
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -40,12 +37,15 @@ jobs:
 
       - name: Security audit
         run: pnpm audit
+        working-directory: ./client
 
       - name: Lint
         run: pnpm lint
+        working-directory: ./client
 
       - name: Build
         run: pnpm build
+        working-directory: ./client
 
       - name: Cache build output
         uses: actions/cache@v4
@@ -72,15 +72,20 @@ jobs:
         uses: docker/setup-compose-action@v1
 
       - name: Set up and start services
-        working-directory: .
         run: |
           # This service still needs its own .env file, so we create it
           mkdir -p ./genai
+          : # TODO change to current secret structure
           echo "CHAIR_API_KEY=${CHAIR_API_KEY}" > ./genai/.env
           # : yes this should be empty
           echo "NEXT_PUBLIC_API_URL=" > ./client/.env.local
           echo "JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431" >> ./client/.env.local
           echo "JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431" > ./env
+
+
+          ls -a
+
+          cat ./env
 
           # docker-compose will automatically pick up JWT_SECRET from the environment
           echo "Starting Docker services..."
@@ -107,9 +112,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./client
 
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
+        working-directory: ./client
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -125,11 +132,11 @@ jobs:
         run: |
           # Configure playwright to use the dockerized application URL
           pnpm exec playwright test
+        working-directory: ./client
 
       - name: Print client logs on failure
         if: failure()
         run: |
-          cd ..
           echo "==== Docker Compose Client Logs ===="
           docker compose logs client
 
@@ -144,5 +151,4 @@ jobs:
       - name: Stop Docker Compose services
         if: always()
         run: |
-          cd ..
           docker-compose down -v
