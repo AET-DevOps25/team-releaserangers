@@ -32,7 +32,8 @@ jobs:
             rm .env.prod
             touch .env.prod
             echo "CLIENT_HOST=client.54.83.62.127.nip.io" >> .env.prod
-            echo "NEXT_PUBLIC_API_URL=api.54.83.62.127.nip.io" >> .env.prod
+            cho "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
+            echo "NEXT_PUBLIC_API_URL=https://api.54.83.62.127.nip.io" >> .env.prod
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.0.3

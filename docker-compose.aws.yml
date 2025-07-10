@@ -28,7 +28,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentication-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.routers.authentication-service.rule=Host(`${SERVER_HOST}`)"
       - "traefik.http.services.authentication-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.authentication-service.entrypoints=websecure"
       - "traefik.http.routers.authentication-service.tls.certresolver=letsencrypt"
@@ -40,7 +40,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.coursemgmt-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.routers.coursemgmt-service.rule=Host(`${SERVER_HOST}`)"
       - "traefik.http.services.coursemgmt-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.coursemgmt-service.entrypoints=websecure"
       - "traefik.http.routers.coursemgmt-service.tls.certresolver=letsencrypt"
@@ -52,7 +52,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.upload-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.routers.upload-service.rule=Host(`${SERVER_HOST}`)"
       - "traefik.http.services.upload-service.loadbalancer.server.port=8080"
       - "traefik.http.routers.upload-service.entrypoints=websecure"
       - "traefik.http.routers.upload-service.tls.certresolver=letsencrypt"
@@ -86,7 +86,7 @@ services:
       - ./genai/.env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.genai-service.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.routers.genai-service.rule=Host(`${SERVER_HOST}`)"
       - "traefik.http.services.genai-service.loadbalancer.server.port=8000"
       - "traefik.http.routers.genai-service.entrypoints=websecure"
       - "traefik.http.routers.genai-service.tls.certresolver=letsencrypt"
@@ -99,7 +99,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api-gateway.rule=Host(`${NEXT_PUBLIC_API_URL}`)"
+      - "traefik.http.routers.api-gateway.rule=Host(`${SERVER_HOST}`)"
       - "traefik.http.services.api-gateway.loadbalancer.server.port=80"
       - "traefik.http.routers.api-gateway.entrypoints=websecure"
       - "traefik.http.routers.api-gateway.tls.certresolver=letsencrypt"
