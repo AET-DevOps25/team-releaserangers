@@ -57,9 +57,10 @@ public class ChapterController {
         if (userIDOpt.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
+
         final String userID = userIDOpt.get();
         final List<Chapter> chapters = courseService.getCoursesByUserId(userID).stream()
-                .flatMap(course -> course.getChapters().stream())
+                .flatMap(course -> chapterService.getChaptersByCourseId(course.getId()).stream())
                 .toList();
         if (chapters.isEmpty()) {
             return ResponseEntity.noContent().build();

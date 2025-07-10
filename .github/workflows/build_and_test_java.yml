@@ -1,18 +1,17 @@
-name: Test Java Services
+name: Build and Test Java Services
 
 on:
   push:
-  pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         service:
           - authentication-service
-# TODO         - coursemgmt-service
-# TODO         - upload-service
+          - coursemgmt-service
+          - upload-service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,8 +21,33 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Build ${{ matrix.service }}
+        working-directory: server/${{ matrix.service }}
+        run: mvn -B clean package -DskipTests --file pom.xml --no-transfer-progress
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        service:
+          - authentication-service
+          - coursemgmt-service
+          - upload-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
 
       - name: Run ${{ matrix.service }} tests
         working-directory: server/${{ matrix.service }}
