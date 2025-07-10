@@ -1,12 +1,11 @@
 from dotenv import load_dotenv
 import os
 import requests
-from typing import List, Any, Optional, Union
+from typing import List, Any, Optional
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 import io
 from google import genai
-from google.genai import types
 
 load_dotenv()
 
