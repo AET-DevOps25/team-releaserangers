@@ -70,6 +70,32 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
 ---
 
+## Quick Local Setup (Recommended)
+
+The easiest way to configure your environment for local development is to use the provided setup script:
+
+```bash
+./setup-env.sh
+```
+
+This script will automatically create and configure all required `.env` files for both the server and client, ensuring that secrets like `JWT_SECRET` are synchronized. If the files already exist, you will be prompted to overwrite them.
+
+---
+
+## Running the Application Locally
+
+### Using Docker Compose (Recommended)
+
+To start the entire application stack (client, server, database, etc.) locally, simply run:
+
+```bash
+docker compose up --build
+```
+
+This will build and start all services as defined in the `docker-compose.yml` file.
+
+---
+
 ## Setup Instructions
 
 ### Clone the Repository
