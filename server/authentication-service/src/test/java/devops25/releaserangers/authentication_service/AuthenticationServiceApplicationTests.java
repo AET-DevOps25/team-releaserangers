@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 class AuthenticationServiceApplicationTests {
 
-    // TODO, see if we want to use this?
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("test_db")

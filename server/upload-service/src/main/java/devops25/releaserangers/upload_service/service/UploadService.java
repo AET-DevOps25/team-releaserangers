@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,11 +31,14 @@ import java.util.stream.Collectors;
 @Service
 public class UploadService {
     private final FileRepository fileRepository;
+
+    private final RestTemplate restTemplate;
     private static final Logger logger = LoggerFactory.getLogger(UploadService.class);
+  
     private static final List<String> ALLOWED_TYPES = List.of("application/pdf");
     private static final String NO_FILES_ERROR = "No files provided. Please upload at least one PDF file.";
     private static final String INVALID_TYPE_ERROR = "Currently only PDF file(s) are allowed. Please upload valid PDF file(s).";
-    private static final String NULL_FILENAME_ERROR = "File name cannot be null.";
+    private static final String NULL_FILENAME_ERROR = "File name cannot be empty or null.";
     private static final String TOKEN_COOKIE = "token=";
     private static final String ERROR_FETCHING_CHAPTERS = "Error fetching chapters from coursemgmt-service: ";
     private static final String ERROR_SERIALIZING_CHAPTERS = "Error serializing chapters response: ";
@@ -50,8 +54,10 @@ public class UploadService {
      *
      * @param fileRepository the repository for file persistence
      */
-    public UploadService(final FileRepository fileRepository) {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
+    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate) {
         this.fileRepository = fileRepository;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -66,20 +72,24 @@ public class UploadService {
      */
     @Transactional
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
+        logger.info("Handle uploaded files");
         if (files == null || files.length == 0) {
+            logger.info(NO_FILES_ERROR);
             throw new IllegalArgumentException(NO_FILES_ERROR);
         }
         for (final MultipartFile file : files) {
             if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
+                logger.info(INVALID_TYPE_ERROR);
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
         }
         final List<File> uploadedFiles = new java.util.ArrayList<>();
         for (MultipartFile file : files) {
             final String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null) {
+            if (originalFilename == null || originalFilename.isEmpty()) {
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
+          
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
             if (existingFile == null) {
@@ -207,15 +217,12 @@ public class UploadService {
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
         if (token != null) {
             headers.add(HttpHeaders.COOKIE, "token=" + token);
         }
-
         final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        final RestTemplate summaryRestTemplate = new RestTemplate();
-        summaryRestTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
+        restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
     }
 
     /**
