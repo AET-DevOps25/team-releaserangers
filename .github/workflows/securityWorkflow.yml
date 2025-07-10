@@ -17,8 +17,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
           GITLEAKS_CONFIG: ./.github/gitleaks.toml
-        with:
-          args: "detect --source=. --no-git --redact"
+
   kics:
     name: KICS IaC Scan
     runs-on: ubuntu-latest
