@@ -75,7 +75,7 @@ export default function CoursePage() {
           </div>
           <div className="ml-auto flex items-center gap-4 px-3">
             {hasChapters && (
-              <AddContentButton>
+              <AddContentButton courseId={courseId}>
                 <Button size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   <span>Add Content</span>
@@ -97,11 +97,11 @@ export default function CoursePage() {
 
             {hasChapters ? (
               <div className="space-y-8">
-                <ChapterList chapters={course.chapters} courseId={course.id} />
+                <ChapterList chapters={course.chapters} courseId={courseId} />
               </div>
             ) : (
               <div className="space-y-6">
-                <UploadDropzone isInDialog={false} />
+                <UploadDropzone isInDialog={false} courseId={courseId} />
               </div>
             )}
           </div>

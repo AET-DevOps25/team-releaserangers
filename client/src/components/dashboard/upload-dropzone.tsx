@@ -12,9 +12,10 @@ import { UPLOAD_ENDPOINT } from "../../server/endpoints"
 interface UploadDropzoneProps {
   isInDialog?: boolean
   onUploadComplete?: () => void
+  courseId: string
 }
 
-export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadDropzoneProps) {
+export function UploadDropzone({ isInDialog = false, onUploadComplete, courseId }: UploadDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -82,8 +83,9 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadD
       })
 
       // Replace with environment variable or config for production
-      const response = await fetch(UPLOAD_ENDPOINT, {
+      const response = await fetch(`${UPLOAD_ENDPOINT}/${courseId}`, {
         method: "POST",
+        credentials: "include",
         body: formData,
       })
 

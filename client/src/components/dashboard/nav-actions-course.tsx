@@ -104,7 +104,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
                               </SidebarMenuButton>
                             </DeleteCourseDialog>
                           ) : item.label === "Add Content" ? (
-                            <AddContentButton>
+                            <AddContentButton courseId={course.id}>
                               <SidebarMenuButton>
                                 <item.icon /> <span>{item.label}</span>
                               </SidebarMenuButton>
