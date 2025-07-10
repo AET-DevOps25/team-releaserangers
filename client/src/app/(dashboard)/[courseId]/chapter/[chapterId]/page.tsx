@@ -79,7 +79,7 @@ export default function ChapterPage() {
           <div className="ml-auto px-3">{chapter && <NavActionsChapter chapter={chapter} />}</div>
         </header>
         <div className="flex flex-1 flex-col gap-4 px-4 py-10">
-          <MarkdownViewer title={chapter?.title || ""} content={chapter?.content || ""} />
+          <MarkdownViewer title={chapter?.emoji + " " + chapter?.title || ""} content={chapter?.content || ""} />
         </div>
       </SidebarInset>
     </SidebarProvider>
