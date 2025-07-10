@@ -45,21 +45,6 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void testAuthenticateUser_Success() {
-        User user = TestUtils.createTestUser("auth@example.com", "Auth", "pass");
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(passwordEncoder.matches("pass", user.getPassword())).thenReturn(true);
-        User result = userService.authenticateUser(user.getEmail(), "pass");
-        assertEquals(user.getEmail(), result.getEmail());
-    }
-
-    @Test
-    void testAuthenticateUser_Failure() {
-        when(userRepository.findByEmail("fail@example.com")).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> userService.authenticateUser("fail@example.com", "pass"));
-    }
-
-    @Test
     void testUpdateUser_Success() {
         User user = TestUtils.createTestUser("update@example.com", "User", "pass");
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
@@ -78,6 +63,4 @@ public class UserServiceUnitTest {
         assertDoesNotThrow(() -> userService.deleteUser(user.getEmail()));
         verify(userRepository).delete(user);
     }
-
-    // More unit tests for other scenarios...
 }

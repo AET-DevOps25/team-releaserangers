@@ -17,14 +17,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User authenticateUser(String email, String password) {
-        final User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
-        return user;
-    }
-
     public User updateUser(String email, User update) {
         final User user = userRepository.findByEmail(email);
         if (update.getEmail() != null) {
@@ -41,9 +33,6 @@ public class UserService {
 
     public void deleteUser(String email) {
         final User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
         userRepository.delete(user);
     }
 
