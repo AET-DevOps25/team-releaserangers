@@ -5,6 +5,7 @@ WORKDIR /app
 # Copy only dependency files first for better layer caching
 COPY pom.xml .
 COPY src ./src
+COPY checkstyle.xml checkstyle.xml
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine

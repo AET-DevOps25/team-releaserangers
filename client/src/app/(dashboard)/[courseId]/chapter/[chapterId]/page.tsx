@@ -7,9 +7,9 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { NavActionsChapter } from "@/components/dashboard/nav-actions-chapter"
 import { useParams } from "next/navigation"
-import useCourseStore from "@/hooks/course-store"
-import { useEffect, useState } from "react"
 import Loading from "./loading"
+import { useChapter } from "@/hooks/chapterAPI"
+import { useCourse } from "@/hooks/courseAPI"
 
 // TODO: Table, Code, links and other components
 
@@ -17,29 +17,26 @@ export default function ChapterPage() {
   const params = useParams<{ courseId: string; chapterId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const chapterId = params ? (typeof params.chapterId === "string" ? params.chapterId : "") : ""
-  const { fetchChapter, fetchCourse } = useCourseStore()
-  const [chapter, setChapter] = useState<Chapter | null>(null)
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { chapter, isLoading, error } = useChapter(courseId, chapterId)
+  const { course, isLoading: isCourseLoading, error: courseError } = useCourse(courseId)
 
-  useEffect(() => {
-    async function loadChapter() {
-      try {
-        const chapterData = await fetchChapter(courseId, chapterId)
-        setChapter(chapterData)
-        const courseData = await fetchCourse(courseId)
-        setCourse(courseData)
-      } catch (error) {
-        console.error("Failed to load chapter:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+  if (error || courseError) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-lg font-semibold">Error loading chapter</p>
+              <p className="text-muted-foreground">Please try again later</p>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }
 
-    loadChapter()
-  }, [courseId, chapterId, fetchChapter, fetchCourse])
-
-  if (loading) {
+  if (isLoading || isCourseLoading) {
     return <Loading />
   }
 
@@ -82,7 +79,7 @@ export default function ChapterPage() {
           <div className="ml-auto px-3">{chapter && <NavActionsChapter chapter={chapter} />}</div>
         </header>
         <div className="flex flex-1 flex-col gap-4 px-4 py-10">
-          <MarkdownViewer title={chapter?.title || ""} content={chapter?.content || ""} />
+          <MarkdownViewer title={chapter?.emoji + " " + chapter?.title || ""} content={chapter?.content || ""} />
         </div>
       </SidebarInset>
     </SidebarProvider>

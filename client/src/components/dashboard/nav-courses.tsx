@@ -14,12 +14,27 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { ButtonType, CourseCreationDialog } from "./course-creation-dialog"
-import useCourseStore from "@/hooks/course-store"
 import { Suspense } from "react"
 import Link from "next/link"
+import { useCourses } from "@/hooks/courseAPI"
 
-export function NavCourses({ isLoading }: { isLoading: boolean }) {
-  const { courses } = useCourseStore()
+export function NavCourses() {
+  const { courses, error, isLoading } = useCourses()
+
+  if (error) {
+    return (
+      <SidebarGroup className="group-data-[collapsible=icon]:hidden" data-collapsible="icon">
+        <SidebarGroupLabel>Courses</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="pointer-events-none">
+              <span className="text-red-500">Error loading courses</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    )
+  }
 
   return (
     <SidebarGroup>

@@ -7,15 +7,30 @@ import { FileUp, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { UPLOAD_ENDPOINT } from "../../server/endpoints"
 
 interface UploadDropzoneProps {
   isInDialog?: boolean
   onUploadComplete?: () => void
+  courseId: string
 }
 
-export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadDropzoneProps) {
+export function UploadDropzone({ isInDialog = false, onUploadComplete, courseId }: UploadDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const validateFiles = (fileList: FileList) => {
+    const validFiles: File[] = []
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i]
+      if (file.type === "application/pdf") {
+        validFiles.push(file)
+      }
+    }
+    return validFiles
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -29,15 +44,27 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadD
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
+    setError(null)
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0])
+      const validFiles = validateFiles(e.dataTransfer.files)
+      if (validFiles.length === 0) {
+        setError("Please upload PDF files only")
+        return
+      }
+      setFiles((prevFiles) => [...prevFiles, ...validFiles])
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null)
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0])
+      const validFiles = validateFiles(e.target.files)
+      if (validFiles.length === 0) {
+        setError("Please upload PDF files only")
+        return
+      }
+      setFiles((prevFiles) => [...prevFiles, ...validFiles])
     }
   }
 
@@ -45,14 +72,36 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadD
     document.getElementById("file-upload")?.click()
   }
 
-  const handleUpload = () => {
-    // Simulate upload process
-    setTimeout(() => {
-      setFile(null)
+  const handleUpload = async () => {
+    setIsUploading(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      files.forEach((file) => {
+        formData.append("files", file)
+      })
+
+      // Replace with environment variable or config for production
+      const response = await fetch(`${UPLOAD_ENDPOINT}/${courseId}`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`)
+      }
+
+      setFiles([])
       if (onUploadComplete) {
         onUploadComplete()
       }
-    }, 1500)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed")
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
@@ -66,19 +115,30 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadD
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+      <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} multiple accept=".pdf" />
 
       <div className="flex flex-col items-center justify-center text-center">
-        {file ? (
+        {files.length > 0 ? (
           <>
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <FileUp className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-lg font-medium">{file.name}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            <h3 className="text-lg font-medium">
+              {files.length} file{files.length > 1 ? "s" : ""} selected
+            </h3>
+            <div className="mt-2 max-h-32 overflow-y-auto">
+              {files.map((file, index) => (
+                <p key={index} className="text-sm text-muted-foreground">
+                  {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              ))}
+            </div>
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             <div className="mt-4 flex gap-2">
-              <Button onClick={handleUpload}>Upload Content</Button>
-              <Button variant="outline" onClick={() => setFile(null)}>
+              <Button onClick={handleUpload} disabled={isUploading}>
+                {isUploading ? "Uploading..." : "Upload Content"}
+              </Button>
+              <Button variant="outline" onClick={() => setFiles([])} disabled={isUploading}>
                 Cancel
               </Button>
             </div>
@@ -100,6 +160,7 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete }: UploadD
                 </>
               )}
             </p>
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             <Button variant="outline" onClick={handleUploadClick} className={cn(isInDialog ? "mt-4" : "mt-6", isInDialog ? "text-sm" : "text-xs")}>
               Select File
             </Button>
