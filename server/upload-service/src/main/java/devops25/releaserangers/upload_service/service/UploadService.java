@@ -72,11 +72,14 @@ public class UploadService {
      */
     @Transactional
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
+        logger.info("Handle uploaded files");
         if (files == null || files.length == 0) {
+            logger.info(NO_FILES_ERROR);
             throw new IllegalArgumentException(NO_FILES_ERROR);
         }
         for (final MultipartFile file : files) {
             if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
+                logger.info(INVALID_TYPE_ERROR);
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
         }
@@ -215,7 +218,7 @@ public class UploadService {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         if (token != null) {
-            headers.set("Authorization", "Bearer " + token);
+            headers.add(HttpHeaders.COOKIE, "token=" + token);
         }
         final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
