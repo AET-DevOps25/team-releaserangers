@@ -32,35 +32,61 @@ class GenericLLM(LLM):
         if not self.api_url:
             raise ValueError("LLM_API_URL environment variable is required")
 
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        }
-
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
-
-        payload = {
-            "model": self.model_name,
-            "messages": messages,
-            "temperature": 0.5,
-            "max_tokens": 900000,
-        }
+        if self.backend == "google":
+            # Special handling for Google Gemini
+            headers = {
+                "X-goog-api-key": self.api_key,
+                "Content-Type": "application/json",
+            }
+            payload = {
+                "contents": [
+                    {
+                        "parts": [
+                            {
+                                "text": prompt
+                            }
+                        ]
+                    }
+                ]
+            }
+            # For Gemini, the API URL already contains the model
+            api_url = self.api_url
+        else:
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            }
+            messages = [
+                {"role": "user", "content": prompt}
+            ]
+            payload = {
+                "model": self.model_name,
+                "messages": messages,
+                "temperature": 0.5,
+                "max_tokens": 900000,
+            }
+            api_url = self.api_url
 
         try:
             response = requests.post(
-                self.api_url,
+                api_url,
                 headers=headers,
                 json=payload,
                 timeout=180
             )
             response.raise_for_status()
             result = response.json()
-            if "choices" in result and len(result["choices"]) > 0:
-                return result["choices"][0]["message"]["content"].strip()
+
+            if self.backend == "google":
+                if "candidates" in result and len(result["candidates"]) > 0:
+                    return result["candidates"][0]["content"]["parts"][0]["text"].strip()
+                else:
+                    raise ValueError("Unexpected response format from Google API")
             else:
-                raise ValueError("Unexpected response format")
+                if "choices" in result and len(result["choices"]) > 0:
+                    return result["choices"][0]["message"]["content"].strip()
+                else:
+                    raise ValueError("Unexpected response format")
         except requests.HTTPError as e:
             try:
                 error_detail = response.json()
