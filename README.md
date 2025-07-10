@@ -15,21 +15,17 @@ This project is maintained by:
 ---
 
 ## Student Responsibilities
-
-| Week | Title                              | Student  | Description | Status | Impediments | Promises |
-| ---- | ---------------------------------- | -------- | ----------- | ------ | ----------- | -------- |
-| CW19 | Draft Problem Statement            | Everyone |             |        |             |          |
-| CW20 | Create UML Models, Initial Backlog | Everyone |             |        |             |          |
-| CW21 |                                    |          |             |        |             |          |
-| CW22 |                                    |          |             |        |             |          |
-| CW23 |                                    |          |             |        |             |          |
+- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup, Python Testing
+- **Jonathan Müller (JM)**: Frontend Development, Database Design, Terraform and Ansible Setup, Client Testing, Authentication Service
+- **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup
 
 ## Subsystem Ownership
 
-- Subsystem1: ..
-- Subsystem2: ..
-- Subsystem3: ..
-- ...
+- Client: Jonathan Müller (JM)
+- Authentication Service: Jonathan Müller (JM)
+- GenAI Service: Florian Charrot (FC)
+- Course Management Service: Luis Leutbecher (LL)
+- Upload Service: Luis Leutbecher (LL)
 
 ---
 
@@ -43,7 +39,7 @@ This project is maintained by:
 
 ## Project Overview
 
-Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up to date overview of the current course content.
+Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up-to-date overview of the current course content.
 
 ---
 
@@ -69,6 +65,25 @@ Our application helps students to study efficient by leveraging LLM generated sm
   Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
 
 ### Server Setup
+
+- The authentication service uses the [dotenv-java](https://github.com/cdimascio/dotenv-java) library to automatically load environment variables from your `.env` file.
+- Ensure you have a `.env` file in the root of your project with the following content:
+
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+  You can orient yourself by looking at how the `.env.example` file looks like in the project root.
+
+- The `application.properties` file in `server/authentication-service/src/main/resources/` uses a placeholder to read the secret:
+
+  ```bash
+  jwt.secret=${JWT_SECRET}
+  ```
+
+- You do not need to manually export environment variables. Simply run the authentication service as usual (e.g., `./mvnw spring-boot:run`), and the secret will be loaded automatically.
+
+  **Note:** The JWT secret must be identical in `.env`, `.env.local` (for the client), and available to the authentication service for authentication to work correctly.
 
 ### LLM Service Setup
 
