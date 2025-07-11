@@ -33,7 +33,7 @@ services:
       - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JWT_SECRET=${JWT_SECRET}
+    env_file: .env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -81,9 +81,7 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - NEXT_PUBLIC_API_URL=http://localhost
+    env_file: ./client/.env.local
     depends_on:
       - authentication-service
       - coursemgmt-service

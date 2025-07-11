@@ -82,10 +82,6 @@ jobs:
           echo "JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431" >> ./client/.env.local
           echo "JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431" > .env
 
-          ls -a
-
-          cat .env
-
           # docker-compose will automatically pick up JWT_SECRET from the environment
           echo "Starting Docker services..."
           docker compose up -d
@@ -150,4 +146,4 @@ jobs:
       - name: Stop Docker Compose services
         if: always()
         run: |
-          docker-compose down -v
+          docker compose down -v
