@@ -129,7 +129,7 @@ class FileCapableLLM(LLM):
         if not self.api_url:
             raise ValueError("LLM_API_URL environment variable is required")
         
-        client = genai.Client()
+        client = genai.Client(api_key=self.api_key)
 
         uploaded_file = client.files.upload(
             file=file,
