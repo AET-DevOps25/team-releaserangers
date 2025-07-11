@@ -24,6 +24,8 @@ services:
   authentication-service:
     image: ghcr.io/aet-devops25/team-releaserangers/authentication-service:latest
     restart: unless-stopped
+    env_file:
+      - .env.prod
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JWT_SECRET=${JWT_SECRET}
@@ -80,12 +82,6 @@ services:
       - LLM_MODEL=${LLM_MODEL}
       - LLM_BACKEND=${LLM_BACKEND}
       - COURSEMGMT_URL=http://coursemgmt-service:8080
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.genai-service.rule=Host(`${SERVER_HOST}`)"
-      - "traefik.http.services.genai-service.loadbalancer.server.port=8000"
-      - "traefik.http.routers.genai-service.entrypoints=websecure"
-      - "traefik.http.routers.genai-service.tls.certresolver=letsencrypt"
     depends_on:
       - coursemgmt-service
       - upload-service
