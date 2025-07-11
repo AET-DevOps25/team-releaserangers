@@ -16,7 +16,7 @@ export default async function middleware(req: NextRequest) {
   let session: JWTPayload | null = null
   if (token) {
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+      const secret = new TextEncoder().encode(process.env.NEXT_JWT_SECRET)
       const { payload } = await jwtVerify(token, secret)
       session = payload
     } catch (e) {
