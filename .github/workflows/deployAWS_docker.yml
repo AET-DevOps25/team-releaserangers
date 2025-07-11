@@ -41,6 +41,7 @@ jobs:
             LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
             LLM_BACKEND=google
             COURSEMGMT_URL=http://coursemgmt-service:8080
+            FILE_PARSING=False
             EOF
 
       - name: SSH to VM and Execute Docker-Compose Up

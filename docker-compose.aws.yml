@@ -52,7 +52,7 @@ services:
         condition: service_healthy
 
   client:
-    image: ghcr.io/aet-devops25/team-releaserangers/client:latest@sha256:b9cc73074b82172f481e7fd4b7209d7df0b0e0c0d11eb085f6dcc4d9fc261659
+    image: ghcr.io/aet-devops25/team-releaserangers/client:latest
     restart: unless-stopped
     environment:
       - JWT_SECRET=${JWT_SECRET}
