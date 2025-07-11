@@ -6,7 +6,6 @@ This is a university project designed to enhance students learning experience by
 
 # Section Overview
 
-
 ---
 
 ## Our Team
@@ -20,6 +19,7 @@ This project is maintained by:
 ---
 
 ## Student Responsibilities
+
 - **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup, Python Testing
 - **Jonathan Müller (JM)**: Frontend Development, Database Design, Terraform and Ansible Setup, Client Testing, Authentication Service
 - **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup
@@ -63,6 +63,7 @@ And navigate into the project directory:
 ```bash
 cd team-releaserangers
 ```
+
 ### Environment Configuration
 
 The easiest way to configure your environment for local development is to use the provided setup script:
@@ -94,7 +95,6 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 ---
 
 ## Individual Setup Instructions
-
 
 ### Client Setup
 
@@ -260,14 +260,46 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ### Client Tests
 
+Install the necessary dependencies for the client:
+
+```bash
+cd client
+pnpm install
+```
+
+To run the playwright e2e tests for the client, you have to start the whole
+stack using Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+Then you can run the tests using Playwright:
+
+```bash
+cd client
+pnpm test
+```
+
+For a nice UI interface you can run the tests in headed mode:
+
+```bash
+cd client
+pnpm test:ui
+```
+
 ### Server Tests
+
 To run tests for the server and each microservice, you can use Maven commands. Each microservice has its own set of tests, and you can run them individually or for the entire server.
 For the entire server, navigate to the `server` directory and run:
+
 ```bash
 cd server
 mvn clean package
 ```
+
 For individual microservices, navigate to the specific service directory and run:
+
 ```bash
 cd server/authentication-service
 mvn clean package
@@ -280,6 +312,7 @@ mvn clean package
 ```
 
 ### GenAI Service Tests
+
 ---
 
 ## Code Quality: SpotBugs & Checkstyle
@@ -291,18 +324,22 @@ SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the se
 You can run these tools manually or as part of the Maven build:
 
 - **To run both SpotBugs and Checkstyle for all modules:**
+
   ```sh
   cd server
   mvn verify
   ```
+
   This will execute both plugins as part of the `verify` phase.
 
 - **To run only SpotBugs:**
+
   ```sh
   mvn spotbugs:check
   ```
 
 - **To run only Checkstyle:**
+
   ```sh
   mvn checkstyle:check
   ```
@@ -315,6 +352,7 @@ You can run these tools manually or as part of the Maven build:
   Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
 
 ### Maven Phase Integration
+
 - **Checkstyle** runs during the `validate` and `verify` phases.
 - **SpotBugs** runs during the `verify` phase.
 
