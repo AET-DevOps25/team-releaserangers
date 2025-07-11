@@ -11,6 +11,11 @@ public class AuthenticationServiceApplication {
     Dotenv dotenv;
     try {
       dotenv = Dotenv.configure().filename(".env.prod").ignoreIfMissing().load();
+      System.out.println("Trying default dir: " + dotenv.get("JWT_SECRET"));
+
+      dotenv = Dotenv.configure().directory("../../.").filename(".env.prod").ignoreIfMissing().load();
+      System.out.println("Trying other path: " + dotenv.get("JWT_SECRET"));
+
       if (dotenv.get("JWT_SECRET") == null) {
         System.out.println("JWT_SECRET not found in .env.prod, falling back to .env in the parent directory");
         dotenv = Dotenv.configure().directory("../../.").load();
