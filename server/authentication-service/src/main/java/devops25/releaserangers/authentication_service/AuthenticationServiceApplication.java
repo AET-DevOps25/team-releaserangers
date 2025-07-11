@@ -1,11 +1,15 @@
 package devops25.releaserangers.authentication_service;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AuthenticationServiceApplication {
+
+  @Value("${jwt.secret}")
+  private String jwtSecret;
 
   static {
     Dotenv dotenv;
