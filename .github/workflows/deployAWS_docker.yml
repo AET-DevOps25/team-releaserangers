@@ -33,6 +33,7 @@ jobs:
             touch .env.prod
             cat > .env.prod <<EOF
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+            CLIENT_URL=https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io
             CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io
             SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io
             NEXT_PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io

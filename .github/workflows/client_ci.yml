@@ -86,6 +86,7 @@ jobs:
           cat > ./client/.env.local <<EOF
           NEXT_PUBLIC_API_URL=
           JWT_SECRET=${{ secrets.JWT_SECRET }}
+          CLIENT_URL=http://localhost:3000
           EOF
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
 

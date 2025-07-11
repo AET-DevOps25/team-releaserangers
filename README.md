@@ -58,6 +58,7 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
   ```bash
   JWT_SECRET=<your_jwt_secret>
+  CLIENT_URL=http://localhost:3000
   ```
 
 - for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
@@ -180,18 +181,22 @@ SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the se
 You can run these tools manually or as part of the Maven build:
 
 - **To run both SpotBugs and Checkstyle for all modules:**
+
   ```sh
   cd server
   mvn verify
   ```
+
   This will execute both plugins as part of the `verify` phase.
 
 - **To run only SpotBugs:**
+
   ```sh
   mvn spotbugs:check
   ```
 
 - **To run only Checkstyle:**
+
   ```sh
   mvn checkstyle:check
   ```
@@ -204,6 +209,7 @@ You can run these tools manually or as part of the Maven build:
   Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
 
 ### Maven Phase Integration
+
 - **Checkstyle** runs during the `validate` and `verify` phases.
 - **SpotBugs** runs during the `verify` phase.
 

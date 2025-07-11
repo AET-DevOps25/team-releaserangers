@@ -45,6 +45,7 @@ services:
       - "8082:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file: .env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -56,6 +57,7 @@ services:
       - "8083:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file: .env
     depends_on:
       postgres-db:
         condition: service_healthy
