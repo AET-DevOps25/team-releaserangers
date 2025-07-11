@@ -31,9 +31,17 @@ jobs:
           script: |
             rm .env.prod
             touch .env.prod
-            echo "CLIENT_HOST=client.54.83.62.127.nip.io" >> .env.prod
-            cho "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
-            echo "NEXT_PUBLIC_API_URL=https://api.54.83.62.127.nip.io" >> .env.prod
+            cat > .env.prod <<EOF
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io
+            SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io
+            NEXT_PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io
+            LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+            LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent
+            LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
+            LLM_BACKEND=google
+            COURSEMGMT_URL=http://coursemgmt-service:8080
+            EOF
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.0.3
