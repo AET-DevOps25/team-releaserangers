@@ -28,6 +28,10 @@ public class AuthenticationServiceApplication {
     if (jwtSecret != null) {
       System.setProperty("JWT_SECRET", jwtSecret);
     }
+    final String clientUrl = dotenv.get("CLIENT_URL");
+    if (clientUrl != null) {
+      System.setProperty("CLIENT_URL", clientUrl);
+    }
   }
 
   public static void main(String[] args) {
