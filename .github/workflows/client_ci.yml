@@ -77,7 +77,7 @@ jobs:
           mkdir -p ./genai
 
           cat > ./genai/.env <<EOF
-          LLM_API_KEY=${secrets.LLM_API_KEY}
+          LLM_API_KEY=${{ secrets.LLM_API_KEY }}
           LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent
           LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
           LLM_BACKEND=google
