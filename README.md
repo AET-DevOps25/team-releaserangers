@@ -254,6 +254,34 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ---
 
+## Testing Instructions
+
+### How to Run Tests
+
+### Client Tests
+
+### Server Tests
+To run tests for the server and each microservice, you can use Maven commands. Each microservice has its own set of tests, and you can run them individually or for the entire server.
+For the entire server, navigate to the `server` directory and run:
+```bash
+cd server
+mvn clean package
+```
+For individual microservices, navigate to the specific service directory and run:
+```bash
+cd server/authentication-service
+mvn clean package
+
+cd ../coursemgmt-service
+mvn clean package
+
+cd ../upload-service
+mvn clean package
+```
+
+### GenAI Service Tests
+---
+
 ## Code Quality: SpotBugs & Checkstyle
 
 ### How to Run SpotBugs and Checkstyle
