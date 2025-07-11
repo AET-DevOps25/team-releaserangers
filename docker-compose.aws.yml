@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
     environment:
       - JWT_SECRET=${JWT_SECRET}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - API_URL=${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
     labels:

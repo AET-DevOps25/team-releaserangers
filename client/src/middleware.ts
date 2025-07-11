@@ -35,10 +35,26 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
   }
 
+  // Check if the request is for the runtime config
+  if (req.nextUrl.pathname === "/runtime-config.js") {
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || ""
+
+    const script = `window.__RUNTIME_CONFIG__ = {
+  API_URL: '${apiUrl}'
+};`
+
+    return new NextResponse(script, {
+      headers: {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "no-store, must-revalidate",
+      },
+    })
+  }
+
   return NextResponse.next()
 }
 
 // Routes Middleware should not run on
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)", "/runtime-config.js"],
 }

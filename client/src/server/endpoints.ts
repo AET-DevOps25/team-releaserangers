@@ -1,4 +1,16 @@
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+// Get API URL at runtime - fallback to build-time variable for backwards compatibility
+const getApiUrl = () => {
+  // Check if we're in browser environment
+  if (typeof window !== "undefined") {
+    // In browser, try to get from window object (set by runtime config)
+    return (window as any).__RUNTIME_CONFIG__?.API_URL || process.env.NEXT_PUBLIC_API_URL
+  }
+  // On server side, use environment variable
+  return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL
+}
+
+const apiUrl = getApiUrl()
+
 export const COURSES_ENDPOINT = `${apiUrl}/courses`
 export const COURSE_ENDPOINT = (courseId: string) => `${apiUrl}/courses/${courseId}`
 export const CHAPTER_ENDPOINT = (chapterId: string) => `${apiUrl}/chapters/${chapterId}`
