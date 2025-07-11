@@ -109,6 +109,7 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 
   ```bash
   JWT_SECRET=<your_jwt_secret>
+  NEXT_PUBLIC_API_URL="http://localhost"
   ```
 
   Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
@@ -260,7 +261,7 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ### Client Tests
 
-Install the necessary dependencies for the client:
+Check the client setup from above and install the necessary dependencies for the client:
 
 ```bash
 cd client
@@ -268,7 +269,7 @@ pnpm install
 ```
 
 To run the playwright e2e tests for the client, you have to start the whole
-stack using Docker Compose:
+stack using Docker Compose. It is advised to use a fresh database to avoid conflicts with existing data.
 
 ```bash
 docker compose up --build -d
