@@ -53,6 +53,7 @@ public class AuthControllerIntegrationTest {
         registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("jwt.secret", () -> "08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431");
+        registry.add("client.url", () -> "http://localhost:3000");
     }
 
     @BeforeEach

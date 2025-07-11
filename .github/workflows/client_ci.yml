@@ -86,9 +86,9 @@ jobs:
           cat > ./client/.env.local <<EOF
           NEXT_PUBLIC_API_URL=
           JWT_SECRET=${{ secrets.JWT_SECRET }}
-          CLIENT_URL=http://localhost:3000
           EOF
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
+          echo "CLIENT_URL=http://localhost:3000" >> .env
 
           # docker-compose will automatically pick up JWT_SECRET from the environment
           echo "Starting Docker services..."
