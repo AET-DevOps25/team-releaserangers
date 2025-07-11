@@ -82,6 +82,7 @@ jobs:
           LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
           LLM_BACKEND=google
           COURSEMGMT_URL=http://coursemgmt-service:8081
+          FILE_PARSING=False
           EOF
           # : yes this should be empty
           cat > ./client/.env.local <<EOF
