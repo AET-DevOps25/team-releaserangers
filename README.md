@@ -6,28 +6,6 @@ This is a university project designed to enhance students learning experience by
 
 # Section Overview
 
-- [Our Team](#our-team)
-- [Student Responsibilities](#student-responsibilities)
-- [Subsystem Ownership](#subsystem-ownership)
-- [Key Features](#key-features)
-- [Project Overview](#project-overview)
-- [Setup Instructions](#setup-instructions)
-  - [Client Setup](#client-setup)
-  - [Server Setup](#server-setup)
-  - [LLM Service Setup](#llm-service-setup)
-- [Running the Application](#running-the-application)
-  - [Start the Database](#start-the-database)
-  - [Start the Client](#start-the-client)
-  - [Start the Server](#start-the-server)
-  - [Start the LLM Service](#start-the-llm-service)
-- [How to Use with Docker](#how-to-use-with-docker)
-- [Tech Stack](#tech-stack)
-- [Database Schema](#database-schema)
-- [Architecture Overview](#architecture-overview)
-- [API documentation](#api-documentation)
-- [CI/CD Instructions](#cicd-instructions)
-- [Monitoring Instructions](#monitoring-instructions)
-- [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
 
 ---
 
@@ -72,7 +50,28 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
 ## Quick Local Setup (Recommended)
 
+### Clone the Repository
+
+To get started, clone the repository:
+
+```bash
+git clone https://github.com/AET-DevOps25/team-releaserangers.git
+```
+
+And navigate into the project directory:
+
+```bash
+cd team-releaserangers
+```
+### Environment Configuration
+
 The easiest way to configure your environment for local development is to use the provided setup script:
+
+```bash
+chmod +x setup-env.sh
+```
+
+Then run the script:
 
 ```bash
 ./setup-env.sh
@@ -82,9 +81,7 @@ This script will automatically create and configure all required `.env` files fo
 
 ---
 
-## Running the Application Locally
-
-### Using Docker Compose (Recommended)
+### Run locally using Docker Compose (Recommended)
 
 To start the entire application stack (client, server, database, etc.) locally, simply run:
 
@@ -96,9 +93,8 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 
 ---
 
-## Setup Instructions
+## Individual Setup Instructions
 
-### Clone the Repository
 
 ### Client Setup
 
@@ -159,9 +155,36 @@ Make sure to create a .env file from the .env.example and add your API Key.
 
 ### Start the Database
 
+You can start the database using Docker Compose:
+
+```bash
+docker compose up postgres-db
+```
+
 ### Start the Client
 
+From the project root, run:
+
+```bash
+cd client
+pnpm install
+pnpm dev
+```
+
 ### Start the Server
+
+To start the microservices individually, repeat in their respective directories (e.g., authentication-service, coursemgmt-service, upload-service):
+
+```bash
+cd authentication-service
+./mvnw spring-boot:run
+
+cd coursemgmt-service
+./mvnw spring-boot:run
+
+cd upload-service
+./mvnw spring-boot:run
+```
 
 ### Start the LLM Service
 
@@ -181,14 +204,6 @@ Make sure to create a .env file from the .env.example and add your API Key.
   docker build -t llm .
   docker run --env-file .env -p 8084:8084 llm
   ```
-
-## How to Use with Docker
-
-```bash
-docker compose up --build
-```
-
----
 
 ## Tech Stack
 
