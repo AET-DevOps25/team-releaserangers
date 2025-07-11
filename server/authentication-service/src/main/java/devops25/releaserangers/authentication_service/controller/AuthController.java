@@ -43,9 +43,9 @@ public class AuthController {
             final User authenticatedUser = userService.findByEmail(user.getEmail());
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(false) // TODO Set to true if using HTTPS
+                    .secure(true) // Set to true for HTTPS in production
                     .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .sameSite("None") // Required for cross-site requests with secure=true
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -83,7 +83,7 @@ public class AuthController {
             final String token = jwtUtils.generateToken(user.getEmail());
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(false) // TODO Set to true if using HTTPS
+                    .secure(true) // Set to true for HTTPS in production
                     .path("/") // Set the path for the cookie
                     .sameSite("Lax") // TODO Set SameSite attribute in production
                     .maxAge(3600) // Set cookie expiration time (1 hour)
@@ -161,9 +161,9 @@ public class AuthController {
         // Invalidate the cookie by setting it to expire
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // TODO Set to true if using HTTPS
+                .secure(true) // Set to true for HTTPS in production
                 .path("/") // Set the path for the cookie
-                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .sameSite("None") // Required for cross-site requests with secure=true
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
@@ -176,9 +176,9 @@ public class AuthController {
         // invalidate the cookie by setting it to expire
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // TODO Set to true if using HTTPS
+                .secure(true) // Set to true for HTTPS in production
                 .path("/") // Set the path for the cookie
-                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .sameSite("None") // Required for cross-site requests with secure=true
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
