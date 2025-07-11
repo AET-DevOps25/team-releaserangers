@@ -4,12 +4,8 @@ on:
   push:
     branches: ["**"]
 
-defaults:
-  run:
-    working-directory: ./client
-
 jobs:
-  build:
+  lint-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,12 +25,134 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./client
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: ./client/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('./client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
 
       - name: Security audit
         run: pnpm audit
+        working-directory: ./client
 
       - name: Lint
         run: pnpm lint
+        working-directory: ./client
 
       - name: Build
         run: pnpm build
+        working-directory: ./client
+
+      - name: Cache build output
+        uses: actions/cache@v4
+        with:
+          path: ./client/dist
+          key: build-${{ github.sha }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: ./client/dist/
+          retention-days: 1
+
+  e2e-test:
+    needs: lint-and-build
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Set up and start services
+        run: |
+          # This service still needs its own .env file, so we create it
+          mkdir -p ./genai
+
+          cat > ./genai/.env <<EOF
+          LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+          LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent
+          LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
+          LLM_BACKEND=google
+          COURSEMGMT_URL=http://coursemgmt-service:8081
+          FILE_PARSING=False
+          EOF
+          # : yes this should be empty
+          cat > ./client/.env.local <<EOF
+          NEXT_PUBLIC_API_URL=
+          JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431
+          EOF
+          echo "JWT_SECRET=08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431" > .env
+
+          # docker-compose will automatically pick up JWT_SECRET from the environment
+          echo "Starting Docker services..."
+          docker compose up -d
+
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+          docker compose ps -a
+          echo "==== Docker Compose Logs ===="
+          docker compose logs
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: "**/pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./client
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+        working-directory: ./client
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Run Playwright tests against Docker services
+        env:
+          PLAYWRIGHT_BASE_URL: "http://localhost"
+        run: |
+          # Configure playwright to use the dockerized application URL
+          pnpm exec playwright test
+        working-directory: ./client
+
+      - name: Print client logs on failure
+        if: failure()
+        run: |
+          echo "==== Docker Compose Client Logs ===="
+          docker compose logs client
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: ./client/playwright-report/
+          retention-days: 30
+
+      - name: Stop Docker Compose services
+        if: always()
+        run: |
+          docker compose down -v
