@@ -26,3 +26,21 @@ variable "ssh_private_key" {
   type        = string
   sensitive   = true
 }
+
+variable "ebs_volume_size" {
+  description = "Size of the EBS volume for PostgreSQL data in GB"
+  type        = number
+  default     = 20
+}
+
+variable "ebs_volume_type" {
+  description = "Type of EBS volume (gp3, gp2, io1, io2, st1, sc1)"
+  type        = string
+  default     = "gp3"
+}
+
+variable "ebs_volume_encrypted" {
+  description = "Whether to encrypt the EBS volume"
+  type        = bool
+  default     = true
+}

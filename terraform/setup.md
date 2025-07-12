@@ -53,3 +53,17 @@
    ```bash
    terraform apply
    ```
+
+## PostgreSQL Persistent Storage
+
+The Terraform configuration includes an EBS volume for PostgreSQL data persistence. After running `terraform apply`, you'll need to set up the volume for use with PostgreSQL.
+
+See the [PostgreSQL Persistent Storage documentation](../docs/postgresql-persistent-storage.md) for detailed instructions on:
+- Formatting and mounting the EBS volume
+- Configuring PostgreSQL to use persistent storage
+- Setting up automated mounting with Ansible
+
+The EBS volume configuration can be customized in `terraform.tfvars`:
+- `ebs_volume_size`: Size in GB (default: 20)
+- `ebs_volume_type`: Volume type (default: gp3)
+- `ebs_volume_encrypted`: Encryption enabled (default: true)
