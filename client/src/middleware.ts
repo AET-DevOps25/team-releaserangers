@@ -6,9 +6,15 @@ const protectedRoutes = ["/dashboard"]
 const publicRoutes = ["/login", "/signup", "/"]
 
 // Function to get JWT secret at runtime
-const getJwtSecret = () => {
-  // Try different environment variable names that might be available at runtime
-  return process.env.NEXT_PUBLIC_JWT_SECRET || process.env.JWT_SECRET || ""
+const getJwtSecret = async (baseUrl: string): Promise<string> => {
+  try {
+    const response = await fetch(`${baseUrl}/api/config`)
+    const config = await response.json()
+    return config.jwtSecret || ""
+  } catch (error) {
+    console.error("Failed to fetch JWT secret:", error)
+    return ""
+  }
 }
 
 export default async function middleware(req: NextRequest) {
@@ -22,7 +28,8 @@ export default async function middleware(req: NextRequest) {
   let session: JWTPayload | null = null
   if (token) {
     try {
-      const jwtSecret = getJwtSecret()
+      const baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
+      const jwtSecret = await getJwtSecret(baseUrl)
       if (!jwtSecret) {
         console.error("JWT secret not available")
         session = null
