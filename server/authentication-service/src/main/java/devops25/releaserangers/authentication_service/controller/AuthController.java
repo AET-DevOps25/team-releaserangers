@@ -37,8 +37,8 @@ public class AuthController {
     }
 
     private String getCookieDomain() {
-        if (!isHttps()) {
-            return clientUrl.split("://")[1].split("/")[0].split(":")[0];
+        if (!isHttps() && clientUrl.contains("localhost")) {
+            return "localhost";
         }
         final String[] parts = clientUrl.split("://");
         if (parts.length > 1) {
