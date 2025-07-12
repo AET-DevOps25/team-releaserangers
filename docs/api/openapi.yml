@@ -1,0 +1,1361 @@
+openapi: 3.0.4
+info:
+  title: ReleaseRangers - OpenAPI 3.0
+  description: |-
+    This is ReleaseRanger Server based on the OpenAPI 3.0 specification.
+  license:
+    name: MIT License
+    url: https://mit-license.org
+  version: 1.0.0
+servers:
+  - url: http://54.83.62.127
+    description: Main (production) server
+  - url: http://localhost
+    description: Local staging server
+tags:
+  - name: authentication
+    description: Everything related to the user authentication and authorization service
+  - name: course-management
+    description: Everything related to the course management service
+  - name: chapters
+    description: Everything related to the chapter in the course management service
+  - name: upload
+    description: Everything related to the file upload service
+  - name: genai
+    description: Everything related to the GenAI service
+paths:
+  /auth/signin:
+    post:
+      tags:
+        - authentication
+      summary: Sign in a user.
+      description: Authenticates a user and returns user details with a JWT token in a cookie.
+      operationId: signinUser
+      security: []
+      requestBody:
+        description: User credentials for sign in
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentials"
+      responses:
+        "200":
+          description: User authenticated successfully.
+          headers:
+            Set-Cookie:
+              description: JWT token cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid credentials.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/signup:
+    post:
+      tags:
+        - authentication
+      summary: Register a new user.
+      description: Registers a new user and returns user details with a JWT token in a cookie.
+      operationId: signupUser
+      security: []
+      requestBody:
+        description: User registration data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        "200":
+          description: User registered successfully.
+          headers:
+            Set-Cookie:
+              description: JWT token cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Email already in use.
+        "401":
+          description: Invalid credentials.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/signout:
+    post:
+      tags:
+        - authentication
+      summary: Sign out the current user.
+      description: Logs out the user by invalidating the JWT token cookie.
+      operationId: signoutUser
+      responses:
+        "200":
+          description: User logged out successfully.
+          headers:
+            Set-Cookie:
+              description: Expired JWT token cookie
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/user:
+    get:
+      tags:
+        - authentication
+      summary: Get current user details.
+      description: Returns details of the authenticated user.
+      operationId: getUserDetails
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "404":
+          description: User not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - authentication
+      summary: Update current user details.
+      description: Updates the authenticated user's details.
+      operationId: updateUserDetails
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User fields to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+              minProperties: 1
+      responses:
+        "200":
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Email already in use.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "404":
+          description: User not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - authentication
+      summary: Delete current user.
+      description: Deletes the authenticated user and invalidates the JWT token cookie.
+      operationId: deleteUser
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully.
+          headers:
+            Set-Cookie:
+              description: Expired JWT token cookie
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "404":
+          description: User not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/validate:
+    get:
+      tags:
+        - authentication
+      summary: Validate the current user's token.
+      description: Validates the JWT token and returns the user ID if valid.
+      operationId: validateToken
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Token is valid. Returns user ID.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "404":
+          description: User not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses:
+    get:
+      tags:
+        - course-management
+      summary: Get all courses of a user.
+      description: Returns a list of all courses of the user.
+      operationId: getAllCourses
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of courses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+        "204":
+          description: No courses found for the user.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - course-management
+      summary: Create a new course.
+      description: Creates a new course for the authenticated user.
+      operationId: createCourse
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Course object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseRequest"
+      responses:
+        "200":
+          description: The created course.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses/{courseId}:
+    get:
+      tags:
+        - course-management
+      summary: Get a course by ID.
+      description: Returns a course if the user is authorized.
+      operationId: getCourseById
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course to retrieve
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested course.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - course-management
+      summary: Update a course by ID.
+      description: Updates a course if the user is authorized.
+      operationId: updateCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course to update
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated course object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseRequest"
+      responses:
+        "200":
+          description: The updated course.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - course-management
+      summary: Patch a course by ID.
+      description: Partially updates a course if the user is authorized.
+      operationId: patchCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course to patch
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Partial course object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseRequest"
+              minProperties: 1
+      responses:
+        "200":
+          description: The patched course.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        "500":
+          description: Patch application failed.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - course-management
+      summary: Delete a course by ID.
+      description: Deletes a course if the user is authorized.
+      operationId: deleteCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course to delete
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Course deleted successfully.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /courses/{courseId}/chapters:
+    get:
+      tags:
+        - course-management
+      summary: Get chapters by course ID.
+      description: Returns all chapters for a course if the user is authorized.
+      operationId: getChaptersByCourseId
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of chapters for the course.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Chapter"
+        "204":
+          description: No chapters found for the course.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - course-management
+      summary: Create a chapter in a course.
+      description: Creates a new chapter in the specified course if the user is authorized.
+      operationId: createChapterInCourse
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course
+          schema:
+            type: string
+          required: true
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Chapter object to create (must include course object)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterRequest"
+      responses:
+        "200":
+          description: The created chapter.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "404":
+          description: Course not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /chapters:
+    get:
+      tags:
+        - chapters
+      summary: Get all chapters for the authenticated user.
+      description: Returns all chapters belonging to the authenticated user.
+      operationId: getAllChapters
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of chapters for the user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Chapter"
+        "204":
+          description: No chapters found for the user.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - chapters
+      summary: Create a new chapter.
+      description: Creates a new chapter for a course owned by the authenticated user.
+      operationId: createChapter
+      parameters:
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Chapter object to create (must include courseId)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterCreateRequest"
+      responses:
+        "200":
+          description: The created chapter.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+        "400":
+          description: Bad request. CourseId missing or invalid.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /chapters/{chapter_id}:
+    get:
+      tags:
+        - chapters
+      summary: Get a chapter by ID.
+      description: Returns a chapter if the user is authorized.
+      operationId: getChapterById
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          description: ID of the chapter to retrieve
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested chapter.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the chapter.
+        "404":
+          description: Chapter not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - chapters
+      summary: Update a chapter by ID.
+      description: Updates a chapter if the user is authorized.
+      operationId: updateChapter
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          description: ID of the chapter to update
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated chapter object (course object with only id required)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterUpdateRequest"
+      responses:
+        "200":
+          description: The updated chapter.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the chapter.
+        "404":
+          description: Chapter not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - chapters
+      summary: Patch a chapter by ID.
+      description: Partially updates a chapter if the user is authorized.
+      operationId: patchChapter
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          description: ID of the chapter to patch
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Partial chapter object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterRequest"
+              minProperties: 1
+      responses:
+        "200":
+          description: The patched chapter.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the chapter.
+        "404":
+          description: Chapter not found.
+        "500":
+          description: Patch application failed.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - chapters
+      summary: Delete a chapter by ID.
+      description: Deletes a chapter if the user is authorized.
+      operationId: deleteChapter
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          description: ID of the chapter to delete
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          description: Authentication token (JWT) for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Chapter deleted successfully.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the chapter.
+        "404":
+          description: Chapter not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /upload/{courseId}:
+    post:
+      tags:
+        - upload
+      summary: Upload multiple files to a course.
+      description: Uploads one or more files to a specific course for the authenticated user.
+      operationId: uploadFilesToCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course to upload files to
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          required: true
+          description: Authentication token (JWT) for the user
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files:
+                contentType: application/pdf
+      responses:
+        "200":
+          description: Files uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+        "400":
+          description: Bad request. Invalid input or courseId.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "403":
+          description: Forbidden. User does not own the course.
+        "500":
+          description: Failed to process files.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - upload
+      summary: Get all uploaded files for a course.
+      description: Returns metadata for all files uploaded to a specific course.
+      operationId: getFilesByCourseId
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          required: true
+          description: Authentication token (JWT) for the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of files for the course.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+        "204":
+          description: No files found for the course.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "500":
+          description: Failed to fetch files for course.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - upload
+      summary: Delete all files for a course.
+      description: Deletes all uploaded files for a specific course.
+      operationId: deleteFilesByCourseId
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: string
+        - name: token
+          in: cookie
+          required: true
+          description: Authentication token (JWT) for the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Files deleted successfully.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "500":
+          description: Failed to delete files for course.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /upload:
+    get:
+      tags:
+        - upload
+      summary: Get all uploaded files for the authenticated user.
+      description: Returns metadata for all files uploaded by the authenticated user.
+      operationId: getAllFiles
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          description: Authentication token (JWT) for the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of all uploaded files for the user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+        "204":
+          description: No files found for the user.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "500":
+          description: Failed to fetch files.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - upload
+      summary: Delete all uploaded files for the authenticated user.
+      description: Deletes all uploaded files for the authenticated user.
+      operationId: deleteAllFiles
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          description: Authentication token (JWT) for the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All files deleted successfully.
+        "401":
+          description: Unauthorized. Token missing or invalid.
+        "500":
+          description: Failed to delete files.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /genai/summarize:
+    post:
+      tags:
+        - genai
+      summary: Generate summary for uploaded file.
+      description: Accepts user's uploaded file and returns a summary.
+      operationId: summarizeFile
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                courseId:
+                  type: string
+                existingChapterSummary:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Chapter"
+            encoding:
+              files:
+                contentType: application/pdf
+              courseId:
+                contentType: text/plain
+              existingChapterSummary:
+                contentType: application/json
+      responses:
+        "200":
+          description: Summary generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryResponse"
+        "400":
+          description: Bad request. File missing or invalid.
+        "404":
+          description: Course not found.
+        "422":
+          description: Unprocessable entity. File processing failed.
+        "500":
+          description: Failed to generate summary.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenAIError"
+
+components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+      description: Use the JWT token stored in the 'token' cookie for authentication.
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use the JWT token in the Authorization header for authentication.
+
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the course
+        userId:
+          type: string
+          description: ID of the user who owns the course
+        name:
+          type: string
+          description: Name of the course
+        description:
+          type: string
+          description: Description of the course
+        emoji:
+          type: string
+          description: Emoji representing the course
+        isFavorite:
+          type: boolean
+          description: Indicates if the course is a favorite for the user
+        chapters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Chapter"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the course was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the course was last updated
+
+    CourseRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the course
+        userId:
+          type: string
+          description: ID of the user who owns the course
+        name:
+          type: string
+          description: Name of the course
+        description:
+          type: string
+          description: Description of the course
+        emoji:
+          type: string
+          description: Emoji representing the course
+        isFavorite:
+          type: boolean
+          description: Indicates if the course is a favorite for the user
+      description: Course object for post/put/patch requests (no chapters field)
+
+    CourseCreateRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the course
+        userId:
+          type: string
+          description: ID of the user who owns the course
+        name:
+          type: string
+          description: Name of the course
+        description:
+          type: string
+          description: Description of the course
+        emoji:
+          type: string
+          description: Emoji representing the course
+        isFavorite:
+          type: boolean
+          description: Indicates if the course is a favorite for the user
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the course was last updated
+      description: Request body for creating a chapter using the /chapter endpoint.
+
+    Chapter:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the chapter
+        title:
+          type: string
+          description: Title of the chapter
+        content:
+          type: string
+          description: Content of the chapter
+        emoji:
+          type: string
+          description: Emoji representing the chapter
+        isFavorite:
+          type: boolean
+          description: Indicates if the chapter is a favorite for the user
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the chapter was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the chapter was last updated
+
+    ChapterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the chapter
+        courseId:
+          type: string
+          description: ID of the course the chapter belongs to
+        title:
+          type: string
+          description: Title of the chapter
+        content:
+          type: string
+          description: Content of the chapter
+        emoji:
+          type: string
+          description: Emoji representing the chapter
+        isFavorite:
+          type: boolean
+          description: Indicates if the chapter is a favorite for the user
+      description: Chapter object for post/put/patch requests (no courseId field)
+
+    ChapterCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        course:
+          $ref: "#/components/schemas/CourseCreateRequest"
+        content:
+          type: string
+        emoji:
+          type: string
+        isFavorite:
+          type: boolean
+      required:
+        - title
+        - course
+        - content
+      description: Request body for creating a chapter, including a full course object.
+
+    ChapterUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        course:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        content:
+          type: string
+        emoji:
+          type: string
+        isFavorite:
+          type: boolean
+      required:
+        - title
+        - course
+        - content
+      description: Request body for updating a chapter, with a course object containing only id.
+
+    Error:
+      type: string
+      description: Error message describing the issue
+
+    GenAIError:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Detailed error message from the GenAI service
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the user
+        email:
+          type: string
+          description: User's email address
+        name:
+          type: string
+          description: User's name
+        password:
+          type: string
+          description: User's password (hashed)
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user was last updated
+    UserCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UserRegistration:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+    UserUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+      description: At least one field is required for PATCH. Only include fields to update.
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the file
+        filename:
+          type: string
+          description: Name of the uploaded file
+        contentType:
+          type: string
+          description: MIME type of the file
+        courseId:
+          type: string
+          description: ID of the course the file is associated with
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the file was uploaded
+    SummaryResponse:
+      type: object
+      properties:
+        chapter_title:
+          type: string
+          description: Title of the summarized chapter
+        summary_markdown:
+          type: string
+          description: Markdown summary of the file
+        emoji:
+          type: string
+          description: Emoji representing the summary
+        source_file:
+          type: string
+          description: Name of the uploaded source file
+
+security:
+  - CookieAuth: []

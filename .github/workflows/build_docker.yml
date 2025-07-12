@@ -37,6 +37,11 @@ jobs:
           - service: client
             context: ./client
             file: ./client/Dockerfile
+
+          - service: swagger-ui
+            context: ./docs/api
+            file: ./docs/api/Dockerfile.swagger-ui
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
