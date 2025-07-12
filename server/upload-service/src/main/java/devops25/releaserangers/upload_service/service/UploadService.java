@@ -52,6 +52,7 @@ public class UploadService {
     @Value("${coursemgmt.service.url}")
     private String courseMgmtServiceUrl;
 
+    private final MeterRegistry registry;
     private final Counter uploadRequestCounter;
     private final Counter uploadErrorCounter;
     private final Counter summaryCounter;
@@ -59,29 +60,36 @@ public class UploadService {
 
 
     /**
-     * Constructs the UploadService with the required FileRepository.
+     * Constructs an UploadService with the specified dependencies.
      *
-     * @param fileRepository the repository for file persistence
+     * @param fileRepository the repository for file operations
+     * @param restTemplate   the RestTemplate for making HTTP requests
+     * @param registry       the MeterRegistry for metrics
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
     public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry registry) {
 
-        registry.config().commonTags("service", "upload-service");
+        this.registry = registry;
+        this.registry.config().commonTags("service", "upload-service");
 
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
 
-        this.uploadRequestCounter = Counter.builder("upload_service.requests.total")
+        this.uploadRequestCounter = Counter.builder("upload_service_requests_total")
                 .description("Total number of upload requests")
+                .tags("service", "upload-service")
                 .register(registry);
-        this.summaryCounter = Counter.builder("upload_service.summary.requests.total")
+        this.summaryCounter = Counter.builder("upload_service_summary_requests_total")
                 .description("Total number of requests to the summary service")
+                .tags("service", "upload-service")
                 .register(registry);
-        this.uploadErrorCounter = Counter.builder("upload_service.errors.total")
+        this.uploadErrorCounter = Counter.builder("upload_service_errors_total")
                 .description("Number of errors when processing uploaded files")
+                .tags("service", "upload-service")
                 .register(registry);
-        this.uploadTimer = Timer.builder("upload_service.request.duration")
+        this.uploadTimer = Timer.builder("upload_service_request_duration")
                 .description("Time taken to get uploaded files summarized")
+                .tags("service", "upload-service")
                 .register(registry);
     }
 

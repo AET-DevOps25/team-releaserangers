@@ -7,21 +7,29 @@ scrape_configs:
     static_configs:
       - targets: [ 'localhost:9090' ]
 
+  - job_name: 'genai-service'
+    static_configs:
+      - targets: ['genai-service:8000']
+
   - job_name: 'authentication-service'
     static_configs:
       - targets: ['authentication-service:8080']
+    metrics_path: '/actuator/prometheus'
 
   - job_name: 'coursemgmt-service'
     static_configs:
       - targets: ['coursemgmt-service:8080']
+    metrics_path: '/actuator/prometheus'
 
   - job_name: 'upload-service'
     static_configs:
       - targets: ['upload-service:8080']
+    metrics_path: '/actuator/prometheus'
 
-  - job_name: 'genai-service'
-    static_configs:
-      - targets: ['genai-service:8000']
+#  - job_name: 'upload-service'
+#    static_configs:
+#      - targets: [ 'upload-service:8082' ]
+#    metrics_path: '/actuator/prometheus'
 
 # rule_files:
 #   - alert.rules.yml
