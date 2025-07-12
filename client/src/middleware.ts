@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { JWTPayload, jwtVerify } from "jose"
 
+export const dynamic = "force-dynamic"
+
 // 1. Specify protected and public routes
 const protectedRoutes = ["/dashboard"]
 const publicRoutes = ["/login", "/signup", "/"]

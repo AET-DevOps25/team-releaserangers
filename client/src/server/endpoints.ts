@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 // Runtime API URL determination - works with pre-built Docker images
 const getApiUrl = () => {
   // Server-side: use environment variable
