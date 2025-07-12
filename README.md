@@ -4,6 +4,10 @@ This is a university project designed to enhance students learning experience by
 
 ---
 
+# Section Overview
+
+---
+
 ## Our Team
 
 This project is maintained by:
@@ -16,20 +20,17 @@ This project is maintained by:
 
 ## Student Responsibilities
 
-| Week | Title                              | Student  | Description | Status | Impediments | Promises |
-| ---- | ---------------------------------- | -------- | ----------- | ------ | ----------- | -------- |
-| CW19 | Draft Problem Statement            | Everyone |             |        |             |          |
-| CW20 | Create UML Models, Initial Backlog | Everyone |             |        |             |          |
-| CW21 |                                    |          |             |        |             |          |
-| CW22 |                                    |          |             |        |             |          |
-| CW23 |                                    |          |             |        |             |          |
+- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup, Python Testing
+- **Jonathan Müller (JM)**: Frontend Development, Database Design, Terraform and Ansible Setup, Client Testing, Authentication Service
+- **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup
 
 ## Subsystem Ownership
 
-- Subsystem1: ..
-- Subsystem2: ..
-- Subsystem3: ..
-- ...
+- Client: Jonathan Müller (JM)
+- Authentication Service: Jonathan Müller (JM)
+- GenAI Service: Florian Charrot (FC)
+- Course Management Service: Luis Leutbecher (LL)
+- Upload Service: Luis Leutbecher (LL)
 
 ---
 
@@ -43,13 +44,57 @@ This project is maintained by:
 
 ## Project Overview
 
-Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up to date overview of the current course content.
+Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up-to-date overview of the current course content.
 
 ---
 
-## Setup Instructions
+## Quick Local Setup (Recommended)
 
 ### Clone the Repository
+
+To get started, clone the repository:
+
+```bash
+git clone https://github.com/AET-DevOps25/team-releaserangers.git
+```
+
+And navigate into the project directory:
+
+```bash
+cd team-releaserangers
+```
+
+### Environment Configuration
+
+The easiest way to configure your environment for local development is to use the provided setup script:
+
+```bash
+chmod +x setup-env.sh
+```
+
+Then run the script:
+
+```bash
+./setup-env.sh
+```
+
+This script will automatically create and configure all required `.env` files for both the server and client, ensuring that secrets like `JWT_SECRET` are synchronized. If the files already exist, you will be prompted to overwrite them.
+
+---
+
+### Run locally using Docker Compose (Recommended)
+
+To start the entire application stack (client, server, database, etc.) locally, simply run:
+
+```bash
+docker compose up --build
+```
+
+This will build and start all services as defined in the `docker-compose.yml` file.
+
+---
+
+## Individual Setup Instructions
 
 ### Client Setup
 
@@ -64,11 +109,31 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
   ```bash
   JWT_SECRET=<your_jwt_secret>
+  NEXT_PUBLIC_API_URL="http://localhost"
   ```
 
   Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
 
 ### Server Setup
+
+- The authentication service uses the [dotenv-java](https://github.com/cdimascio/dotenv-java) library to automatically load environment variables from your `.env` file.
+- Ensure you have a `.env` file in the root of your project with the following content:
+
+  ```bash
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+  You can orient yourself by looking at how the `.env.example` file looks like in the project root.
+
+- The `application.properties` file in `server/authentication-service/src/main/resources/` uses a placeholder to read the secret:
+
+  ```bash
+  jwt.secret=${JWT_SECRET}
+  ```
+
+- You do not need to manually export environment variables. Simply run the authentication service as usual (e.g., `./mvnw spring-boot:run`), and the secret will be loaded automatically.
+
+  **Note:** The JWT secret must be identical in `.env`, `.env.local` (for the client), and available to the authentication service for authentication to work correctly.
 
 ### LLM Service Setup
 
@@ -91,9 +156,36 @@ Make sure to create a .env file from the .env.example and add your API Key.
 
 ### Start the Database
 
+You can start the database using Docker Compose:
+
+```bash
+docker compose up postgres-db
+```
+
 ### Start the Client
 
+From the project root, run:
+
+```bash
+cd client
+pnpm install
+pnpm dev
+```
+
 ### Start the Server
+
+To start the microservices individually, repeat in their respective directories (e.g., authentication-service, coursemgmt-service, upload-service):
+
+```bash
+cd authentication-service
+./mvnw spring-boot:run
+
+cd coursemgmt-service
+./mvnw spring-boot:run
+
+cd upload-service
+./mvnw spring-boot:run
+```
 
 ### Start the LLM Service
 
@@ -113,14 +205,6 @@ Make sure to create a .env file from the .env.example and add your API Key.
   docker build -t llm .
   docker run --env-file .env -p 8084:8084 llm
   ```
-
-## How to Use with Docker
-
-```bash
-docker compose up --build
-```
-
----
 
 ## Tech Stack
 
@@ -183,6 +267,67 @@ This provides a complete, interactive overview of all endpoints, request/respons
 
 ---
 
+## Testing Instructions
+
+### How to Run Tests
+
+### Client Tests
+
+Check the client setup from above and install the necessary dependencies for the client:
+
+```bash
+cd client
+pnpm install
+```
+
+To run the playwright e2e tests for the client, you have to start the whole
+stack using Docker Compose. It is advised to use a fresh database to avoid conflicts with existing data.
+
+```bash
+docker compose up --build -d
+```
+
+Then you can run the tests using Playwright:
+
+```bash
+cd client
+pnpm test
+```
+
+For a nice UI interface you can run the tests in headed mode:
+
+```bash
+cd client
+pnpm test:ui
+```
+
+### Server Tests
+
+To run tests for the server and each microservice, you can use Maven commands. Each microservice has its own set of tests, and you can run them individually or for the entire server.
+For the entire server, navigate to the `server` directory and run:
+
+```bash
+cd server
+mvn clean package
+```
+
+For individual microservices, navigate to the specific service directory and run:
+
+```bash
+cd server/authentication-service
+mvn clean package
+
+cd ../coursemgmt-service
+mvn clean package
+
+cd ../upload-service
+mvn clean package
+```
+
+### GenAI Service Tests
+
+---
+
 ## Code Quality: SpotBugs & Checkstyle
 
 ### How to Run SpotBugs and Checkstyle
@@ -192,18 +337,22 @@ SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the se
 You can run these tools manually or as part of the Maven build:
 
 - **To run both SpotBugs and Checkstyle for all modules:**
+
   ```sh
   cd server
   mvn verify
   ```
+
   This will execute both plugins as part of the `verify` phase.
 
 - **To run only SpotBugs:**
+
   ```sh
   mvn spotbugs:check
   ```
 
 - **To run only Checkstyle:**
+
   ```sh
   mvn checkstyle:check
   ```
@@ -216,6 +365,7 @@ You can run these tools manually or as part of the Maven build:
   Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
 
 ### Maven Phase Integration
+
 - **Checkstyle** runs during the `validate` and `verify` phases.
 - **SpotBugs** runs during the `verify` phase.
 
