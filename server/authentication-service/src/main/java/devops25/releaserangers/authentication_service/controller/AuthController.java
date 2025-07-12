@@ -85,7 +85,7 @@ public class AuthController {
                     .httpOnly(true)
                     .secure(true) // Set to true for HTTPS in production
                     .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .sameSite("None") // TODO Set SameSite attribute in production
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
