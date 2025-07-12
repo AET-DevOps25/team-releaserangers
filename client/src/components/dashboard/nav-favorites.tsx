@@ -5,11 +5,17 @@ import Link from "next/link"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import useCourseStore from "@/hooks/course-store"
+import { useFavorites } from "@/hooks/useFavorites"
+import { useUpdateCourse } from "@/hooks/courseAPI"
+import { useUpdateChapter } from "@/hooks/chapterAPI"
+import { mutate } from "swr"
+import { CHAPTER_ENDPOINT, COURSE_ENDPOINT } from "@/server/endpoints"
 
-export function NavFavorites({ isLoading }: { isLoading: boolean }) {
+export function NavFavorites() {
   const { isMobile } = useSidebar()
-  const { favorites, updateCourse, updateChapter } = useCourseStore()
+  const { favorites, error, isLoading, refetch } = useFavorites()
+  const { updateCourse } = useUpdateCourse()
+  const { updateChapter } = useUpdateChapter()
 
   const handleFavorite = async (item: Favorite) => {
     try {
@@ -17,11 +23,14 @@ export function NavFavorites({ isLoading }: { isLoading: boolean }) {
         await updateCourse(item.id, {
           isFavorite: false,
         })
+        mutate(COURSE_ENDPOINT(item.id))
       } else {
         await updateChapter(item.courseId!, item.id, {
           isFavorite: false,
         })
+        mutate(CHAPTER_ENDPOINT(item.id))
       }
+      if (refetch) refetch()
     } catch (error) {
       console.error("Failed to update favorite status:", error)
     }
@@ -37,6 +46,21 @@ export function NavFavorites({ isLoading }: { isLoading: boolean }) {
     const domain = window.location.origin
     const itemUrl = `${domain}${item.type === "course" ? `/${item.id}` : `/${item.courseId}/chapter/${item.id}`}`
     window.open(itemUrl, "_blank")
+  }
+
+  if (error) {
+    return (
+      <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+        <SidebarGroupLabel>Favorites</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="pointer-events-none">
+              <span className="text-red-500">Error loading favorites</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    )
   }
 
   return (

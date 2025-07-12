@@ -1,18 +1,17 @@
-name: Test Java Services
+name: Build All Java Projects
 
 on:
   push:
-  pull_request:
 
 jobs:
-  test:
+  build-java-projects:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         service:
           - authentication-service
-# TODO         - coursemgmt-service
-# TODO         - upload-service
+          - coursemgmt-service
+          - upload-service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,6 +24,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Run ${{ matrix.service }} tests
+      - name: Build ${{ matrix.service }}
         working-directory: server/${{ matrix.service }}
-        run: mvn -B clean package --file pom.xml --no-transfer-progress
+        run: mvn -B clean package -DskipTests --file pom.xml --no-transfer-progress

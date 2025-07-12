@@ -14,6 +14,12 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
+    /**
+     * Retrieves all courses from the repository.
+     * This method is only used for testing purposes.
+     *
+     * @return a list of all courses.
+     */
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
@@ -44,7 +50,7 @@ public class CourseService {
     }
 
     public void deleteCourse(Course course) {
-        Course existingCourse = getCourseById(course.getId());
+        final Course existingCourse = getCourseById(course.getId());
         if (existingCourse != null) {
             courseRepository.delete(existingCourse);
         }

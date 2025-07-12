@@ -20,6 +20,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U release -d devops25_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   authentication-service:
     build:
@@ -28,9 +33,10 @@ services:
       - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JWT_SECRET=${JWT_SECRET}
+    env_file: .env
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
 
   coursemgmt-service:
     build:
@@ -40,7 +46,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
 
   upload-service:
     build:
@@ -50,7 +57,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
 
   genai-service:
     build:
@@ -58,6 +66,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: ./genai/.env
+    environment:
+      - COURSEMGMT_URL=http://coursemgmt-service:8080
     ports:
       - "8084:8000"
     depends_on:
@@ -71,8 +81,7 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
+    env_file: ./client/.env.local
     depends_on:
       - authentication-service
       - coursemgmt-service

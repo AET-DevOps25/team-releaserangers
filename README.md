@@ -132,6 +132,25 @@ docker compose up --build
 
 ---
 
+## Database Schema
+
+Our application uses PostgreSQL as the primary database with tables distributed across three microservices:
+
+![Database Schema](docs/database_schema.png)
+
+### Schema Documentation
+
+- **DBML File**: [database_schema.dbml](docs/database_schema.dbml) - Import this into [dbdiagram.io](https://dbdiagram.io) for interactive editing
+
+### Key Tables
+
+- **users** (Authentication Service): User accounts and authentication
+- **courses** (Course Management): Course information and metadata
+- **chapters** (Course Management): Individual learning chapters within courses
+- **uploaded_files** (Upload Service): File uploads associated with courses
+
+---
+
 ## Architecture Overview
 
 ### Top Level Architecture
@@ -161,5 +180,45 @@ This provides a complete, interactive overview of all endpoints, request/respons
 ---
 
 ## Monitoring Instructions
+
+---
+
+## Code Quality: SpotBugs & Checkstyle
+
+### How to Run SpotBugs and Checkstyle
+
+SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the server and each microservice (authentication-service, coursemgmt-service, upload-service).
+
+You can run these tools manually or as part of the Maven build:
+
+- **To run both SpotBugs and Checkstyle for all modules:**
+  ```sh
+  cd server
+  mvn verify
+  ```
+  This will execute both plugins as part of the `verify` phase.
+
+- **To run only SpotBugs:**
+  ```sh
+  mvn spotbugs:check
+  ```
+
+- **To run only Checkstyle:**
+  ```sh
+  mvn checkstyle:check
+  ```
+
+- **To run for a specific microservice:**
+  ```sh
+  cd server/<microservice-folder>
+  mvn verify
+  ```
+  Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
+
+### Maven Phase Integration
+- **Checkstyle** runs during the `validate` and `verify` phases.
+- **SpotBugs** runs during the `verify` phase.
+
+If you run `mvn verify`, both tools will be executed and any violations will fail the build.
 
 ---

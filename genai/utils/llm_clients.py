@@ -1,100 +1,13 @@
-import os
-import requests
-from typing import List, Any, Optional
-from langchain.llms.base import LLM
-from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain_core.prompts import PromptTemplate
-
-# Environment configuration
-CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
-API_URL = "https://gpu.aet.cit.tum.de/api/chat/completions"
-
-class OpenWebUILLM(LLM):
-    """
-    Custom LangChain LLM wrapper for Open WebUI API.
-    
-    This class integrates the Open WebUI API with LangChain's LLM interface,
-    allowing us to use the API in LangChain chains and pipelines.
-    """
-    
-    api_url: str = API_URL
-    api_key: str = CHAIR_API_KEY
-    model_name: str = "llama3.3:latest"
-    
-    @property
-    def _llm_type(self) -> str:
-        return "open_webui"
-    
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Any,
-    ) -> str:
-        """
-        Call the Open WebUI API to generate a response.
-        
-        Args:
-            prompt: The input prompt to send to the model
-            stop: Optional list of stop sequences
-            run_manager: Optional callback manager for LangChain
-            **kwargs: Additional keyword arguments
-            
-        Returns:
-            The generated response text
-            
-        Raises:
-            Exception: If API call fails
-        """
-        if not self.api_key:
-            raise ValueError("CHAIR_API_KEY environment variable is required")
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        }
-        
-        # Build messages for chat completion
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
-        
-        payload = {
-            "model": self.model_name,
-            "messages": messages,
-            "temperature": 0.5,
-            "max_tokens": 100000,
-        }
-       
-        try:
-            response = requests.post(
-                self.api_url,
-                headers=headers,
-                json=payload,
-                timeout=180
-            )
-            response.raise_for_status()
-            result = response.json()
-            print(result)
-            
-            # Extract the response content
-            if "choices" in result and len(result["choices"]) > 0:
-                content = result["choices"][0]["message"]["content"]
-                return content.strip()
-            else:
-                raise ValueError("Unexpected response format from API")
-                
-        except requests.RequestException as e:
-            raise Exception(f"API request failed: {str(e)}")
-        except (KeyError, IndexError, ValueError) as e:
-            raise Exception(f"Failed to parse API response: {str(e)}")
-
+from utils.llm_provider import get_llm
 
 async def summarize_with_llm(lecture_content: str) -> str:
    
     # Initialize the LLM
-    llm = OpenWebUILLM()
+    llm = get_llm()
+
+    model_name = getattr(llm, "model_name", None) or getattr(llm, "model", None) or "Unknown model"
+    print(f"Using {model_name} for summarization")
 
     # Create the prompt template
     summary_prompt = PromptTemplate(
@@ -120,6 +33,7 @@ async def summarize_with_llm(lecture_content: str) -> str:
             - The title must summarize the central topic.
             - Pick a relevant emoji: e.g., 📘, 🧠, 📐, 💻, 🧪 — avoid informal or irrelevant ones.
             - Return a valid JSON object, with all newlines inside string values escaped as \\n
+            Respond with **only** the JSON object and **nothing else**. Do not include any explanation, commentary, or formatting outside the JSON.
 
             Input Lecture Notes:
             --------------------
@@ -133,6 +47,7 @@ async def summarize_with_llm(lecture_content: str) -> str:
             "summary_markdown": "Markdown summary here",
             "emoji": "🎓",
             }}
+           
             """
             )
     

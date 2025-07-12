@@ -1,12 +1,17 @@
 package devops25.releaserangers.upload_service.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
+
+@SuppressFBWarnings(justification = "Exposing service references is acceptable here")
 @Entity
 @Table(name = "uploaded_files")
 @Getter

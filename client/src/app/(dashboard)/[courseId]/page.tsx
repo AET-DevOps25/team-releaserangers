@@ -8,44 +8,35 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { ChapterList } from "@/components/dashboard/chapter-list"
 import { UploadDropzone } from "@/components/dashboard/upload-dropzone"
 import { AddContentButton } from "@/components/dashboard/add-content-button"
-import useCourseStore from "@/hooks/course-store"
-import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Loading from "./loading"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import { useCourse } from "@/hooks/courseAPI"
 
 export default function CoursePage() {
   const params = useParams<{ courseId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
-  const { fetchCourse, courses } = useCourseStore()
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { course, isLoading, error } = useCourse(courseId)
 
-  useEffect(() => {
-    const existingCourse = courses.find((c) => c.id === courseId)
-    if (existingCourse) {
-      setCourse(existingCourse)
-      setLoading(false)
-      return
-    }
-
-    async function loadCourse() {
-      try {
-        const courseData = await fetchCourse(courseId)
-        setCourse(courseData)
-      } catch (error) {
-        console.error("Failed to load course:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadCourse()
-  }, [courseId, fetchCourse, courses])
-
-  if (loading) {
+  if (isLoading) {
     return <Loading />
+  }
+
+  if (error) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-lg font-semibold">Error loading course</p>
+              <p className="text-muted-foreground">Please try again later</p>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    )
   }
 
   if (!course) {
@@ -84,7 +75,7 @@ export default function CoursePage() {
           </div>
           <div className="ml-auto flex items-center gap-4 px-3">
             {hasChapters && (
-              <AddContentButton>
+              <AddContentButton courseId={courseId}>
                 <Button size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   <span>Add Content</span>
@@ -106,11 +97,11 @@ export default function CoursePage() {
 
             {hasChapters ? (
               <div className="space-y-8">
-                <ChapterList chapters={course.chapters} courseId={course.id} />
+                <ChapterList chapters={course.chapters} courseId={courseId} />
               </div>
             ) : (
               <div className="space-y-6">
-                <UploadDropzone isInDialog={false} />
+                <UploadDropzone isInDialog={false} courseId={courseId} />
               </div>
             )}
           </div>

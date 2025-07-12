@@ -1,12 +1,12 @@
 "use client"
 
-import useUserStore from "@/hooks/user-store"
+import { useUser } from "@/hooks/authAPI"
 import { Calendar, Clock } from "lucide-react"
 
 export function WelcomeSection() {
   const currentTime = new Date()
   const hour = currentTime.getHours()
-  const { user } = useUserStore()
+  const { user } = useUser()
 
   const getGreeting = () => {
     if (hour < 12) return "Good morning"

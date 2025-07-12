@@ -9,8 +9,9 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu
 import { formatDistanceToNow } from "date-fns"
 import { DeleteCourseDialog } from "./delete-course-dialog"
 import { CustomizeCourseDialog } from "./customize-course-dialog"
-import useCourseStore from "@/hooks/course-store"
 import { AddContentButton } from "./add-content-button"
+import { useFavorites } from "@/hooks/useFavorites"
+import { useUpdateCourse } from "@/hooks/courseAPI"
 
 export function NavActionsCourse({ course }: { course: Course }) {
   const data = [
@@ -46,18 +47,16 @@ export function NavActionsCourse({ course }: { course: Course }) {
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(course.isFavorite)
-  const { updateCourse } = useCourseStore()
+  const { updateCourse } = useUpdateCourse()
+  const { refetch } = useFavorites()
 
   const handleFavorite = async () => {
-    try {
-      const value = !isFavorite
-      setIsFavorite(value)
-      await updateCourse(course.id, {
-        isFavorite: value,
-      })
-    } catch (error) {
-      console.error("Failed to update favorite status:", error)
-    }
+    const value = !isFavorite
+    setIsFavorite(value)
+    await updateCourse(course.id, {
+      isFavorite: value,
+    })
+    if (refetch) refetch()
   }
 
   const handleCopyLink = () => {
@@ -69,6 +68,10 @@ export function NavActionsCourse({ course }: { course: Course }) {
     console.log("Export clicked")
   }
 
+  React.useEffect(() => {
+    setIsFavorite(course.isFavorite)
+  }, [course.isFavorite])
+
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="text-muted-foreground hidden font-medium md:inline-block">
@@ -79,7 +82,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
       </Button>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7">
+          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7" data-testid="nav-actions-course-button">
             <MoreHorizontal />
           </Button>
         </PopoverTrigger>
@@ -105,7 +108,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
                               </SidebarMenuButton>
                             </DeleteCourseDialog>
                           ) : item.label === "Add Content" ? (
-                            <AddContentButton>
+                            <AddContentButton courseId={course.id}>
                               <SidebarMenuButton>
                                 <item.icon /> <span>{item.label}</span>
                               </SidebarMenuButton>
