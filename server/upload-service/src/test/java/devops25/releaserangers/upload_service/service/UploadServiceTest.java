@@ -3,11 +3,11 @@ package devops25.releaserangers.upload_service.service;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.client.RestTemplate;
@@ -28,16 +28,17 @@ class UploadServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @Mock
-    private MeterRegistry meterRegistry;
+    private MeterRegistry registry;
 
     @InjectMocks
     private UploadService uploadService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        uploadService = new UploadService(fileRepository, restTemplate, meterRegistry);
+        fileRepository = mock(FileRepository.class);
+        restTemplate = mock(RestTemplate.class);
+        registry = new SimpleMeterRegistry();
+        uploadService = new UploadService(fileRepository, restTemplate, registry);
     }
 
     @Test
