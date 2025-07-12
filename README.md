@@ -156,6 +156,18 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ## API documentation
 
+The entire API is defined using OpenAPI (see [`api-collections/openapi.yml`](api-collections/openapi.yml)).
+
+After starting the application with Docker Compose, you can view and interact with the API documentation using Swagger UI:
+
+- Open your browser and navigate to [http://localhost/swagger-ui](http://localhost/swagger-ui)
+
+Alternatively, you can also view the Swagger UI via GitHub Pages (if enabled for this repository):
+
+- Open your browser and navigate to `https://<your-github-username>.github.io/<your-repo-name>/swagger-ui` (replace with your actual GitHub username and repository name)
+
+This provides a complete, interactive overview of all endpoints, request/response formats, and authentication details.
+
 ---
 
 ## CI/CD Instructions
