@@ -2,6 +2,7 @@ package devops25.releaserangers.upload_service.service;
 
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,13 +28,16 @@ class UploadServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private MeterRegistry meterRegistry;
+
     @InjectMocks
     private UploadService uploadService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        uploadService = new UploadService(fileRepository, restTemplate);
+        uploadService = new UploadService(fileRepository, restTemplate, meterRegistry);
     }
 
     @Test

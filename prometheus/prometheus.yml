@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+  - job_name: 'authentication-service'
+    static_configs:
+      - targets: ['authentication-service:8080']
+
+  - job_name: 'coursemgmt-service'
+    static_configs:
+      - targets: ['coursemgmt-service:8080']
+
+  - job_name: 'upload-service'
+    static_configs:
+      - targets: ['upload-service:8080']
+
+  - job_name: 'genai-service'
+    static_configs:
+      - targets: ['genai-service:8000']
+
+# rule_files:
+#   - alert.rules.yml
+

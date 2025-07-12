@@ -5,6 +5,9 @@ import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,15 +52,37 @@ public class UploadService {
     @Value("${coursemgmt.service.url}")
     private String courseMgmtServiceUrl;
 
+    private final Counter uploadRequestCounter;
+    private final Counter uploadErrorCounter;
+    private final Counter summaryCounter;
+    private final Timer uploadTimer;
+
+
     /**
      * Constructs the UploadService with the required FileRepository.
      *
      * @param fileRepository the repository for file persistence
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
-    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate) {
+    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry registry) {
+
+        registry.config().commonTags("service", "upload-service");
+
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
+
+        this.uploadRequestCounter = Counter.builder("upload_service.requests.total")
+                .description("Total number of upload requests")
+                .register(registry);
+        this.summaryCounter = Counter.builder("upload_service.summary.requests.total")
+                .description("Total number of requests to the summary service")
+                .register(registry);
+        this.uploadErrorCounter = Counter.builder("upload_service.errors.total")
+                .description("Number of errors when processing uploaded files")
+                .register(registry);
+        this.uploadTimer = Timer.builder("upload_service.request.duration")
+                .description("Time taken to get uploaded files summarized")
+                .register(registry);
     }
 
     /**
@@ -74,11 +99,13 @@ public class UploadService {
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
         logger.info("Handle uploaded files");
         if (files == null || files.length == 0) {
+            uploadErrorCounter.increment();
             logger.info(NO_FILES_ERROR);
             throw new IllegalArgumentException(NO_FILES_ERROR);
         }
         for (final MultipartFile file : files) {
             if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
+                uploadErrorCounter.increment();
                 logger.info(INVALID_TYPE_ERROR);
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
@@ -87,11 +114,13 @@ public class UploadService {
         for (MultipartFile file : files) {
             final String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || originalFilename.isEmpty()) {
+                uploadErrorCounter.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
           
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
+            uploadRequestCounter.increment();
             if (existingFile == null) {
                 // No file with this name exists, save as is
                 uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
@@ -200,29 +229,32 @@ public class UploadService {
      * @param token         the authentication token
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
-        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("courseId", courseId);
-        for (File file : uploadedFiles) {
-            body.add("files", new ByteArrayResource(file.getData()) {
-                @Override
-                public String getFilename() {
-                    return file.getFilename();
-                }
-            });
-        }
+        summaryCounter.increment();
+        uploadTimer.record(() -> {
+            final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("courseId", courseId);
+            for (File file : uploadedFiles) {
+                body.add("files", new ByteArrayResource(file.getData()) {
+                    @Override
+                    public String getFilename() {
+                        return file.getFilename();
+                    }
+                });
+            }
 
-        final String chaptersJson = fetchChaptersJson(courseId, token);
-        logger.info("Chapters: {}", chaptersJson);
-        body.add("existingChapterSummary", chaptersJson);
+            final String chaptersJson = fetchChaptersJson(courseId, token);
+            logger.info("Chapters: {}", chaptersJson);
+            body.add("existingChapterSummary", chaptersJson);
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        if (token != null) {
-            headers.add(HttpHeaders.COOKIE, "token=" + token);
-        }
-        final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            final HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            if (token != null) {
+                headers.add(HttpHeaders.COOKIE, "token=" + token);
+            }
+            final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
+            restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
+        });
     }
 
     /**
@@ -262,3 +294,4 @@ public class UploadService {
         }
     }
 }
+
