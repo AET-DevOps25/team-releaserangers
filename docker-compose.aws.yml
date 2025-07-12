@@ -93,6 +93,8 @@ services:
   swagger-ui:
     image: ghcr.io/aet-devops25/team-releaserangers/swagger-ui:latest
     restart: unless-stopped
+    environment:
+      - SWAGGER_HOST=swagger-ui.${SERVER_HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.swagger-ui.rule=Host(`${SWAGGER_HOST}`)"

@@ -36,6 +36,23 @@ public class AuthController {
         return "https".equalsIgnoreCase(clientUrl.split("://")[0]);
     }
 
+    private String getCookieDomain() {
+        if (!isHttps()) {
+            return clientUrl.split("://")[1].split("/")[0].split(":")[0];
+        }
+        final String[] parts = clientUrl.split("://");
+        if (parts.length > 1) {
+            final String host = parts[1].split("/")[0];
+            final String[] hostParts = host.split("\\.");
+            if (hostParts.length >= 3) {
+                return "." + hostParts[hostParts.length - 3] + "." + hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
+            } else if (hostParts.length >= 2) {
+                return "." + hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
+            }
+        }
+        return null;
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
         try {
@@ -49,11 +66,13 @@ public class AuthController {
 
             final String token = jwtUtils.generateToken(user.getEmail());
             final User authenticatedUser = userService.findByEmail(user.getEmail());
+            final String domain = getCookieDomain();
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(isHttps()) 
-                    .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // More compatible across browsers
+                    .path("/")
+                    .domain(domain)
+                    .sameSite(isHttps() ? "None" : "Lax")
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -89,11 +108,13 @@ public class AuthController {
                     )
             );
             final String token = jwtUtils.generateToken(user.getEmail());
+            final String domain = getCookieDomain();
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(isHttps())
-                    .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .path("/")
+                    .domain(domain)
+                    .sameSite(isHttps() ? "None" : "Lax") // TODO Set SameSite attribute in production
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -167,11 +188,13 @@ public class AuthController {
         }
         userService.deleteUser(email);
         // Invalidate the cookie by setting it to expire
+        final String domain = getCookieDomain();
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(isHttps())
-                .path("/") // Set the path for the cookie
-                .sameSite("Lax") // More compatible across browsers
+                .path("/")
+                .domain(domain)
+                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
@@ -181,12 +204,13 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<String> signoutUser() {
-        // invalidate the cookie by setting it to expire
+        final String domain = getCookieDomain();
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(isHttps())
-                .path("/") // Set the path for the cookie
-                .sameSite("Lax") // More compatible across browsers
+                .path("/")
+                .domain(domain)
+                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
