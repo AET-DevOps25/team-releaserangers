@@ -44,11 +44,7 @@ public class AuthController {
         if (parts.length > 1) {
             final String host = parts[1].split("/")[0];
             final String[] hostParts = host.split("\\.");
-            if (hostParts.length >= 3) {
-                return "." + hostParts[hostParts.length - 3] + "." + hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
-            } else if (hostParts.length >= 2) {
-                return "." + hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
-            }
+            return hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
         }
         return null;
     }
