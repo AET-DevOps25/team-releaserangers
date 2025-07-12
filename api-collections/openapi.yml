@@ -1019,7 +1019,7 @@ paths:
       tags:
         - genai
       summary: Generate summary for uploaded file.
-      description: Accepts user's uploaded file and returns a summary via Ollama.
+      description: Accepts user's uploaded file and returns a summary.
       operationId: summarizeFile
       security: []
       requestBody:
@@ -1029,9 +1029,24 @@ paths:
             schema:
               type: object
               properties:
-                file:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                courseId:
                   type: string
-                  format: binary
+                existingChapterSummary:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Chapter"
+            encoding:
+              files:
+                contentType: application/pdf
+              courseId:
+                contentType: text/plain
+              existingChapterSummary:
+                contentType: application/json
       responses:
         "200":
           description: Summary generated successfully.
@@ -1041,6 +1056,10 @@ paths:
                 $ref: "#/components/schemas/SummaryResponse"
         "400":
           description: Bad request. File missing or invalid.
+        "404":
+          description: Course not found.
+        "422":
+          description: Unprocessable entity. File processing failed.
         "500":
           description: Failed to generate summary.
         default:
@@ -1048,7 +1067,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/GenAIError"
 
 components:
   securitySchemes:
@@ -1245,6 +1264,13 @@ components:
     Error:
       type: string
       description: Error message describing the issue
+
+    GenAIError:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Detailed error message from the GenAI service
 
     User:
       type: object
