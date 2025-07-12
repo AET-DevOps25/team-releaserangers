@@ -849,11 +849,14 @@ paths:
             schema:
               type: object
               properties:
-                file:
+                files:
                   type: array
                   items:
                     type: string
                     format: binary
+            encoding:
+              files:
+                contentType: application/pdf
       responses:
         "200":
           description: Files uploaded successfully.
@@ -1305,10 +1308,6 @@ components:
         contentType:
           type: string
           description: MIME type of the file
-        data:
-          type: string
-          format: binary
-          description: Binary data of the file
         courseId:
           type: string
           description: ID of the course the file is associated with
