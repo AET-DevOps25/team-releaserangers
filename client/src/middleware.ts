@@ -5,6 +5,12 @@ import { JWTPayload, jwtVerify } from "jose"
 const protectedRoutes = ["/dashboard"]
 const publicRoutes = ["/login", "/signup", "/"]
 
+// Function to get JWT secret at runtime
+const getJwtSecret = () => {
+  // Try different environment variable names that might be available at runtime
+  return process.env.NEXT_PUBLIC_JWT_SECRET || process.env.JWT_SECRET || ""
+}
+
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname
@@ -16,9 +22,15 @@ export default async function middleware(req: NextRequest) {
   let session: JWTPayload | null = null
   if (token) {
     try {
-      const secret = new TextEncoder().encode(process.env.NEXT_JWT_SECRET)
-      const { payload } = await jwtVerify(token, secret)
-      session = payload
+      const jwtSecret = getJwtSecret()
+      if (!jwtSecret) {
+        console.error("JWT secret not available")
+        session = null
+      } else {
+        const secret = new TextEncoder().encode(jwtSecret)
+        const { payload } = await jwtVerify(token, secret)
+        session = payload
+      }
     } catch (e) {
       console.error("JWT verification failed:", e)
       session = null
