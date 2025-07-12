@@ -3,3 +3,4 @@ instance_name   = "ReleaseRangersAppServer"
 instance_type   = "t2.micro"
 ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3..."
 ssh_private_key = "path/to/your/private/key.pem"
+block_device_size = 48

@@ -45,6 +45,7 @@ services:
       - "8082:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file: .env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -56,6 +57,7 @@ services:
       - "8083:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file: .env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -81,18 +83,10 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file: ./client/.env.local
     depends_on:
       - authentication-service
       - coursemgmt-service
       - upload-service
-
-  swagger-ui:
-    build:
-      context: ./docs/api
-      dockerfile: Dockerfile.swagger-ui
-    ports:
-      - "8088:8080"
 
 volumes:
   postgres-data:

@@ -4,6 +4,7 @@ import devops25.releaserangers.authentication_service.model.User;
 import devops25.releaserangers.authentication_service.security.JwtUtil;
 import devops25.releaserangers.authentication_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,26 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtil jwtUtils;
+    @Value("${client.url}")
+    private String clientUrl;
+
+    private Boolean isHttps() {
+        // Check if the application is running in a secure context (HTTPS)
+        return "https".equalsIgnoreCase(clientUrl.split("://")[0]);
+    }
+
+    private String getCookieDomain() {
+        if (!isHttps()) {
+            return clientUrl.split("://")[1].split("/")[0].split(":")[0];
+        }
+        final String[] parts = clientUrl.split("://");
+        if (parts.length > 1) {
+            final String host = parts[1].split("/")[0];
+            final String[] hostParts = host.split("\\.");
+            return hostParts[hostParts.length - 2] + "." + hostParts[hostParts.length - 1];
+        }
+        return null;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
@@ -41,11 +62,13 @@ public class AuthController {
 
             final String token = jwtUtils.generateToken(user.getEmail());
             final User authenticatedUser = userService.findByEmail(user.getEmail());
+            final String domain = getCookieDomain();
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(false) // TODO Set to true if using HTTPS
-                    .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .secure(isHttps()) 
+                    .path("/")
+                    .domain(domain)
+                    .sameSite(isHttps() ? "None" : "Lax")
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -81,11 +104,13 @@ public class AuthController {
                     )
             );
             final String token = jwtUtils.generateToken(user.getEmail());
+            final String domain = getCookieDomain();
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(false) // TODO Set to true if using HTTPS
-                    .path("/") // Set the path for the cookie
-                    .sameSite("Lax") // TODO Set SameSite attribute in production
+                    .secure(isHttps())
+                    .path("/")
+                    .domain(domain)
+                    .sameSite(isHttps() ? "None" : "Lax") // TODO Set SameSite attribute in production
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -159,11 +184,13 @@ public class AuthController {
         }
         userService.deleteUser(email);
         // Invalidate the cookie by setting it to expire
+        final String domain = getCookieDomain();
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // TODO Set to true if using HTTPS
-                .path("/") // Set the path for the cookie
-                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .secure(isHttps())
+                .path("/")
+                .domain(domain)
+                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
@@ -173,12 +200,13 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<String> signoutUser() {
-        // invalidate the cookie by setting it to expire
+        final String domain = getCookieDomain();
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // TODO Set to true if using HTTPS
-                .path("/") // Set the path for the cookie
-                .sameSite("Lax") // TODO Set SameSite attribute in production
+                .secure(isHttps())
+                .path("/")
+                .domain(domain)
+                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()

@@ -92,7 +92,7 @@ resource "aws_instance" "app_server" {
   vpc_security_group_ids      = [aws_security_group.app_server_sg.id]
 
   root_block_device {
-    volume_size = 32
+    volume_size = var.block_device_size
     volume_type = "gp3"
   }
 

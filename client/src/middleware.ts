@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { JWTPayload, jwtVerify } from "jose"
 
 // 1. Specify protected and public routes
 const protectedRoutes = ["/dashboard"]
-const publicRoutes = ["/login", "/signup", "/", "/swagger-ui"]
+const publicRoutes = ["/login", "/signup", "/"]
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -11,27 +10,16 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path)
   const isPublicRoute = publicRoutes.includes(path)
 
-  // 3. Extract JWT from cookie
+  // 3. Check session validity based on expiry cookie
   const token = req.cookies.get("token")?.value || null
-  let session: JWTPayload | null = null
-  if (token) {
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET)
-      const { payload } = await jwtVerify(token, secret)
-      session = payload
-    } catch (e) {
-      console.error("JWT verification failed:", e)
-      session = null
-    }
-  }
 
   // 4. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL("/login", req.nextUrl))
   }
 
   // 5. Redirect to /dashboard if the user is authenticated
-  if (isPublicRoute && session && !req.nextUrl.pathname.startsWith("/dashboard")) {
+  if (isPublicRoute && token && !req.nextUrl.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
   }
 
@@ -40,5 +28,5 @@ export default async function middleware(req: NextRequest) {
 
 // Routes Middleware should not run on
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)", "/runtime-config.js"],
 }
