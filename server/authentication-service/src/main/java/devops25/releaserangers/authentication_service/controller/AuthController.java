@@ -4,6 +4,7 @@ import devops25.releaserangers.authentication_service.model.User;
 import devops25.releaserangers.authentication_service.security.JwtUtil;
 import devops25.releaserangers.authentication_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,13 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtil jwtUtils;
+    @Value("${client.url}")
+    private String clientUrl;
+
+    private Boolean isHttps() {
+        // Check if the application is running in a secure context (HTTPS)
+        return "https".equalsIgnoreCase(clientUrl.split("://")[0]);
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
@@ -43,9 +51,9 @@ public class AuthController {
             final User authenticatedUser = userService.findByEmail(user.getEmail());
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(true) // Set to true for HTTPS in production
+                    .secure(isHttps()) 
                     .path("/") // Set the path for the cookie
-                    .sameSite("None") // Required for cross-site requests with secure=true
+                    .sameSite("Lax") // More compatible across browsers
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -83,9 +91,9 @@ public class AuthController {
             final String token = jwtUtils.generateToken(user.getEmail());
             final ResponseCookie responseCookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(true) // Set to true for HTTPS in production
+                    .secure(isHttps())
                     .path("/") // Set the path for the cookie
-                    .sameSite("None") // TODO Set SameSite attribute in production
+                    .sameSite("Lax") // TODO Set SameSite attribute in production
                     .maxAge(3600) // Set cookie expiration time (1 hour)
                     .build();
             return ResponseEntity.ok()
@@ -161,9 +169,9 @@ public class AuthController {
         // Invalidate the cookie by setting it to expire
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(true) // Set to true for HTTPS in production
+                .secure(isHttps())
                 .path("/") // Set the path for the cookie
-                .sameSite("None") // Required for cross-site requests with secure=true
+                .sameSite("Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
@@ -176,9 +184,9 @@ public class AuthController {
         // invalidate the cookie by setting it to expire
         final ResponseCookie responseCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(true) // Set to true for HTTPS in production
+                .secure(isHttps())
                 .path("/") // Set the path for the cookie
-                .sameSite("None") // Required for cross-site requests with secure=true
+                .sameSite("Lax") // More compatible across browsers
                 .maxAge(0) // Set cookie expiration time to 0 to delete it
                 .build();
         return ResponseEntity.ok()
