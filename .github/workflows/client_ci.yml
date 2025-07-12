@@ -82,11 +82,6 @@ jobs:
           COURSEMGMT_URL=http://coursemgmt-service:8080
           FILE_PARSING=False
           EOF
-          # : yes this should be empty
-          cat > ./client/.env.local <<EOF
-          NEXT_PUBLIC_API_URL=
-          NEXT_PUBLIC_JWT_SECRET=${{ secrets.JWT_SECRET }}
-          EOF
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
           echo "CLIENT_URL=http://localhost:3000" >> .env
 

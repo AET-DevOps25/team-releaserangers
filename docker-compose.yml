@@ -83,7 +83,6 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file: ./client/.env.local
     depends_on:
       - authentication-service
       - coursemgmt-service

@@ -61,9 +61,6 @@ services:
   client:
     image: ghcr.io/aet-devops25/team-releaserangers/client:latest
     restart: unless-stopped
-    environment:
-      - NEXT_PUBLIC_JWT_SECRET=${JWT_SECRET}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
     labels:

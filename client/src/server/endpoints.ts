@@ -1,15 +1,11 @@
-export const dynamic = "force-dynamic"
-
 // Runtime API URL determination - works with pre-built Docker images
 const getApiUrl = () => {
-  // Server-side: use environment variable
-  if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || ""
-  }
-
   // Client-side: construct from current hostname
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname
+    if (hostname.includes("localhost")) {
+      return "http://localhost" // Use localhost for development
+    }
     // Extract base domain (remove 'client.' prefix if present)
     const baseDomain = hostname.replace(/^client\./, "")
     return `https://api.${baseDomain}`
