@@ -90,7 +90,7 @@ services:
 
   swagger-ui:
     build:
-      context: ./api-collections
+      context: ./docs/api
       dockerfile: Dockerfile.swagger-ui
     ports:
       - "8088:8080"
