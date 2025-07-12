@@ -11,6 +11,7 @@ from models.summary import SummaryResponse
 router = APIRouter()
 
 COURSEMGMT_URL = os.getenv("COURSEMGMT_URL", "http://localhost:8081")
+FILE_PARSING = os.getenv("FILE_PARSING", "False").lower() in ("true", "1", "yes")
 
 @router.post(
         "/summarize",
@@ -49,28 +50,33 @@ async def summarize_pdf(
     summaries = []
     for file in files:
         print(f"Processing file: {file.filename}")
+        print("IN summarize.py:", FILE_PARSING)
+        if FILE_PARSING:
+            print("NO")
+            # Extract markdown
+            start_extract = time.perf_counter()
+            docs = await pdf_parser.extract_markdown_langchain(file)  # returns list
+            markdown = "\n\n".join(docs)
+            end_extract = time.perf_counter()
+            print(f"PDF extraction took {end_extract - start_extract:.2f} seconds")
 
-        # Extract markdown
-        start_extract = time.perf_counter()
-        docs = await pdf_parser.extract_markdown_langchain(file)  # returns list
-        markdown = "\n\n".join(docs)
-        end_extract = time.perf_counter()
-        print(f"PDF extraction took {end_extract - start_extract:.2f} seconds")
-
-        # Summarize
-        start_summary = time.perf_counter()
-        summary_string = await summarizer.summarize(markdown)
-        end_summary = time.perf_counter()
-        print(f"Summarization took {end_summary - start_summary:.2f} seconds")
-
+            # Summarize
+            start_summary = time.perf_counter()
+            summary_string = await summarizer.summarize(markdown_text=markdown)
+            end_summary = time.perf_counter()
+            print(f"Summarization took {end_summary - start_summary:.2f} seconds")
+        else:
+            start_summary = time.perf_counter()
+            summary_string = await summarizer.summarize(file=file.file, filename=file.filename)
+            end_summary = time.perf_counter()
+            print(f"Summarization took {end_summary - start_summary:.2f} seconds")
+        
         # Clean summary
         cleaned = clean_markdown(summary_string)
-        print(cleaned)
         try:
             summary_json = json.loads(cleaned)
         except json.JSONDecodeError:
             raise HTTPException(status_code=500, detail="LLM returned invalid JSON")
-
         # Prepare payload for chapter service
         chapter_payload = {
             "title": summary_json["chapter_title"],
@@ -78,12 +84,14 @@ async def summarize_pdf(
             "emoji": summary_json["emoji"],
             "isFavorite": False,
         }
-        print(f"{COURSEMGMT_URL}/{courseId}/chapters")
+
+        url = f"{COURSEMGMT_URL}/courses/{courseId}/chapters"
+        print(url)
         # Send to chapter backend
         async with httpx.AsyncClient() as client:
            
             chapter_resp = await client.post(
-                f"{COURSEMGMT_URL}/courses/{courseId}/chapters",
+                url,
                 #headers={"Authorization": authorization},
                 cookies={"token": token},
                 json=chapter_payload
