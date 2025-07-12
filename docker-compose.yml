@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
@@ -16,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.db
+    restart: unless-stopped
     ports:
       - "5432:5432"
     volumes:
@@ -29,6 +31,7 @@ services:
   authentication-service:
     build:
       context: ./server/authentication-service
+    restart: unless-stopped
     ports:
       - "8081:8080"
     environment:
@@ -41,6 +44,7 @@ services:
   coursemgmt-service:
     build:
       context: ./server/coursemgmt-service
+    restart: unless-stopped
     ports:
       - "8082:8080"
     environment:
@@ -52,6 +56,7 @@ services:
   upload-service:
     build:
       context: ./server/upload-service
+    restart: unless-stopped
     ports:
       - "8083:8080"
     environment:
