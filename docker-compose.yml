@@ -152,13 +152,6 @@ services:
     command: -config.file=/etc/loki/loki-config.yaml
     restart: unless-stopped
 
-  swagger-ui:
-    build:
-      context: ./docs/api
-      dockerfile: Dockerfile.swagger-ui
-    ports:
-      - "8088:8080"
-
 volumes:
   postgres-data:
   prometheus_data:
