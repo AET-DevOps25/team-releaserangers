@@ -49,6 +49,19 @@ public class AuthController {
         return null;
     }
 
+    private ResponseCookie createResponseCookie(String token, int maxAge, Boolean secure) {
+        final ResponseCookie.ResponseCookieBuilder responseCookie = ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .secure(secure)
+                .path("/")
+                .sameSite(secure ? "None" : "Lax")
+                .maxAge(maxAge);
+        if (secure) {
+            responseCookie.domain(getCookieDomain());
+        }
+        return responseCookie.build();
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
         try {
@@ -59,18 +72,9 @@ public class AuthController {
                             user.getPassword()
                     )
             );
-
             final String token = jwtUtils.generateToken(user.getEmail());
             final User authenticatedUser = userService.findByEmail(user.getEmail());
-            final String domain = getCookieDomain();
-            final ResponseCookie responseCookie = ResponseCookie.from("token", token)
-                    .httpOnly(true)
-                    .secure(isHttps()) 
-                    .path("/")
-                    .domain(domain)
-                    .sameSite(isHttps() ? "None" : "Lax")
-                    .maxAge(3600) // Set cookie expiration time (1 hour)
-                    .build();
+            final ResponseCookie responseCookie = createResponseCookie(token, 3600, isHttps());
             return ResponseEntity.ok()
                 .header("Set-Cookie", responseCookie.toString())
                 .body(authenticatedUser);
@@ -104,15 +108,7 @@ public class AuthController {
                     )
             );
             final String token = jwtUtils.generateToken(user.getEmail());
-            final String domain = getCookieDomain();
-            final ResponseCookie responseCookie = ResponseCookie.from("token", token)
-                    .httpOnly(true)
-                    .secure(isHttps())
-                    .path("/")
-                    .domain(domain)
-                    .sameSite(isHttps() ? "None" : "Lax") // TODO Set SameSite attribute in production
-                    .maxAge(3600) // Set cookie expiration time (1 hour)
-                    .build();
+            final ResponseCookie responseCookie = createResponseCookie(token, 3600, isHttps());
             return ResponseEntity.ok()
                 .header("Set-Cookie", responseCookie.toString())
                 .body(newUser);
@@ -184,15 +180,7 @@ public class AuthController {
         }
         userService.deleteUser(email);
         // Invalidate the cookie by setting it to expire
-        final String domain = getCookieDomain();
-        final ResponseCookie responseCookie = ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .secure(isHttps())
-                .path("/")
-                .domain(domain)
-                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
-                .maxAge(0) // Set cookie expiration time to 0 to delete it
-                .build();
+        final ResponseCookie responseCookie = createResponseCookie("", 0, isHttps());
         return ResponseEntity.ok()
                 .header("Set-Cookie", responseCookie.toString())
                 .body("User deleted successfully");
@@ -200,15 +188,7 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<String> signoutUser() {
-        final String domain = getCookieDomain();
-        final ResponseCookie responseCookie = ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .secure(isHttps())
-                .path("/")
-                .domain(domain)
-                .sameSite(isHttps() ? "None" : "Lax") // More compatible across browsers
-                .maxAge(0) // Set cookie expiration time to 0 to delete it
-                .build();
+        final ResponseCookie responseCookie = createResponseCookie("", 0, isHttps());
         return ResponseEntity.ok()
                 .header("Set-Cookie", responseCookie.toString())
                 .body("User logged out successfully");
