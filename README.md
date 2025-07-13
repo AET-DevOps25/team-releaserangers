@@ -6,6 +6,22 @@ This is a university project designed to enhance students learning experience by
 
 # Section Overview
 
+- [Our Team](#our-team)
+- [Student Responsibilities](#student-responsibilities)
+- [Subsystem Ownership](#subsystem-ownership)
+- [Key Features](#key-features)
+- [Project Overview](#project-overview)
+- [Quick Local Setup (Recommended)](#quick-local-setup-recommended)
+- [Individual Setup Instructions](#individual-setup-instructions)
+- [Tech Stack](#tech-stack)
+- [Database Schema](#database-schema)
+- [Architecture Overview](#architecture-overview)
+- [API documentation](#api-documentation)
+- [CI/CD Instructions](#ci-cd-instructions)
+- [Monitoring Instructions](#monitoring-instructions)
+- [Testing Instructions](#testing-instructions)
+- [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
+
 ---
 
 ## Our Team
