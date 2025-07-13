@@ -5,8 +5,8 @@ set -e
 # Paths to env files
 SERVER_ENV=".env"
 SERVER_ENV_EXAMPLE=".env.example"
-CLIENT_ENV="client/.env.local"
-CLIENT_ENV_EXAMPLE="client/.env.example"
+CLIENT_ENV="client/.env.local" # (deprecated, will not be used)
+CLIENT_ENV_EXAMPLE="client/.env.example" # (deprecated, will not be used)
 GENAI_ENV="genai/.env"
 GENAI_ENV_EXAMPLE="genai/.env.example"
 
@@ -59,17 +59,12 @@ prompt_overwrite() {
 
 # Check if env files exist and prompt before continuing
 prompt_overwrite "$GENAI_ENV"
-prompt_overwrite "$CLIENT_ENV"
 prompt_overwrite "$SERVER_ENV"
 
 # Ensure .env files exist, copy from example if missing
 if [ ! -f "$SERVER_ENV" ]; then
   print_status "Creating $SERVER_ENV from $SERVER_ENV_EXAMPLE."
   cp "$SERVER_ENV_EXAMPLE" "$SERVER_ENV"
-fi
-if [ ! -f "$CLIENT_ENV" ]; then
-  print_status "Creating $CLIENT_ENV from $CLIENT_ENV_EXAMPLE."
-  cp "$CLIENT_ENV_EXAMPLE" "$CLIENT_ENV"
 fi
 if [ ! -f "$GENAI_ENV" ]; then
   print_status "Creating $GENAI_ENV."
@@ -79,35 +74,38 @@ fi
 # --- JWT_SECRET setup ---
 EXAMPLE_JWT_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV_EXAMPLE")
 SERVER_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV")
-CLIENT_SECRET=$(grab_var "JWT_SECRET" "$CLIENT_ENV")
-
 if [[ -n "$SERVER_SECRET" && "$SERVER_SECRET" != "$EXAMPLE_JWT_SECRET" ]]; then
   print_status "Current JWT_SECRET in $SERVER_ENV: $SERVER_SECRET"
   prompt_overwrite "$SERVER_ENV"
   if [ $? -eq 0 ]; then
     JWT_SECRET=$(generate_jwt_secret)
     set_var "JWT_SECRET" "$JWT_SECRET" "$SERVER_ENV"
-    set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
-    print_status "New JWT_SECRET generated and set in $SERVER_ENV and $CLIENT_ENV."
+    print_status "New JWT_SECRET generated and set in $SERVER_ENV."
   else
     JWT_SECRET="$SERVER_SECRET"
-    set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
-    print_status "JWT_SECRET kept and synchronized in $CLIENT_ENV."
+    print_status "JWT_SECRET kept in $SERVER_ENV."
   fi
 else
   JWT_SECRET=$(generate_jwt_secret)
   set_var "JWT_SECRET" "$JWT_SECRET" "$SERVER_ENV"
-  set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
-  print_status "JWT_SECRET generated and set in $SERVER_ENV and $CLIENT_ENV."
+  print_status "JWT_SECRET generated and set in $SERVER_ENV."
 fi
 
-# --- NEXT_PUBLIC_API_URL setup for client/.env.local ---
+# --- NEXT_PUBLIC_API_URL setup for .env ---
 NEXT_PUBLIC_API_URL=$(grab_var "NEXT_PUBLIC_API_URL" "$SERVER_ENV_EXAMPLE")
 if [ -z "$NEXT_PUBLIC_API_URL" ]; then
   NEXT_PUBLIC_API_URL="http://localhost"
 fi
-set_var "NEXT_PUBLIC_API_URL" "$NEXT_PUBLIC_API_URL" "$CLIENT_ENV"
-print_status "NEXT_PUBLIC_API_URL set in $CLIENT_ENV."
+set_var "NEXT_PUBLIC_API_URL" "$NEXT_PUBLIC_API_URL" "$SERVER_ENV"
+print_status "NEXT_PUBLIC_API_URL set in $SERVER_ENV."
+
+# --- CLIENT_URL setup for .env ---
+CLIENT_URL=$(grab_var "CLIENT_URL" "$SERVER_ENV_EXAMPLE")
+if [ -z "$CLIENT_URL" ]; then
+  CLIENT_URL="http://localhost:3000"
+fi
+set_var "CLIENT_URL" "$CLIENT_URL" "$SERVER_ENV"
+print_status "CLIENT_URL set in $SERVER_ENV."
 
 # --- LLM_API_KEY setup for genai/.env ---
 read -p "Enter your gemini LLM_API_KEY for GenAI service: " LLM_API_KEY
