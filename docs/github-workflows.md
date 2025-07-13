@@ -2,26 +2,11 @@
 
 ## Overview
 
-- [Build All Java Projects](#build-all-java-projects)
 - [Build and Test Java Services](#build-and-test-java-services)
 - [Build Docker Images](#build-docker-images)
 - [Client CI](#client-ci)
 - [Build and Deploy Docker to AWS EC2](#build-and-deploy-docker-to-aws-ec2)
 - [Gitleaks Secret and KICS IaC Scan](#gitleaks-secret-and-kics-iac-scan)
-
----
-
-## Build All Java Projects
-
-**Workflow file:** `.github/workflows/build_java.yml`
-
-**Trigger:**
-- On every push to the repository.
-
-**Steps:**
-1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest code from the repository. The `fetch-depth: 0` option ensures the full history is available, which is useful for some tools and versioning.
-2. **Set up JDK:** Installs JDK 21 (Temurin distribution) using `actions/setup-java@v4`. This ensures the build environment matches the required Java version for all services.
-3. **Build each Java service:** For each service (`authentication-service`, `coursemgmt-service`, `upload-service`), runs `mvn clean package -DskipTests` in the respective directory. This compiles the code and packages it into a JAR/WAR file, skipping tests to speed up the build and focus on compilation issues.
 
 ---
 
