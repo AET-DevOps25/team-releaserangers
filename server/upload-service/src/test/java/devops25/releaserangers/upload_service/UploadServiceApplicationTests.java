@@ -31,6 +31,7 @@ class UploadServiceApplicationTests {
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+        registry.add("client.url", () -> "http://localhost:3000");
     }
 
     @Autowired

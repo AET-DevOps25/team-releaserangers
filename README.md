@@ -58,15 +58,10 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
   ```bash
   JWT_SECRET=<your_jwt_secret>
+  CLIENT_URL=http://localhost:3000
   ```
 
-- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
-
-  ```bash
-  JWT_SECRET=<your_jwt_secret>
-  ```
-
-  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
+  Attention: The JWT secret must be the same in both `.env` and `authentication-service/src/main/resources/application.properties` files.
 
 ### Server Setup
 
@@ -163,13 +158,9 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 The entire API is defined using OpenAPI (see [`api-collections/openapi.yml`](api-collections/openapi.yml)).
 
-After starting the application with Docker Compose, you can view and interact with the API documentation using Swagger UI:
+You can view the Swagger UI via GitHub Pages (if enabled for this repository):
 
-- Open your browser and navigate to [http://localhost/swagger-ui](http://localhost/swagger-ui)
-
-Alternatively, you can also view the Swagger UI via GitHub Pages (if enabled for this repository):
-
-- Open your browser and navigate to `https://<your-github-username>.github.io/<your-repo-name>/swagger-ui` (replace with your actual GitHub username and repository name)
+- Open your browser and navigate to `https://aet-devops25.github.io/team-releaserangers/api/index.html`
 
 This provides a complete, interactive overview of all endpoints, request/response formats, and authentication details.
 
@@ -192,18 +183,22 @@ SpotBugs and Checkstyle are integrated into the Maven build lifecycle for the se
 You can run these tools manually or as part of the Maven build:
 
 - **To run both SpotBugs and Checkstyle for all modules:**
+
   ```sh
   cd server
   mvn verify
   ```
+
   This will execute both plugins as part of the `verify` phase.
 
 - **To run only SpotBugs:**
+
   ```sh
   mvn spotbugs:check
   ```
 
 - **To run only Checkstyle:**
+
   ```sh
   mvn checkstyle:check
   ```
@@ -216,6 +211,7 @@ You can run these tools manually or as part of the Maven build:
   Replace `<microservice-folder>` with `authentication-service`, `coursemgmt-service`, or `upload-service`.
 
 ### Maven Phase Integration
+
 - **Checkstyle** runs during the `validate` and `verify` phases.
 - **SpotBugs** runs during the `verify` phase.
 
