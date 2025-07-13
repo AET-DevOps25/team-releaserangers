@@ -26,3 +26,9 @@ variable "ssh_private_key" {
   type        = string
   sensitive   = true
 }
+
+variable "block_device_size" {
+  description = "Size of the root block device in GB"
+  type        = number
+  default     = 48
+}

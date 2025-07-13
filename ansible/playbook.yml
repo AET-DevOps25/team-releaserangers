@@ -1,7 +1,7 @@
 ---
 - name: Install Docker and Docker Compose
   hosts: app_server
-  become: yes
+  become: true
   tasks:
     - name: Update and upgrade apt packages
       apt:

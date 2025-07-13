@@ -74,22 +74,16 @@ jobs:
       - name: Set up and start services
         run: |
           # This service still needs its own .env file, so we create it
-          mkdir -p ./genai
-
           cat > ./genai/.env <<EOF
           LLM_API_KEY=${{ secrets.LLM_API_KEY }}
           LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent
           LLM_MODEL=gemini-2.5-flash-lite-preview-06-17
           LLM_BACKEND=google
-          COURSEMGMT_URL=http://coursemgmt-service:8081
+          COURSEMGMT_URL=http://coursemgmt-service:8080
           FILE_PARSING=False
           EOF
-          # : yes this should be empty
-          cat > ./client/.env.local <<EOF
-          NEXT_PUBLIC_API_URL=
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          EOF
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
+          echo "CLIENT_URL=http://localhost:3000" >> .env
 
           # docker-compose will automatically pick up JWT_SECRET from the environment
           echo "Starting Docker services..."
