@@ -66,19 +66,24 @@ cd team-releaserangers
 
 ### Environment Configuration
 
+> **⚠️ Note:** Make sure to configure the `JWT_SECRET` and `LLM_API_KEY` environment variables before running the project locally. These are required for authentication and GenAI features to work.
+
 The easiest way to configure your environment for local development is to use the provided setup script:
+
+You can get your own free-tier gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ```bash
 chmod +x setup-env.sh
 ```
 
-Then run the script:
+Then run the script and follow the prompts to create and configure the necessary `.env` files:
 
 ```bash
 ./setup-env.sh
 ```
 
-This script will automatically create and configure all required `.env` files for both the server and client, ensuring that secrets like `JWT_SECRET` are synchronized. If the files already exist, you will be prompted to overwrite them.
+This script will automatically create and configure all required `.env` files for both the server, genai and client.
+If you set up the `.env` files yourself please ensure that secrets like `JWT_SECRET` are synchronized.
 
 ---
 
@@ -96,115 +101,9 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 
 ## Individual Setup Instructions
 
-### Client Setup
+For step-by-step instructions on setting up and running each service (client, server, GenAI/LLM service, and database) individually, see the [Start Individual Services Guide](docs/start-individual.md). This guide covers environment variable setup, dependency installation, and how to start each service separately for development or testing.
 
-- create a `.env` file in the root directory of the project
-- add the following environment variables:
-
-  ```bash
-  JWT_SECRET=<your_jwt_secret>
-  ```
-
-- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
-
-  ```bash
-  JWT_SECRET=<your_jwt_secret>
-  NEXT_PUBLIC_API_URL="http://localhost"
-  ```
-
-  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
-
-### Server Setup
-
-- The authentication service uses the [dotenv-java](https://github.com/cdimascio/dotenv-java) library to automatically load environment variables from your `.env` file.
-- Ensure you have a `.env` file in the root of your project with the following content:
-
-  ```bash
-  JWT_SECRET=<your_jwt_secret>
-  ```
-
-  You can orient yourself by looking at how the `.env.example` file looks like in the project root.
-
-- The `application.properties` file in `server/authentication-service/src/main/resources/` uses a placeholder to read the secret:
-
-  ```bash
-  jwt.secret=${JWT_SECRET}
-  ```
-
-- You do not need to manually export environment variables. Simply run the authentication service as usual (e.g., `./mvnw spring-boot:run`), and the secret will be loaded automatically.
-
-  **Note:** The JWT secret must be identical in `.env`, `.env.local` (for the client), and available to the authentication service for authentication to work correctly.
-
-### LLM Service Setup
-
-Make sure to create a .env file from the .env.example and add your API Key.
-
-1. Navigate to the <code>genai</code> directory:
-
-   ```bash
-   cd genai
-   ```
-
-2. Install Dependencies:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip3 install -r requirements.txt
-   ```
-
-## Running the Application
-
-### Start the Database
-
-You can start the database using Docker Compose:
-
-```bash
-docker compose up postgres-db
-```
-
-### Start the Client
-
-From the project root, run:
-
-```bash
-cd client
-pnpm install
-pnpm dev
-```
-
-### Start the Server
-
-To start the microservices individually, repeat in their respective directories (e.g., authentication-service, coursemgmt-service, upload-service):
-
-```bash
-cd authentication-service
-./mvnw spring-boot:run
-
-cd coursemgmt-service
-./mvnw spring-boot:run
-
-cd upload-service
-./mvnw spring-boot:run
-```
-
-### Start the LLM Service
-
-- Using uvicorn directly:
-  ```bash
-  cd genai
-  uvicorn main:app --host 0.0.0.0 --port 8084
-  ```
-- Using python3:
-  ```bash
-  cd genai
-  python3 main.py
-  ```
-- Using Docker:
-  ```bash
-  cd genai
-  docker build -t llm .
-  docker run --env-file .env -p 8084:8084 llm
-  ```
+---
 
 ## Tech Stack
 
@@ -265,6 +164,7 @@ This provides a complete, interactive overview of all endpoints, request/respons
 
 For detailed documentation on the CI/CD workflows, please refer to the following documentation:
 - [GitHub Workflows Documentation](docs/github-workflows.md)
+- [Start Individual Services Guide](docs/start-individual.md)
 
 ---
 
@@ -377,5 +277,3 @@ You can run these tools manually or as part of the Maven build:
 If you run `mvn verify`, both tools will be executed and any violations will fail the build.
 
 ---
-
-
