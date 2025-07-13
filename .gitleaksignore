@@ -1,2 +1,7 @@
 acf85a2c8fb6870ff4300835b1b671720e843576:.github/workflows/client_ci.yml:generic-api-key:90
 acf85a2c8fb6870ff4300835b1b671720e843576:.github/workflows/client_ci.yml:generic-api-key:92
+ea2e93ec543529da9b34ebeb69c0157b23008a33:server/authentication-service/src/main/resources/application.properties:generic-api-key:11
+bfa1787c40acfd908a02126a997cac65787bf96b:.github/workflows/client_ci.yml:generic-api-key:83
+6cdcd0fda5dbc8d63b15528a90cad0a55995c90c:.github/workflows/client_ci.yml:generic-api-key:82
+6cdcd0fda5dbc8d63b15528a90cad0a55995c90c:.github/workflows/client_ci.yml:generic-api-key:83
+266f924251413d5837badf02258bd8fa4f910e15:.github/workflows/client_ci.yml:generic-api-key:89

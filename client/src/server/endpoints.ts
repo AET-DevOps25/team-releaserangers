@@ -1,10 +1,25 @@
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
-export const COURSES_ENDPOINT = `${apiUrl}/courses`
-export const COURSE_ENDPOINT = (courseId: string) => `${apiUrl}/courses/${courseId}`
-export const CHAPTER_ENDPOINT = (chapterId: string) => `${apiUrl}/chapters/${chapterId}`
-export const FAVORITES_ENDPOINT = `${apiUrl}/favorites`
-export const USER_ENDPOINT = `${apiUrl}/auth/user`
-export const SIGNIN_ENDPOINT = `${apiUrl}/auth/signin`
-export const SIGNUP_ENDPOINT = `${apiUrl}/auth/signup`
-export const SIGNOUT_ENDPOINT = `${apiUrl}/auth/signout`
-export const UPLOAD_ENDPOINT = `${apiUrl}/upload`
+// Runtime API URL determination - works with pre-built Docker images
+const getApiUrl = () => {
+  // Client-side: construct from current hostname
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname
+    if (hostname.includes("localhost")) {
+      return "http://localhost" // Use localhost for development
+    }
+    // Extract base domain (remove 'client.' prefix if present)
+    const baseDomain = hostname.replace(/^client\./, "")
+    return `https://api.${baseDomain}`
+  }
+
+  return ""
+}
+
+export const COURSES_ENDPOINT = `${getApiUrl()}/courses`
+export const COURSE_ENDPOINT = (courseId: string) => `${getApiUrl()}/courses/${courseId}`
+export const CHAPTER_ENDPOINT = (chapterId: string) => `${getApiUrl()}/chapters/${chapterId}`
+export const FAVORITES_ENDPOINT = `${getApiUrl()}/favorites`
+export const USER_ENDPOINT = `${getApiUrl()}/auth/user`
+export const SIGNIN_ENDPOINT = `${getApiUrl()}/auth/signin`
+export const SIGNUP_ENDPOINT = `${getApiUrl()}/auth/signup`
+export const SIGNOUT_ENDPOINT = `${getApiUrl()}/auth/signout`
+export const UPLOAD_ENDPOINT = `${getApiUrl()}/upload`
