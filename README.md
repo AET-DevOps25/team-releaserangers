@@ -4,7 +4,17 @@ This is a university project designed to enhance students learning experience by
 
 ---
 
-# Section Overview
+## Our Team
+
+  This project is maintained by:
+
+- **Florian Charrot (FC)**
+- **Jonathan Müller (JM)**
+- **Luis Leutbecher (LL)**
+
+---
+
+## Section Overview
 
 - [Our Team](#our-team)
 - [Student Responsibilities](#student-responsibilities)
@@ -21,16 +31,6 @@ This is a university project designed to enhance students learning experience by
 - [Monitoring Instructions](#monitoring-instructions)
 - [Testing Instructions](#testing-instructions)
 - [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
-
----
-
-## Our Team
-
-This project is maintained by:
-
-- **Florian Charrot (FC)**
-- **Jonathan Müller (JM)**
-- **Luis Leutbecher (LL)**
 
 ---
 
