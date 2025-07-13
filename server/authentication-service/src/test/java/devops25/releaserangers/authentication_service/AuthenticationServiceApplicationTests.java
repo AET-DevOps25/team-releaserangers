@@ -29,8 +29,8 @@ class AuthenticationServiceApplicationTests {
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
-        // Ensure JWT_SECRET is set for tests
         registry.add("jwt.secret", () -> "08856eb694ef8c41d3ebe9a526597613e149c1762294d749e2f33f98281cf431");
+        registry.add("client.url", () -> "http://localhost:3000");
     }
 
     @Autowired

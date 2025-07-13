@@ -68,6 +68,8 @@ cd team-releaserangers
 
 > **⚠️ Note:** Make sure to configure the `JWT_SECRET` and `LLM_API_KEY` environment variables before running the project locally. These are required for authentication and GenAI features to work.
 
+Attention: The JWT secret must be the same in both `.env` and `authentication-service/src/main/resources/application.properties` files.
+
 The easiest way to configure your environment for local development is to use the provided setup script:
 
 You can get your own free-tier gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
@@ -146,13 +148,9 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 The entire API is defined using OpenAPI (see [`api-collections/openapi.yml`](api-collections/openapi.yml)).
 
-After starting the application with Docker Compose, you can view and interact with the API documentation using Swagger UI:
+You can view the Swagger UI via GitHub Pages (if enabled for this repository):
 
-- Open your browser and navigate to [http://localhost/swagger-ui](http://localhost/swagger-ui)
-
-Alternatively, you can also view the Swagger UI via GitHub Pages (if enabled for this repository):
-
-- Open your browser and navigate to `https://<your-github-username>.github.io/<your-repo-name>/swagger-ui` (replace with your actual GitHub username and repository name)
+- Open your browser and navigate to `https://aet-devops25.github.io/team-releaserangers/api/index.html`
 
 This provides a complete, interactive overview of all endpoints, request/response formats, and authentication details.
 
