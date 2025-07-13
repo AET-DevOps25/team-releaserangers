@@ -68,6 +68,10 @@ export function NavActionsCourse({ course }: { course: Course }) {
     console.log("Export clicked")
   }
 
+  React.useEffect(() => {
+    setIsFavorite(course.isFavorite)
+  }, [course.isFavorite])
+
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="text-muted-foreground hidden font-medium md:inline-block">
@@ -78,7 +82,7 @@ export function NavActionsCourse({ course }: { course: Course }) {
       </Button>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7">
+          <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent h-7 w-7" data-testid="nav-actions-course-button">
             <MoreHorizontal />
           </Button>
         </PopoverTrigger>
