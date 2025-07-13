@@ -8,6 +8,8 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, Sideba
 import { useFavorites } from "@/hooks/useFavorites"
 import { useUpdateCourse } from "@/hooks/courseAPI"
 import { useUpdateChapter } from "@/hooks/chapterAPI"
+import { mutate } from "swr"
+import { CHAPTER_ENDPOINT, COURSE_ENDPOINT } from "@/server/endpoints"
 
 export function NavFavorites() {
   const { isMobile } = useSidebar()
@@ -21,10 +23,12 @@ export function NavFavorites() {
         await updateCourse(item.id, {
           isFavorite: false,
         })
+        mutate(COURSE_ENDPOINT(item.id))
       } else {
         await updateChapter(item.courseId!, item.id, {
           isFavorite: false,
         })
+        mutate(CHAPTER_ENDPOINT(item.id))
       }
       if (refetch) refetch()
     } catch (error) {

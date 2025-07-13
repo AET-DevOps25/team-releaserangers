@@ -163,7 +163,10 @@ export function useSignOut() {
 
     try {
       const response = await fetch(SIGNOUT_ENDPOINT, {
-        method: "DELETE",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
       })
       if (!response.ok) {

@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { FileUp, Upload } from "lucide-react"
+import { FileUp, Loader2Icon, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -97,6 +97,7 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete, courseId 
       if (onUploadComplete) {
         onUploadComplete()
       }
+      window.location.reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")
     } finally {
@@ -136,7 +137,14 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete, courseId 
             {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             <div className="mt-4 flex gap-2">
               <Button onClick={handleUpload} disabled={isUploading}>
-                {isUploading ? "Uploading..." : "Upload Content"}
+                {isUploading ? (
+                  <>
+                    Uploading
+                    <Loader2Icon className="animate-spin" />
+                  </>
+                ) : (
+                  "Upload Content"
+                )}
               </Button>
               <Button variant="outline" onClick={() => setFiles([])} disabled={isUploading}>
                 Cancel
