@@ -261,6 +261,11 @@ This provides a complete, interactive overview of all endpoints, request/respons
 
 ## CI/CD Instructions
 
+### Documentation
+
+For detailed documentation on the CI/CD workflows, please refer to the following documentation:
+- [GitHub Workflows Documentation](docs/github-workflows.md)
+
 ---
 
 ## Monitoring Instructions
@@ -372,3 +377,5 @@ You can run these tools manually or as part of the Maven build:
 If you run `mvn verify`, both tools will be executed and any violations will fail the build.
 
 ---
+
+
