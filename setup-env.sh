@@ -2,91 +2,129 @@
 
 set -e
 
+# Paths to env files
+SERVER_ENV=".env"
+SERVER_ENV_EXAMPLE=".env.example"
+CLIENT_ENV="client/.env.local"
+CLIENT_ENV_EXAMPLE="client/.env.example"
+GENAI_ENV="genai/.env"
+GENAI_ENV_EXAMPLE="genai/.env.example"
+
+# Helper to print status
+print_status() {
+  echo -e "\033[1;34m$1\033[0m"
+}
+
 # Function to generate a random JWT secret
 generate_jwt_secret() {
   openssl rand -hex 32
 }
 
-# Function to extract JWT_SECRET from a file
-grab_jwt_secret() {
-  local file="$1"
+# Function to extract a variable from a file
+grab_var() {
+  local var="$1"
+  local file="$2"
   if [ -f "$file" ]; then
-    grep -E '^JWT_SECRET=' "$file" | cut -d'=' -f2- | tr -d '"' | tr -d '\r\n'
+    grep -E "^$var=" "$file" | cut -d'=' -f2- | tr -d '"' | tr -d '\r\n'
   fi
 }
 
-# Function to set JWT_SECRET in a file (replace or add)
-set_jwt_secret() {
-  local file="$1"
-  local secret="$2"
-  if grep -q '^JWT_SECRET=' "$file"; then
-    sed -i '' "s|^JWT_SECRET=.*$|JWT_SECRET=$secret|" "$file"
+# Function to set a variable in a file (replace or add)
+set_var() {
+  local var="$1"
+  local value="$2"
+  local file="$3"
+  if grep -q "^$var=" "$file"; then
+    sed -i '' "s|^$var=.*$|$var=$value|" "$file"
   else
-    echo "JWT_SECRET=$secret" >> "$file"
+    echo "$var=$value" >> "$file"
   fi
 }
 
-# Function to prompt before overwriting an existing file
+# Prompt before overwriting a file
 prompt_overwrite() {
   local file="$1"
   if [ -f "$file" ]; then
     read -p "$file already exists. Overwrite? (Y/N, default N): " answer
     answer=${answer:-N}
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-      echo "Skipping overwrite of $file."
+      print_status "Skipping overwrite of $file."
       return 1
     else
-      echo "Overwriting $file as requested."
+      print_status "Overwriting $file as requested."
     fi
   fi
   return 0
 }
 
-# Setup root .env and client/.env.local
-SERVER_ENV=".env"
-SERVER_ENV_EXAMPLE=".env.example"
-CLIENT_ENV="client/.env.local"
-CLIENT_ENV_EXAMPLE="client/.env.example"
+# Check if env files exist and prompt before continuing
+prompt_overwrite "$GENAI_ENV"
+prompt_overwrite "$CLIENT_ENV"
+prompt_overwrite "$SERVER_ENV"
 
-# Prompt and copy both files from example if missing or if user confirms overwrite
-if [ ! -f "$SERVER_ENV" ] && [ ! -f "$CLIENT_ENV" ]; then
+# Ensure .env files exist, copy from example if missing
+if [ ! -f "$SERVER_ENV" ]; then
+  print_status "Creating $SERVER_ENV from $SERVER_ENV_EXAMPLE."
   cp "$SERVER_ENV_EXAMPLE" "$SERVER_ENV"
+fi
+if [ ! -f "$CLIENT_ENV" ]; then
+  print_status "Creating $CLIENT_ENV from $CLIENT_ENV_EXAMPLE."
   cp "$CLIENT_ENV_EXAMPLE" "$CLIENT_ENV"
-elif [ ! -f "$SERVER_ENV" ]; then
-  cp "$SERVER_ENV_EXAMPLE" "$SERVER_ENV"
-elif [ ! -f "$CLIENT_ENV" ]; then
-  cp "$CLIENT_ENV_EXAMPLE" "$CLIENT_ENV"
-else
-  # Both files exist, prompt once for both
-  read -p "$SERVER_ENV and $CLIENT_ENV already exist. Overwrite both? (y/N, default N): " answer
-  answer=${answer:-N}
-  if [[ "$answer" =~ ^[Yy]$ ]]; then
-    echo "Overwriting $SERVER_ENV and $CLIENT_ENV as requested."
-    cp "$SERVER_ENV_EXAMPLE" "$SERVER_ENV"
-    echo "$SERVER_ENV overwritten from $SERVER_ENV_EXAMPLE."
-    cp "$CLIENT_ENV_EXAMPLE" "$CLIENT_ENV"
-    echo "$CLIENT_ENV overwritten from $CLIENT_ENV_EXAMPLE."
-  else
-    echo "Skipping overwrite of $SERVER_ENV and $CLIENT_ENV."
-  fi
+fi
+if [ ! -f "$GENAI_ENV" ]; then
+  print_status "Creating $GENAI_ENV."
+  touch "$GENAI_ENV"
 fi
 
-# Grab secrets from both files
-SERVER_SECRET=$(grab_jwt_secret "$SERVER_ENV")
-CLIENT_SECRET=$(grab_jwt_secret "$CLIENT_ENV")
+# --- JWT_SECRET setup ---
+EXAMPLE_JWT_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV_EXAMPLE")
+SERVER_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV")
+CLIENT_SECRET=$(grab_var "JWT_SECRET" "$CLIENT_ENV")
 
-# Determine which secret to use, or generate a new one
-if [[ -n "$SERVER_SECRET" && "$SERVER_SECRET" != "<your_jwt_secret>" && "$SERVER_SECRET" != "put_the_same_jwt_secret_as_in_server_applications_properties" ]]; then
-  JWT_SECRET="$SERVER_SECRET"
-elif [[ -n "$CLIENT_SECRET" && "$CLIENT_SECRET" != "<your_jwt_secret>" && "$CLIENT_SECRET" != "put_the_same_jwt_secret_as_in_server_applications_properties" ]]; then
-  JWT_SECRET="$CLIENT_SECRET"
+if [[ -n "$SERVER_SECRET" && "$SERVER_SECRET" != "$EXAMPLE_JWT_SECRET" ]]; then
+  print_status "Current JWT_SECRET in $SERVER_ENV: $SERVER_SECRET"
+  prompt_overwrite "$SERVER_ENV"
+  if [ $? -eq 0 ]; then
+    JWT_SECRET=$(generate_jwt_secret)
+    set_var "JWT_SECRET" "$JWT_SECRET" "$SERVER_ENV"
+    set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
+    print_status "New JWT_SECRET generated and set in $SERVER_ENV and $CLIENT_ENV."
+  else
+    JWT_SECRET="$SERVER_SECRET"
+    set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
+    print_status "JWT_SECRET kept and synchronized in $CLIENT_ENV."
+  fi
 else
   JWT_SECRET=$(generate_jwt_secret)
+  set_var "JWT_SECRET" "$JWT_SECRET" "$SERVER_ENV"
+  set_var "JWT_SECRET" "$JWT_SECRET" "$CLIENT_ENV"
+  print_status "JWT_SECRET generated and set in $SERVER_ENV and $CLIENT_ENV."
 fi
 
-# Set the same JWT_SECRET in both files
-set_jwt_secret "$SERVER_ENV" "$JWT_SECRET"
-set_jwt_secret "$CLIENT_ENV" "$JWT_SECRET"
+# --- NEXT_PUBLIC_API_URL setup for client/.env.local ---
+NEXT_PUBLIC_API_URL=$(grab_var "NEXT_PUBLIC_API_URL" "$SERVER_ENV_EXAMPLE")
+if [ -z "$NEXT_PUBLIC_API_URL" ]; then
+  NEXT_PUBLIC_API_URL="http://localhost"
+fi
+set_var "NEXT_PUBLIC_API_URL" "$NEXT_PUBLIC_API_URL" "$CLIENT_ENV"
+print_status "NEXT_PUBLIC_API_URL set in $CLIENT_ENV."
 
-echo "JWT_SECRET synchronized in $SERVER_ENV and $CLIENT_ENV."
-echo "All .env files are configured. Please review them for any additional settings."
+# --- LLM_API_KEY setup for genai/.env ---
+read -p "Enter your gemini LLM_API_KEY for GenAI service: " LLM_API_KEY
+while [ -z "$LLM_API_KEY" ]; do
+  echo "LLM_API_KEY is required. Please enter your key: "
+  read LLM_API_KEY
+done
+set_var "LLM_API_KEY" "$LLM_API_KEY" "$GENAI_ENV"
+print_status "LLM_API_KEY set in $GENAI_ENV."
+
+# --- Other GenAI variables from .env.example ---
+for var in LLM_API_URL LLM_MODEL LLM_BACKEND COURSEMGMT_URL; do
+  value=$(grab_var "$var" "$SERVER_ENV_EXAMPLE")
+  if [ -n "$value" ]; then
+    set_var "$var" "$value" "$GENAI_ENV"
+    print_status "$var set in $GENAI_ENV."
+  fi
+done
+
+print_status "All .env files are configured. Please review them for any additional settings."
