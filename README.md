@@ -40,6 +40,8 @@ This is a university project designed to enhance students learning experience by
 - **Jonathan Müller (JM)**: Frontend Development, Database Design, Terraform and Ansible Setup, Client Testing, Authentication Service, AWS Deployment
 - **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup, Monitoring and Observation
 
+---
+
 ## Subsystem Ownership
 
 - Client: Jonathan Müller (JM)
@@ -61,6 +63,9 @@ This is a university project designed to enhance students learning experience by
 ## Project Overview
 
 Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up-to-date overview of the current course content.
+
+- [Problem Statement](docs/Problem_Statement.md): Learn about the motivation, main functionality, and user scenarios for ReleaseRangers.
+- [System Architecture](docs/System_Architecture.md): See the technical structure, technologies, and initial backlog for the project.
 
 ---
 
