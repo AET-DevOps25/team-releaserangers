@@ -63,6 +63,14 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
       setIsLoading(false)
     }
   }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleSubmit(event)
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -71,7 +79,7 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
           <CardDescription>Sign up with your Apple account or Passkey</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full" disabled>

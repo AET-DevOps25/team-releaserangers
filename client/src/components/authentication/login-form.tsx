@@ -54,6 +54,13 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleSubmit(event)
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -62,7 +69,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
           <CardDescription>Login with your Apple account or Passkey</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-6">
+          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="grid gap-6">
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full" disabled>
