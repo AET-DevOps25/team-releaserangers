@@ -8,20 +8,21 @@ export function HeroSection() {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col justify-center space-y-6">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Simplify Your Workflow with Acme Inc.</h1>
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Study Smarter, Not Harder with Smart Summaries</h1>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Our platform helps teams collaborate seamlessly, manage projects efficiently, and deliver results faster.
+                Effortlessly organize, summarize, and master your lecture materials. Our AI-powered platform creates smart summaries, organizes your content into learning chapters,
+                and helps you prepare for exams efficiently—all in one place.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link href="/signup">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Get Started
+                  Get Started Free
                 </Button>
               </Link>
-              <Link href="/about">
+              <Link href="#features">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Learn more
+                  See How It Works
                 </Button>
               </Link>
             </div>
