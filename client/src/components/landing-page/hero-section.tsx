@@ -27,27 +27,13 @@ export function HeroSection() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="relative h-[350px] w-full max-w-[500px] rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-1 shadow-xl">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="rounded bg-background p-4 shadow-lg">
-                  <div className="flex h-6 w-full items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                    <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    <div className="ml-2 h-4 w-40 rounded bg-muted"></div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center justify-center transform transition-transform scale-110">
+            <img
+              src="/hero-releaserangers-light.png"
+              alt="Smart Summaries Screenshot"
+              className="rounded-lg object-contain h-full w-full"
+              style={{ maxHeight: "500px", maxWidth: "100%" }}
+            />
           </div>
         </div>
       </div>
