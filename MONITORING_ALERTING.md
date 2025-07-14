@@ -35,6 +35,9 @@ An alert is configured to monitor the `upload_service_errors_gauge` metric. If e
 - Start all services using Docker Compose: `docker compose up --build`
 - Access Grafana at [http://localhost:3001](http://localhost:3001)
 - Dashboards and alerts are automatically provisioned.
+- You can login with the default credentials:
+  - Username: `admin`
+  - Password: `admin`
 
 ## Files
 
