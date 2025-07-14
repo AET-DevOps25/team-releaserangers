@@ -7,8 +7,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { WelcomeSection } from "@/components/dashboard/welcome-section"
 import { RecentCourses } from "@/components/dashboard/recent-courses"
 import { QuickStats } from "@/components/dashboard/quick-stats"
-import { RecentActivity } from "@/components/dashboard/recent-activity"
-import { QuickActions } from "@/components/dashboard/quick-actions"
+import { TipsAndTricks } from "@/components/dashboard/tips-and-tricks"
 
 export default function DashboardPage() {
   return (
@@ -37,8 +36,7 @@ export default function DashboardPage() {
                 <RecentCourses />
               </div>
               <div className="space-y-6">
-                <QuickActions />
-                <RecentActivity />
+                <TipsAndTricks />
               </div>
             </div>
           </div>
