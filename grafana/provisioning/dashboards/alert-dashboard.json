@@ -26,6 +26,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "This panel keeps track of all upload errors that occurred. Each error is listed for 10 minutes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -69,7 +70,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "green"
               },
               {
                 "color": "red",
@@ -83,6 +84,21 @@
             "matcher": {
               "id": "byName",
               "options": "{__name__=\"upload_service_errors_total\", instance=\"upload-service:8080\", job=\"upload-service\", service=\"upload-service\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{__name__=\"upload_service_errors_gauge\", instance=\"upload-service:8080\", job=\"upload-service\", service=\"upload-service\"}"
             },
             "properties": [
               {
@@ -134,7 +150,7 @@
           "useBackend": false
         }
       ],
-      "title": "New panel",
+      "title": "Upload Error Gauge Panel",
       "type": "timeseries"
     }
   ],
@@ -152,5 +168,5 @@
   "timezone": "browser",
   "title": "Alert Dashboard",
   "uid": "fd7f0367-d1b0-49c1-9bdc-58ccc3aded23",
-  "version": 3
+  "version": 4
 }
