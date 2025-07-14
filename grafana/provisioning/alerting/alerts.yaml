@@ -5,23 +5,28 @@ groups:
     folder: notifiers
     interval: 1m
     rules:
-      - uid: aerxmkj9z4sg0b
-        title: Alert Upload Error
+      - uid: ferxqmykc36kgc
+        title: Upload Error Gauge Panel
         condition: C
         data:
           - refId: A
             relativeTimeRange:
-              from: 600
+              from: 21600
               to: 0
             datasourceUid: PBFA97CFB590B2093
             model:
+              adhocFilters: [ ]
+              datasource:
+                type: prometheus
+                uid: PBFA97CFB590B2093
               disableTextWrap: false
               editorMode: builder
               expr: upload_service_errors_gauge
               fullMetaSearch: false
               includeNullMetadata: true
               instant: true
-              intervalMs: 1000
+              interval: ""
+              intervalMs: 15000
               legendFormat: __auto
               maxDataPoints: 43200
               range: false
@@ -41,7 +46,7 @@ groups:
                     params:
                       - C
                   reducer:
-                    params: []
+                    params: [ ]
                     type: last
                   type: query
               datasource:
@@ -52,10 +57,15 @@ groups:
               maxDataPoints: 43200
               refId: C
               type: threshold
+        dashboardUid: fd7f0367-d1b0-49c1-9bdc-58ccc3aded23
+        panelId: 1
         noDataState: NoData
         execErrState: Error
         for: 1m
-        keepFiringFor: 1m
+        annotations:
+          __dashboardUid__: fd7f0367-d1b0-49c1-9bdc-58ccc3aded23
+          __panelId__: "1"
+        labels: { }
         isPaused: false
         notification_settings:
           receiver: grafana-default-email
