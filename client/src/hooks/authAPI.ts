@@ -101,7 +101,7 @@ export function useSignUp() {
         credentials: "include",
       })
       if (!response.ok) {
-        throw new Error(response.statusText)
+        throw new Error(response.statusText + response.status + " - " + response.text + " - " + response.json() + " - " + response.body)
       }
       const user = await response.json()
       mutate(USER_ENDPOINT, user, false)
@@ -136,7 +136,7 @@ export function useSignIn() {
         credentials: "include",
       })
       if (!response.ok) {
-        throw new Error(response.statusText)
+        throw new Error(response.statusText + response.status + " - " + response.text + " - " + response.json() + " - " + response.body)
       }
       const user = await response.json()
       mutate(USER_ENDPOINT, user, false)
