@@ -21,6 +21,9 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
     router.push(`/${courseId}/chapter/${chapterId}`)
   }
 
+  // Sort chapters by creation date in descending order (newest first)
+  const sortedChapters = [...chapters].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -28,7 +31,7 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {chapters.map((chapter) => (
+        {sortedChapters.map((chapter) => (
           <Card
             key={chapter.id}
             className={`cursor-pointer transition-all hover:border-primary ${selectedChapterId === chapter.id ? "border-primary" : ""}`}
@@ -36,7 +39,7 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
           >
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center justify-between">
-                <span className="line-clamp-1">{chapter.title}</span>
+                <span className="line-clamp-1">{chapter.emoji + " " + chapter.title}</span>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </CardTitle>
               <CardDescription className="line-clamp-2">{chapter.content}</CardDescription>
@@ -53,11 +56,11 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
                 <div className="flex items-center">
                   <CalendarSync className="mr-1 h-3 w-3" />
                   <span className="mr-1">Last updated</span>
-                  <span>{formatDistanceToNow(new Date(chapter.createdAt.endsWith("Z") ? chapter.createdAt : chapter.createdAt + "Z"), { addSuffix: true })}</span>
+                  <span>{formatDistanceToNow(new Date(chapter.updatedAt.endsWith("Z") ? chapter.updatedAt : chapter.updatedAt + "Z"), { addSuffix: true })}</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="mr-1 h-3 w-3" />
-                  <span>Created {formatDistanceToNow(new Date(chapter.updatedAt.endsWith("Z") ? chapter.updatedAt : chapter.updatedAt + "Z"), { addSuffix: true })}</span>
+                  <span>Created {formatDistanceToNow(new Date(chapter.createdAt.endsWith("Z") ? chapter.createdAt : chapter.createdAt + "Z"), { addSuffix: true })}</span>
                 </div>
               </div>
             </CardFooter>

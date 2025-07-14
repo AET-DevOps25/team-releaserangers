@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ArrowDown, ArrowUp, Link, MoreHorizontal, Settings2, Star, Trash2 } from "lucide-react"
+import { ArrowDown, Link, MoreHorizontal, Settings2, Star, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -14,6 +14,8 @@ import { CustomizeChapterDialog } from "./customize-chapter-dialog"
 import { useParams } from "next/navigation"
 
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
+  const params = useParams<{ courseId: string; chapterId: string }>()
+  const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(chapter.isFavorite)
   const { updateChapter } = useUpdateChapter()
@@ -24,7 +26,6 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
       {
         label: "Customize Chapter",
         icon: Settings2,
-        action: () => handleCustomizeChapter(),
       },
     ],
     [
@@ -36,15 +37,9 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
       {
         label: "Delete Chapter",
         icon: Trash2,
-        action: () => handleDeleteChapter(),
       },
     ],
     [
-      {
-        label: "Import",
-        icon: ArrowUp,
-        action: () => handleImport(),
-      },
       {
         label: "Export",
         icon: ArrowDown,
@@ -57,7 +52,7 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
     try {
       const value = !isFavorite
       setIsFavorite(value)
-      await updateChapter(chapter.id, {
+      await updateChapter(chapter.id, courseId, {
         isFavorite: value,
       })
       if (refetch) refetch()
@@ -66,25 +61,23 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
     }
   }
 
-  const handleCustomizeChapter = () => {
-    // Logic to customize the chapter
-    console.log("Customize Chapter clicked")
-  }
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href)
     setIsOpen(false)
   }
-  const handleDeleteChapter = () => {
-    // Logic to move the chapter to trash
-    console.log("Move to Trash clicked")
-  }
-  const handleImport = () => {
-    // Logic to import chapter data
-    console.log("Import clicked")
-  }
+
   const handleExport = () => {
-    // Logic to export chapter data
-    console.log("Export clicked")
+    const content = chapter.title + "\n\n" + chapter.content
+    const blob = new Blob([content], { type: "text/markdown" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${chapter.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    setIsOpen(false)
   }
 
   React.useEffect(() => {
