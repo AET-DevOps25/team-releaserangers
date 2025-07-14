@@ -6,6 +6,7 @@ import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -24,8 +25,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -54,9 +58,13 @@ public class UploadService {
 
     private final MeterRegistry registry;
     private final Counter uploadRequestCounter;
-    private final Counter uploadErrorCounter;
+    private final Counter uploadErrorTotal;
+    private final Gauge uploadErrorGauge;
     private final Counter summaryCounter;
     private final Timer uploadTimer;
+
+    private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
+    private static final Duration ERROR_EXPIRY = Duration.ofMinutes(10);
 
 
     /**
@@ -83,8 +91,17 @@ public class UploadService {
                 .description("Total number of requests to the summary service")
                 .tags("service", "upload-service")
                 .register(registry);
-        this.uploadErrorCounter = Counter.builder("upload_service_errors_total")
-                .description("Number of errors when processing uploaded files")
+        this.uploadErrorGauge = Gauge.builder("upload_service_errors_gauge", errorTimestamps, queue -> {
+            final Instant now = Instant.now();
+            // Remove expired timestamps
+            queue.removeIf(ts -> ts.isBefore(now.minus(ERROR_EXPIRY)));
+            return (double) queue.size();
+        })
+        .description("Number of errors when processing uploaded files (expires after 10 minutes)")
+        .tags("service", "upload-service")
+        .register(registry);
+        this.uploadErrorTotal = Counter.builder("upload_service_errors_total")
+                .description("Total number of errors when processing uploaded files")
                 .tags("service", "upload-service")
                 .register(registry);
         this.uploadTimer = Timer.builder("upload_service_request_duration")
@@ -107,13 +124,15 @@ public class UploadService {
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
         logger.info("Handle uploaded files");
         if (files == null || files.length == 0) {
-            uploadErrorCounter.increment();
+            errorTimestamps.add(Instant.now());
+            uploadErrorTotal.increment();
             logger.info(NO_FILES_ERROR);
             throw new IllegalArgumentException(NO_FILES_ERROR);
         }
         for (final MultipartFile file : files) {
             if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
-                uploadErrorCounter.increment();
+                errorTimestamps.add(Instant.now());
+                uploadErrorTotal.increment();
                 logger.info(INVALID_TYPE_ERROR);
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
@@ -122,7 +141,8 @@ public class UploadService {
         for (MultipartFile file : files) {
             final String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || originalFilename.isEmpty()) {
-                uploadErrorCounter.increment();
+                errorTimestamps.add(Instant.now());
+                uploadErrorTotal.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
           
