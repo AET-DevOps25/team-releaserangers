@@ -27,7 +27,7 @@ export function HeroSection() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center justify-center transform transition-transform scale-110">
+          <div className="flex items-center justify-center transform transition-transform scale-110 hover:scale-115 ease-in-out duration-300">
             <img
               src="/hero-releaserangers-light.png"
               alt="Smart Summaries Screenshot"
