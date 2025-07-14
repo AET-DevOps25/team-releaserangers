@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
@@ -28,12 +29,7 @@ export function HeroSection() {
             </div>
           </div>
           <div className="flex items-center justify-center transform transition-transform scale-110 hover:scale-115 ease-in-out duration-300">
-            <img
-              src="/hero-releaserangers-light.png"
-              alt="Smart Summaries Screenshot"
-              className="rounded-lg object-contain h-full w-full"
-              style={{ maxHeight: "500px", maxWidth: "100%" }}
-            />
+            <Image src="/hero-releaserangers-light.png" alt="Smart Summaries Screenshot" className="rounded-lg object-contain h-full w-full" width={600} height={400} />
           </div>
         </div>
       </div>
