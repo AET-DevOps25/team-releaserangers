@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,7 +63,10 @@ public class CourseController {
         if (courses.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(courses);
+        final List<Course> sortedCourses = courses.stream()
+                .sorted(Comparator.comparing(Course::getName))
+                .toList();
+        return ResponseEntity.ok(sortedCourses);
     }
 
     @GetMapping("/{courseId}")
