@@ -64,7 +64,7 @@ public class CourseController {
             return ResponseEntity.noContent().build();
         }
         final List<Course> sortedCourses = courses.stream()
-                .sorted(Comparator.comparing(Course::getName))
+                .sorted(Comparator.comparing(Course::getName, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
         return ResponseEntity.ok(sortedCourses);
     }
