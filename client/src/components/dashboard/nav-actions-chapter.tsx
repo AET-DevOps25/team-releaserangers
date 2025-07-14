@@ -7,13 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { formatDistanceToNow } from "date-fns"
-import { useParams } from "next/navigation"
 import { useFavorites } from "@/hooks/useFavorites"
 import { useUpdateChapter } from "@/hooks/chapterAPI"
 
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
-  const params = useParams<{ courseId: string; chapterId: string }>()
-  const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const [isOpen, setIsOpen] = React.useState(false)
   const [isFavorite, setIsFavorite] = React.useState(chapter.isFavorite)
   const { updateChapter } = useUpdateChapter()
@@ -57,7 +54,7 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
     try {
       const value = !isFavorite
       setIsFavorite(value)
-      await updateChapter(courseId, chapter.id, {
+      await updateChapter(chapter.id, {
         isFavorite: value,
       })
       if (refetch) refetch()

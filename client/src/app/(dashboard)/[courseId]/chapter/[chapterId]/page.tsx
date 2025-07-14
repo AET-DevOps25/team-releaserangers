@@ -17,7 +17,7 @@ export default function ChapterPage() {
   const params = useParams<{ courseId: string; chapterId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const chapterId = params ? (typeof params.chapterId === "string" ? params.chapterId : "") : ""
-  const { chapter, isLoading, error } = useChapter(courseId, chapterId)
+  const { chapter, isLoading, error } = useChapter(chapterId)
   const { course, isLoading: isCourseLoading, error: courseError } = useCourse(courseId)
 
   if (error || courseError) {

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { Calendar, CalendarSync, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ChapterListProps {
@@ -26,9 +25,6 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Chapters ({chapters.length})</h2>
-        <Button disabled variant="outline" size="sm">
-          Reorder
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

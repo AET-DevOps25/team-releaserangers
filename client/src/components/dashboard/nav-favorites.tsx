@@ -25,7 +25,7 @@ export function NavFavorites() {
         })
         mutate(COURSE_ENDPOINT(item.id))
       } else {
-        await updateChapter(item.courseId!, item.id, {
+        await updateChapter(item.id, {
           isFavorite: false,
         })
         mutate(CHAPTER_ENDPOINT(item.id))

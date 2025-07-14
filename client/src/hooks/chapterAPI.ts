@@ -4,7 +4,7 @@ import { authenticatedFetcher } from "./authenticated-fetcher"
 import { useState } from "react"
 import { handleUnauthorized } from "./handle-unauthorized"
 
-export function useChapter(courseId: string, chapterId: string) {
+export function useChapter(chapterId: string) {
   const { data, error, isLoading } = useSWR<Chapter>(CHAPTER_ENDPOINT(chapterId), authenticatedFetcher)
 
   // if (!data.chapters) {
@@ -25,7 +25,7 @@ export function useUpdateChapter() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const updateChapter = async (courseId: string, chapterId: string, chapterUpdate: Partial<Chapter>) => {
+  const updateChapter = async (chapterId: string, chapterUpdate: Partial<Chapter>) => {
     setIsLoading(true)
     setError(null)
 

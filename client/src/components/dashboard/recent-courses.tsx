@@ -3,125 +3,74 @@
 import type React from "react"
 
 import { useRouter } from "next/navigation"
-import { Calendar, ChevronRight, Clock, Play } from "lucide-react"
+import { Calendar, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-
-const recentCourses = [
-  {
-    id: "1",
-    title: "Introduction to Web Development",
-    description: "Learn the fundamentals of web development including HTML, CSS, and JavaScript.",
-    emoji: "💻",
-    progress: 75,
-    lastAccessed: "2023-12-10T14:30:00Z",
-    totalChapters: 12,
-    completedChapters: 9,
-    estimatedTime: "2h 30m remaining",
-  },
-  {
-    id: "2",
-    title: "Advanced React Patterns",
-    description: "Master advanced React patterns and techniques for building scalable applications.",
-    emoji: "⚛️",
-    progress: 30,
-    lastAccessed: "2023-12-09T16:45:00Z",
-    totalChapters: 8,
-    completedChapters: 2,
-    estimatedTime: "5h 45m remaining",
-  },
-  {
-    id: "3",
-    title: "UI/UX Design Principles",
-    description: "Learn the core principles of user interface and user experience design.",
-    emoji: "🎨",
-    progress: 90,
-    lastAccessed: "2023-12-08T10:15:00Z",
-    totalChapters: 10,
-    completedChapters: 9,
-    estimatedTime: "45m remaining",
-  },
-  {
-    id: "4",
-    title: "Data Science Fundamentals",
-    description: "Introduction to data science, statistics, and machine learning concepts.",
-    emoji: "📊",
-    progress: 15,
-    lastAccessed: "2023-12-07T09:20:00Z",
-    totalChapters: 15,
-    completedChapters: 2,
-    estimatedTime: "12h 30m remaining",
-  },
-]
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useCourses } from "@/hooks/courseAPI"
+import { ButtonType, CourseCreationDialog } from "./course-creation-dialog"
 
 export function RecentCourses() {
   const router = useRouter()
+  const { courses, isLoading } = useCourses()
 
   const handleCourseClick = (courseId: string) => {
     router.push(`/${courseId}`)
   }
 
-  const handleContinueClick = (courseId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    router.push(`/${courseId}/chapter/current`)
-  }
+  // Sort courses by last edited time (most recent first) and limit to 4
+  const sortedCourses = [...courses].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Continue Learning</h2>
-        <Button variant="outline" size="sm">
-          View All Courses
-        </Button>
+        <CourseCreationDialog buttonType={ButtonType.Home} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {recentCourses.map((course) => (
-          <Card key={course.id} className="cursor-pointer transition-all hover:border-primary" onClick={() => handleCourseClick(course.id)}>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{course.emoji}</span>
-                  <span className="line-clamp-1">{course.title}</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </CardTitle>
-              <CardDescription className="line-clamp-2">{course.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{course.progress}%</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <span>
-                    {course.completedChapters}/{course.totalChapters} chapters
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{course.estimatedTime}</span>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="pt-0 flex justify-between items-center">
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Calendar className="mr-1 h-3 w-3" />
-                <span>Last accessed {formatDistanceToNow(new Date(course.lastAccessed))} ago</span>
-              </div>
-              <Button size="sm" className="gap-1" onClick={(e) => handleContinueClick(course.id, e)}>
-                <Play className="h-3 w-3" />
-                Continue
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <Card key={`loading-${index}`} className="animate-pulse">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 w-6 rounded bg-muted"></div>
+                      <div className="h-4 w-32 rounded bg-muted"></div>
+                    </div>
+                    <div className="h-5 w-5 rounded bg-muted"></div>
+                  </CardTitle>
+                  <div className="h-4 w-full rounded bg-muted mt-2"></div>
+                  <div className="h-4 w-3/4 rounded bg-muted mt-1"></div>
+                </CardHeader>
+                <CardFooter className="pt-0 flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <div className="h-3 w-3 rounded bg-muted"></div>
+                    <div className="h-3 w-24 rounded bg-muted"></div>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))
+          : sortedCourses.map((course) => (
+              <Card key={course.id} className="cursor-pointer transition-all hover:border-primary" onClick={() => handleCourseClick(course.id)}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{course.emoji}</span>
+                      <span className="line-clamp-1">{course.name}</span>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </CardTitle>
+                  <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                </CardHeader>
+                <CardFooter className="pt-0 flex justify-between items-center">
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Calendar className="mr-1 h-3 w-3" />
+                    <span>Last edited {formatDistanceToNow(new Date(course.updatedAt + "Z"))} ago</span>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
       </div>
     </div>
   )
