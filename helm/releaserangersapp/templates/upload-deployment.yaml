@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-service
+  namespace: "{{ .Values.team }}"
+  labels:
+    app: upload-service
+spec:
+  replicas: {{ .Values.uploadService.replicaCount }}
+  selector:
+    matchLabels:
+      app: upload-service
+  template:
+    metadata:
+      labels:
+        app: upload-service
+    spec:
+      containers:
+        - name: upload-service
+          image: "{{ .Values.uploadService.image.repository }}:{{ .Values.uploadService.image.tag }}"
+          imagePullPolicy: {{ .Values.uploadService.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          ports:
+            - containerPort: {{ .Values.uploadService.service.targetPort }}
+          env:
+            {{- range .Values.uploadService.env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value | quote }}
+              {{- end }}
+            {{- end }}

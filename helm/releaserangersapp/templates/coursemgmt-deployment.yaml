@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coursemgmt-service
+  namespace: "{{ .Values.team }}"
+  labels:
+    app: coursemgmt-service
+spec:
+  replicas: {{ .Values.coursemgmtService.replicaCount }}
+  selector:
+    matchLabels:
+      app: coursemgmt-service
+  template:
+    metadata:
+      labels:
+        app: coursemgmt-service
+    spec:
+      containers:
+        - name: coursemgmt-service
+          image: "{{ .Values.coursemgmtService.image.repository }}:{{ .Values.coursemgmtService.image.tag }}"
+          imagePullPolicy: {{ .Values.coursemgmtService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.coursemgmtService.service.targetPort }}
+          env:
+            {{- range .Values.coursemgmtService.env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value | quote }}
+              {{- else if .valueFrom }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .valueFrom.secretKeyRef.name }}
+                  key: {{ .valueFrom.secretKeyRef.key }}
+              {{- end }}
+            {{- end }}
