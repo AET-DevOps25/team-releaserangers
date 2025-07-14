@@ -9,6 +9,9 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu
 import { formatDistanceToNow } from "date-fns"
 import { useFavorites } from "@/hooks/useFavorites"
 import { useUpdateChapter } from "@/hooks/chapterAPI"
+import { DeleteChapterDialog } from "./delete-chapter-dialog"
+import { CustomizeChapterDialog } from "./customize-chapter-dialog"
+import { useParams } from "next/navigation"
 
 export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -111,9 +114,23 @@ export function NavActionsChapter({ chapter }: { chapter: Chapter }) {
                     <SidebarMenu>
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
-                          <SidebarMenuButton onClick={item.action}>
-                            <item.icon /> <span>{item.label}</span>
-                          </SidebarMenuButton>
+                          {item.label === "Customize Chapter" ? (
+                            <CustomizeChapterDialog chapter={chapter} courseId={courseId}>
+                              <SidebarMenuButton onClick={item.action}>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </CustomizeChapterDialog>
+                          ) : item.label === "Delete Chapter" ? (
+                            <DeleteChapterDialog chapter={chapter} courseId={courseId}>
+                              <SidebarMenuButton onClick={item.action}>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </DeleteChapterDialog>
+                          ) : (
+                            <SidebarMenuButton onClick={item.action}>
+                              <item.icon /> <span>{item.label}</span>
+                            </SidebarMenuButton>
+                          )}
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>

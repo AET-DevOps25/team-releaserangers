@@ -1,4 +1,4 @@
-import { CHAPTER_ENDPOINT } from "@/server/endpoints"
+import { CHAPTER_ENDPOINT, COURSE_ENDPOINT } from "@/server/endpoints"
 import useSWR, { mutate } from "swr"
 import { authenticatedFetcher } from "./authenticated-fetcher"
 import { useState } from "react"
@@ -25,7 +25,7 @@ export function useUpdateChapter() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const updateChapter = async (chapterId: string, chapterUpdate: Partial<Chapter>) => {
+  const updateChapter = async (chapterId: string, courseId: string, chapterUpdate: Partial<Chapter>) => {
     setIsLoading(true)
     setError(null)
 
@@ -46,8 +46,9 @@ export function useUpdateChapter() {
       if (!response.ok) {
         throw new Error(response.statusText)
       }
-      const updatedChapter = await response.json()
+      const updatedChapter: Chapter = await response.json()
       mutate(CHAPTER_ENDPOINT(chapterId), updatedChapter, false)
+      mutate(COURSE_ENDPOINT(courseId)) // Update the course cache after chapter update
     } catch (err) {
       console.error("Error updating chapter:", err)
       setError(err as Error)
@@ -67,7 +68,7 @@ export function useDeleteChapter() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const deleteChapter = async (courseId: string, chapterId: string) => {
+  const deleteChapter = async (chapterId: string) => {
     setIsLoading(true)
     setError(null)
 
