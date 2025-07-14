@@ -37,8 +37,8 @@ export function ChapterList({ chapters, courseId }: ChapterListProps) {
             className={`cursor-pointer transition-all hover:border-primary ${selectedChapterId === chapter.id ? "border-primary" : ""}`}
             onClick={() => handleChapterSelect(chapter.id)}
           >
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between leading-relaxed">
                 <span className="line-clamp-1">{chapter.emoji + " " + chapter.title}</span>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </CardTitle>
