@@ -41,7 +41,7 @@ An alert is configured to monitor the `upload_service_errors_gauge` metric. If e
 ## Files
 
 - `prometheus/prometheus.yml`: Prometheus configuration
-- `grafana/grafana.ini`: Grafana main config (including SMTP)
+- `grafana/grafana.ini`: Grafana main configuration
 - `grafana/provisioning/dashboards/`: Dashboard definitions
 - `grafana/provisioning/datasources/`: Datasource definitions
 - `grafana/provisioning/alerting/alerts.yaml`: Alerting rules
