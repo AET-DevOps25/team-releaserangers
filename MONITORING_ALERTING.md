@@ -24,7 +24,6 @@ We use Prometheus and Grafana for monitoring, with Loki and Promtail for log agg
   - **Dashboards**: JSON files in `grafana/provisioning/dashboards/`.
   - **Datasources**: Prometheus and Loki defined in `grafana/provisioning/datasources/`.
   - **Alerting**: Alert rules in `grafana/provisioning/alerting/alerts.yaml`.
-- **SMTP**: Email notifications for alerts are enabled via the `[smtp]` section in `grafana/grafana.ini`.
 
 ## Example: Upload Error Alert
 
@@ -46,10 +45,5 @@ An alert is configured to monitor the `upload_service_errors_gauge` metric. If e
 - `grafana/provisioning/dashboards/`: Dashboard definitions
 - `grafana/provisioning/datasources/`: Datasource definitions
 - `grafana/provisioning/alerting/alerts.yaml`: Alerting rules
-
-## Customization
-
-- To add or modify alerts, edit the YAML files in `grafana/provisioning/alerting/`.
-- To change notification settings, update the SMTP section in `grafana/grafana.ini`.
 
 ---
