@@ -1,6 +1,6 @@
-# GitHub Workflows Documentation
-
 [← Back to Main README](../README.md)
+
+# GitHub Workflows Documentation
 
 ## Overview
 
@@ -17,9 +17,11 @@
 **Workflow file:** `.github/workflows/build_and_test_java.yml`
 
 **Trigger:**
+
 - On every push to the repository.
 
 **Jobs:**
+
 - **Build:**
   - Matrix job runs for each Java service (`authentication-service`, `coursemgmt-service`, `upload-service`).
   - **Steps:**
@@ -42,9 +44,11 @@
 **Workflow file:** `.github/workflows/build_docker.yml`
 
 **Trigger:**
+
 - On every push to the repository (except pushes by `dependabot[bot]`).
 
 **Steps:**
+
 1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest codebase, ensuring Docker images are built from the most recent changes.
 2. **Log in to GitHub Container Registry:** Uses `docker/login-action@v3` to authenticate with GitHub's container registry using the actor's credentials and a GitHub token. This allows pushing images securely.
 3. **Set up QEMU:** Uses `docker/setup-qemu-action@v3` to enable multi-platform builds (e.g., ARM and AMD64), ensuring images are compatible with various deployment targets.
@@ -58,16 +62,36 @@
 **Workflow file:** `.github/workflows/client_ci.yml`
 
 **Trigger:**
+
 - On every push to any branch.
 
-**Steps:**
-1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest client code.
-2. **Setup pnpm:** Uses `pnpm/action-setup@v4` to install the latest version of pnpm, a fast and efficient package manager for Node.js projects.
-3. **Set up Node.js:** Uses `actions/setup-node@v4` to install Node.js version 22 and cache dependencies for faster builds. The cache is based on the `pnpm-lock.yaml` file to ensure consistency.
-4. **Install dependencies:** Runs `pnpm install` to install all required packages for the client application, ensuring the environment is ready for build and test.
-5. **Security audit:** Runs `pnpm audit` to check for known vulnerabilities in dependencies, helping maintain a secure codebase.
-6. **Lint:** Runs `pnpm lint` to check code for style and quality issues, enforcing best practices and preventing common errors.
-7. **Build:** Runs `pnpm build` to compile and bundle the client application, preparing it for deployment or further testing.
+**Jobs:**
+
+- **Lint and Build:**
+
+  - **Steps:**
+    1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest client code.
+    2. **Setup pnpm:** Uses `pnpm/action-setup@v4` to install the latest version of pnpm, a fast and efficient package manager for Node.js projects.
+    3. **Set up Node.js:** Uses `actions/setup-node@v4` to install Node.js version 22 and cache dependencies for faster builds. The cache is based on the `pnpm-lock.yaml` file to ensure consistency.
+    4. **Install dependencies:** Runs `pnpm install` in the `./client` directory to install all required packages for the client application, ensuring the environment is ready for build and test.
+    5. **Cache node_modules:** Uses `actions/cache@v4` to cache the `node_modules` directory for faster subsequent builds.
+    6. **Security audit:** Runs `pnpm audit` in the `./client` directory to check for known vulnerabilities in dependencies, helping maintain a secure codebase.
+    7. **Lint:** Runs `pnpm lint` in the `./client` directory to check code for style and quality issues, enforcing best practices and preventing common errors.
+    8. **Build:** Runs `pnpm build` in the `./client` directory to compile and bundle the client application, preparing it for deployment or further testing.
+    9. **Cache build output:** Uses `actions/cache@v4` to cache the `./client/dist` directory for faster access to build artifacts.
+    10. **Upload build artifacts:** Uses `actions/upload-artifact@v4` to upload the build output (`./client/dist/`) as an artifact for later use.
+
+- **End-to-End Testing:**
+  - **Depends on:** Lint and Build job.
+  - **Steps:**
+    1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest client code.
+    2. **Setup Docker Compose:** Uses `docker/setup-compose-action@v1` to prepare Docker Compose for service orchestration.
+    3. **Start services:** Runs `docker compose up` to start the required services for testing.
+    4. **Install Playwright Browsers:** Runs `pnpm exec playwright install --with-deps` in the `./client` directory to set up browsers for testing.
+    5. **Cache Playwright browsers:** Uses `actions/cache@v4` to cache Playwright browser binaries for faster test execution.
+    6. **Run Playwright tests:** Runs `pnpm exec playwright test` in the `./client` directory to execute end-to-end tests against the Dockerized services.
+    7. **Upload test report:** Uses `actions/upload-artifact@v4` to upload the Playwright test report (`./client/playwright-report/`) for review.
+    8. **Stop services:** Runs `docker compose down -v` to stop and clean up Docker services after testing.
 
 ---
 
@@ -76,13 +100,15 @@
 **Workflow file:** `.github/workflows/deployAWS_docker.yml`
 
 **Trigger:**
+
 - Manually via `workflow_dispatch` (triggered by a user from the GitHub Actions UI).
 
 **Steps:**
+
 1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest codebase for deployment.
 2. **Copy Docker Compose file to VM:** Uses `appleboy/scp-action@v0.1.7` to securely copy the `docker-compose.aws.yml` file from the repository to the EC2 host. This file defines the services and their configuration for deployment.
 3. **Create `.env.prod` on VM:** Uses `appleboy/ssh-action@v1.0.3` to SSH into the EC2 host and create a production environment file (`.env.prod`) with necessary environment variables (e.g., client and server hostnames, public API URL). This ensures services have the correct configuration for production.
-4. **Deploy with Docker Compose:** Uses `appleboy/ssh-action@v1.0.3` to SSH into the EC2 host, log in to the Docker registry, and run `docker compose up` with the production environment file. The `--pull=always` flag ensures the latest images are used, and `-d` runs the containers in detached mode. This step orchestrates the deployment of all services on the EC2 instance.
+4. **Deploy with Docker Compose:** Uses `appleboy/ssh-action@v1.0.3` to SSH into the EC2 host, log in to the Docker registry, and run `docker compose up` with the production environment file. The `--pull=always` flag ensures the latest images are used, and `-d` runs the containers in detached mode. Additionally, the `--remove-orphans` flag is used to clean up unused containers.
 
 ---
 
@@ -91,9 +117,11 @@
 **Workflow file:** `.github/workflows/securityWorkflow.yml`
 
 **Trigger:**
+
 - On every push to the repository.
 
 **Jobs:**
+
 - **Gitleaks:**
   - **Steps:**
     1. **Checkout code:** Fetches the latest codebase for scanning.

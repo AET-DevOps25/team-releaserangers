@@ -1,24 +1,22 @@
-# Start Individual Services Guide
-
 [← Back to Main README](../README.md)
+
+# Start Individual Services Guide
 
 ### Client Setup
 
-- create a `.env` file in the root directory of the project
-- add the following environment variables:
+- Navigate to the `client` directory:
 
   ```bash
-  JWT_SECRET=<your_jwt_secret>
+  cd client
   ```
 
-- for local development, create a `.env.local` file in the `client` directory and add the following environment variables:
+- If you haven't already, install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/installation).
+
+- Install dependencies using `pnpm`:
 
   ```bash
-  JWT_SECRET=<your_jwt_secret>
-  NEXT_PUBLIC_API_URL="http://localhost"
+  pnpm install
   ```
-
-  Attention: The JWT secret must be the same in both `.env`, `.env.local` and `authentication-service/src/main/resources/application.properties` files.
 
 ### Server Setup
 
@@ -39,7 +37,7 @@
 
 - You do not need to manually export environment variables. Simply run the authentication service as usual (e.g., `./mvnw spring-boot:run`), and the secret will be loaded automatically.
 
-  **Note:** The JWT secret must be identical in `.env`, `.env.local` (for the client), and available to the authentication service for authentication to work correctly.
+  **Note:** The JWT secret must be in `.env` and available to the authentication service for authentication to work correctly.
 
 ### LLM Service Setup
 
@@ -74,7 +72,6 @@ From the project root, run:
 
 ```bash
 cd client
-pnpm install
 pnpm dev
 ```
 

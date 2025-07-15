@@ -1,16 +1,10 @@
 # DevOps 2025 - Team ReleaseRangers
 
-This is a university project designed to enhance students learning experience by leveraging GenAI to create summaries of lecture material throughout the semester. We want to help students optimize their study time by automating the summarization process, allowing them to focus on understanding and applying rather than summarizing.
+This repository is part of the "DevOps: Engineering for Deployment and Operations" course at the Technical University of Munich, taught by Prof. Dr. Stephan Krusche and Prof. Dr. Ingo Weber.
 
----
+This project is leveraging GenAI to create smart summaries of lecture materials. By automating the summarization process, it aims to provide students with a structured and up-to-date overview of their course content, enabling them to focus on understanding and applying concepts rather than summarizing.
 
-## Our Team
-
-  This project is maintained by:
-
-- **Florian Charrot (FC)**
-- **Jonathan Müller (JM)**
-- **Luis Leutbecher (LL)**
+![hero-image](/client/public/hero-releaserangers-light.png)
 
 ---
 
@@ -24,20 +18,32 @@ This is a university project designed to enhance students learning experience by
 - [Quick Local Setup (Recommended)](#quick-local-setup-recommended)
 - [Individual Setup Instructions](#individual-setup-instructions)
 - [Tech Stack](#tech-stack)
-- [Database Schema](#database-schema)
 - [Architecture Overview](#architecture-overview)
+- [Database Schema](#database-schema)
 - [API documentation](#api-documentation)
 - [CI/CD Instructions](#ci-cd-instructions)
 - [Monitoring Instructions](#monitoring-instructions)
 - [Testing Instructions](#testing-instructions)
 - [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
+- [Deployment Instructions](#deployment-instructions)
+
+---
+
+## Our Team
+
+This project is maintained by:
+
+- **Florian Charrot (FC)**
+- **Jonathan Müller (JM)**
+- **Luis Leutbecher (LL)**
 
 ---
 
 ## Student Responsibilities
 
 - **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup, Python Testing
-- **Jonathan Müller (JM)**: Frontend Development, Database Design, Terraform and Ansible Setup, Client Testing, Authentication Service, AWS Deployment
+- **Jonathan Müller (JM)**: Frontend Development, Authentication Service,
+  Database Design, Client Testing, Terraform and Ansible Setup, AWS Deployment
 - **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup, Monitoring and Observation
 
 ---
@@ -55,8 +61,8 @@ This is a university project designed to enhance students learning experience by
 ## Key Features
 
 - **Upload all lecture material at a single place**
-- **Structure relevant information into learning chapters**
-- **Keep uploading whenever you receive new material**
+- **Get smart summaries of your lecture material categorized into learning chapters**
+- **Integrate new content throughout the semester**
 
 ---
 
@@ -64,8 +70,8 @@ This is a university project designed to enhance students learning experience by
 
 Our application helps students to study efficient by leveraging LLM generated smart summaries of their lecture material. Our vision is to create one single place where one can get a summarized overview of the lecture material needed for exam preparation. We want to enable students to easily add new content throughout the semester which constantly gets summarized to always provide the student with an up-to-date overview of the current course content.
 
-- [Problem Statement](docs/Problem_Statement.md): Learn about the motivation, main functionality, and user scenarios for ReleaseRangers.
-- [System Architecture](docs/System_Architecture.md): See the technical structure, technologies, and initial backlog for the project.
+- [Problem Statement](docs/problem_statement.md): Learn about the motivation, main functionality, and user scenarios for ReleaseRangers.
+- [System Architecture](docs/system_architecture.md): See the technical structure, technologies, and initial backlog for the project.
 
 ---
 
@@ -89,11 +95,17 @@ cd team-releaserangers
 
 > **⚠️ Note:** Make sure to configure the `JWT_SECRET` and `LLM_API_KEY` environment variables before running the project locally. These are required for authentication and GenAI features to work.
 
-Attention: The JWT secret must be the same in both `.env` and `authentication-service/src/main/resources/application.properties` files.
+Attention: The JWT secret must be the same in both `.env` and
+`authentication-service/src/main/resources/application.properties` files.
+Currently the authentication service is using the `JWT_SECRET` from the `.env`
+file, so you only need to consider this if you make manual changes to the
+`authentication-service/src/main/resources/application.properties` file.
 
 The easiest way to configure your environment for local development is to use the provided setup script:
 
-You can get your own free-tier gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+For giving you a head start, we have Google Gemini preconfigured as GenAI provider.
+Hence for this script-setup, you need a Google Gemini API key.
+You can get your own free-tier Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ```bash
 chmod +x setup-env.sh
@@ -105,8 +117,13 @@ Then run the script and follow the prompts to create and configure the necessary
 ./setup-env.sh
 ```
 
-This script will automatically create and configure all required `.env` files for both the server, genai and client.
-If you set up the `.env` files yourself please ensure that secrets like `JWT_SECRET` are synchronized.
+This script will automatically create and configure all required `.env` files
+for both the server and genai service.
+
+You can manually adapt the `.env` file or the `genai/.env` file to change the
+GenAI provider or other settings.
+
+E.g. for using OpenWebUI instead of Gemini, you can change the `LLM\_
 
 ---
 
@@ -115,7 +132,7 @@ If you set up the `.env` files yourself please ensure that secrets like `JWT_SEC
 To start the entire application stack (client, server, database, etc.) locally, simply run:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 This will build and start all services as defined in the `docker-compose.yml` file.
@@ -130,11 +147,18 @@ For step-by-step instructions on setting up and running each service (client, se
 
 ## Tech Stack
 
-- **Frontend**: React
+- **Frontend**: Next.js (React)
 - **Backend**: Spring Boot (Java)
 - **GenAI Integration**: LangChain
-- **AI models**: OpenAI, LLaMA
 - **Database**: PostgreSQL
+
+---
+
+## Architecture Overview
+
+### Top Level Architecture
+
+### Subsystem Decomposition
 
 ---
 
@@ -157,21 +181,13 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ---
 
-## Architecture Overview
-
-### Top Level Architecture
-
-### Subsystem Decomposition
-
----
-
 ## API documentation
 
 The entire API is defined using OpenAPI (see [`api-collections/openapi.yml`](api-collections/openapi.yml)).
 
-You can view the Swagger UI via GitHub Pages (if enabled for this repository):
+You can view the Swagger UI via GitHub Pages:
 
-- Open your browser and navigate to `https://aet-devops25.github.io/team-releaserangers/api/index.html`
+- Open your browser and navigate to [https://aet-devops25.github.io/team-releaserangers/api/index.html](https://aet-devops25.github.io/team-releaserangers/api/index.html)
 
 This provides a complete, interactive overview of all endpoints, request/response formats, and authentication details.
 
@@ -182,6 +198,7 @@ This provides a complete, interactive overview of all endpoints, request/respons
 ### Documentation
 
 For detailed documentation on the CI/CD workflows, please refer to the following documentation:
+
 - [GitHub Workflows Documentation](docs/github-workflows.md)
 - [Start Individual Services Guide](docs/start-individual.md)
 
@@ -193,35 +210,33 @@ For detailed documentation on the CI/CD workflows, please refer to the following
 
 ## Testing Instructions
 
-### How to Run Tests
-
 ### Client Tests
 
-Check the client setup from above and install the necessary dependencies for the client:
+Check the client setup from the [Start Individual Services
+Guide](docs/start-individual.md) and install the necessary dependencies for the
+client if not already done:
 
 ```bash
 cd client
 pnpm install
 ```
 
-To run the playwright e2e tests for the client, you have to start the whole
+To run the playwright end-to-end (E2E) tests for the client, you have to start the whole
 stack using Docker Compose. It is advised to use a fresh database to avoid conflicts with existing data.
 
 ```bash
 docker compose up --build -d
 ```
 
-Then you can run the tests using Playwright:
+Then still in the `client` directory, you can run the tests:
 
 ```bash
-cd client
 pnpm test
 ```
 
 For a nice UI interface you can run the tests in headed mode:
 
 ```bash
-cd client
 pnpm test:ui
 ```
 
@@ -252,7 +267,7 @@ mvn clean package
 
 ---
 
-## Code Quality: SpotBugs & Checkstyle
+## Code Quality: SpotBugs & Checkstyle & pnpm Audit
 
 ### How to Run SpotBugs and Checkstyle
 
@@ -296,3 +311,32 @@ You can run these tools manually or as part of the Maven build:
 If you run `mvn verify`, both tools will be executed and any violations will fail the build.
 
 ---
+
+### How to Run pnpm Audit for the Client
+
+To ensure the client dependencies are secure and up-to-date, you can use `pnpm audit` to check for vulnerabilities:
+
+- Navigate to the `client` directory:
+
+  ```sh
+  cd client
+  ```
+
+- Run the audit command:
+
+  ```sh
+  pnpm audit
+  ```
+
+  This will analyze the installed dependencies and report any known
+  vulnerabilities.
+
+---
+
+## Deployment Instructions
+
+For deployment instructions for AWS, please refer to the [Terraform and Ansible
+Setup Guide](docs/terraform_ansible_setup.md). This guide provides step-by-step
+instructions on how to set up Terraform and Ansible for deploying the
+application on AWS.
+For kubernetes deployment, you can refer to the [Kubernetes Deployment Guide](docs/kubernetes_deployment.md).
