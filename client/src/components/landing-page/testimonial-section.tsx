@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 
 export function TestimonialSection() {
@@ -8,9 +8,9 @@ export function TestimonialSection() {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <div className="inline-block rounded-lg bg-background px-3 py-1 text-sm">Testimonials</div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">What Our Customers Say</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">How Students Use Our Platform</h2>
             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Don&apos;t just take our word for it. Here&apos;s what our customers have to say about our platform.
+              Real scenarios from students who improved their exam preparation with our platform.
             </p>
           </div>
         </div>
@@ -20,15 +20,15 @@ export function TestimonialSection() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Avatar" />
+                    <AvatarFallback>AN</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">Jane Doe</p>
-                    <p className="text-sm text-muted-foreground">CEO, Company A</p>
+                    <p className="text-sm font-medium">Anna, Computer Science Student</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground">
-                  &quot;Acme Inc. has transformed how our team works together. The platform is intuitive and has all the features we need.&quot;
+                  &quot;I was stressed before exams, but after uploading my messy notes and slides, this app organized everything into clear chapters and summaries. I finally had
+                  an overview of the whole course in seconds!&quot;
                 </p>
               </div>
             </CardContent>
@@ -38,15 +38,15 @@ export function TestimonialSection() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    {/* <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Avatar" /> */}
-                    <AvatarFallback>JS</AvatarFallback>
+                    <AvatarFallback>MX</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">John Smith</p>
-                    <p className="text-sm text-muted-foreground">CTO, Company B</p>
+                    <p className="text-sm font-medium">Max, Engineering Student</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground">&quot;The security features are top-notch, and the customer support team is always responsive and helpful.&quot;</p>
+                <p className="text-muted-foreground">
+                  &quot;I upload my lecture material every week. The app keeps my summaries up to date, so I never feel lost when exam season comes around.&quot;
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -55,16 +55,15 @@ export function TestimonialSection() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    {/* <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Avatar" /> */}
-                    <AvatarFallback>EJ</AvatarFallback>
+                    <AvatarFallback>TM</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">Emily Johnson</p>
-                    <p className="text-sm text-muted-foreground">Product Manager, Company C</p>
+                    <p className="text-sm font-medium">Tom, Business Student</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground">
-                  &quot;We&apos;ve seen a 30% increase in productivity since implementing Acme Inc. It&apos;s been a game-changer for our team.&quot;
+                  &quot;After missing two weeks of lectures, I uploaded my friend&apos;s notes and quickly caught up using the AI-generated summaries. I didn&apos;t have to read
+                  every document to know what I missed.&quot;
                 </p>
               </div>
             </CardContent>
