@@ -11,7 +11,7 @@ const getApiUrl = () => {
     }
     // Extract base domain (remove 'client.' prefix if present)
     const baseDomain = hostname.replace(/^client\./, "")
-    return `https://client.${baseDomain}`
+    return `https://api.${baseDomain}`
   }
 
   return ""
