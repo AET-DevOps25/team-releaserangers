@@ -148,7 +148,8 @@ For step-by-step instructions on setting up and running each service (client, se
 ## Tech Stack
 
 - **Frontend**: Next.js (React)
-- **Backend**: Spring Boot (Java)
+- **Backend**: Spring Boot (Java, JDK 21 or higher)
+  - The backend services require JDK 21 or newer to build and run. You can download the JDK from [Adoptium](https://adoptium.net/) or [Oracle](https://www.oracle.com/java/technologies/downloads/). Verify your installation with `java -version` to ensure you have the correct version installed.
 - **GenAI Integration**: LangChain
 - **Database**: PostgreSQL
 
@@ -340,3 +341,5 @@ Setup Guide](docs/terraform_ansible_setup.md). This guide provides step-by-step
 instructions on how to set up Terraform and Ansible for deploying the
 application on AWS.
 For kubernetes deployment, you can refer to the [Kubernetes Deployment Guide](docs/kubernetes_deployment.md).
+
+---
