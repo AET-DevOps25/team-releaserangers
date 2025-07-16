@@ -71,7 +71,7 @@ if [ $SERVER_OVERWRITE -eq 0 ]; then
     print_status "Generated new JWT_SECRET."
   fi
   echo "JWT_SECRET=$JWT_SECRET" >> "$SERVER_ENV"
-  echo "JWT_SECRET=$JWT_SECRET" >> "$SERVER_ENV_EXAMPLE"
+  sed -i '' "s/^JWT_SECRET=.*/JWT_SECRET=$JWT_SECRET/" "$SERVER_ENV_EXAMPLE"
 
   # --- CLIENT_URL setup ---
   CLIENT_URL=$(grab_var "CLIENT_URL" "$SERVER_ENV_EXAMPLE")
@@ -101,8 +101,7 @@ if [ $GENAI_OVERWRITE -eq 0 ]; then
     done
   fi
   echo "LLM_API_KEY=$LLM_API_KEY" >> "$GENAI_ENV"
-  echo "LLM_API_KEY=$LLM_API_KEY" >> "$SERVER_ENV_EXAMPLE"
-
+  sed -i '' "s/^LLM_API_KEY=.*/LLM_API_KEY=$LLM_API_KEY/" "$SERVER_ENV_EXAMPLE"
   # --- Other GenAI variables from .env.example ---
   for var in LLM_API_URL LLM_MODEL LLM_BACKEND COURSEMGMT_URL FILE_PARSING; do
     value=$(grab_var "$var" "$SERVER_ENV_EXAMPLE")
