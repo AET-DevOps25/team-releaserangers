@@ -5,10 +5,7 @@ set -e
 # Paths to env files
 SERVER_ENV=".env"
 SERVER_ENV_EXAMPLE=".env.example"
-CLIENT_ENV="client/.env.local" # (deprecated, will not be used)
-CLIENT_ENV_EXAMPLE="client/.env.example" # (deprecated, will not be used)
 GENAI_ENV="genai/.env"
-GENAI_ENV_EXAMPLE="genai/.env.example"
 
 # Helper to print status
 print_status() {
@@ -26,18 +23,6 @@ grab_var() {
   local file="$2"
   if [ -f "$file" ]; then
     grep -E "^$var=" "$file" | cut -d'=' -f2- | tr -d '"' | tr -d '\r\n'
-  fi
-}
-
-# Function to set a variable in a file (replace or add)
-set_var() {
-  local var="$1"
-  local value="$2"
-  local file="$3"
-  if grep -q "^$var=" "$file"; then
-    sed -i '' "s|^$var=.*$|$var=$value|" "$file"
-  else
-    echo "$var=$value" >> "$file"
   fi
 }
 
@@ -86,6 +71,7 @@ if [ $SERVER_OVERWRITE -eq 0 ]; then
     print_status "Generated new JWT_SECRET."
   fi
   echo "JWT_SECRET=$JWT_SECRET" >> "$SERVER_ENV"
+  echo "JWT_SECRET=$JWT_SECRET" >> "$SERVER_ENV_EXAMPLE"
 
   # --- CLIENT_URL setup ---
   CLIENT_URL=$(grab_var "CLIENT_URL" "$SERVER_ENV_EXAMPLE")
@@ -115,6 +101,7 @@ if [ $GENAI_OVERWRITE -eq 0 ]; then
     done
   fi
   echo "LLM_API_KEY=$LLM_API_KEY" >> "$GENAI_ENV"
+  echo "LLM_API_KEY=$LLM_API_KEY" >> "$SERVER_ENV_EXAMPLE"
 
   # --- Other GenAI variables from .env.example ---
   for var in LLM_API_URL LLM_MODEL LLM_BACKEND COURSEMGMT_URL FILE_PARSING; do

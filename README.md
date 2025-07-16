@@ -101,7 +101,13 @@ Currently the authentication service is using the `JWT_SECRET` from the `.env`
 file, so you only need to consider this if you make manual changes to the
 `authentication-service/src/main/resources/application.properties` file.
 
-The easiest way to configure your environment for local development is to use the provided setup script:
+The easiest way to configure your environment for local development is to use
+the provided setup script:
+
+This script contains takes the `.env.example` file which contains all necessary
+environment variables and creates the respective `.env` files for the app.
+Hence, you can always adapt the `.env.example` file to your needs and run the script again
+to update your `.env` files.
 
 For giving you a head start, we have Google Gemini preconfigured as GenAI provider.
 Hence for this script-setup, you need a Google Gemini API key.
