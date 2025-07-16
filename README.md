@@ -123,7 +123,14 @@ for both the server and genai service.
 You can manually adapt the `.env` file or the `genai/.env` file to change the
 GenAI provider or other settings.
 
-E.g. for using OpenWebUI instead of Gemini, you can change the `LLM\_
+E.g. for using OpenWebUI instead of Gemini, you can change the variables in the `genai/.env` file to:
+
+```bash
+LLM_API_URL=https://gpu.aet.cit.tum.de/api/chat/completions
+LLM_API_KEY=<your-openwebui-api-key>
+LLM_MODEL=llama3
+LLM_BACKEND=openwebui
+```
 
 ---
 
