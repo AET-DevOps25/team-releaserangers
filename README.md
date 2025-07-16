@@ -174,7 +174,7 @@ This provides a complete, interactive overview of all endpoints, request/respons
 
 ## Monitoring & Alerting
 
-We use Prometheus and Grafana for monitoring metrics and alerting, with Loki and Promtail for log aggregation. Alerts are configured in Grafana and can send notifications via email when certain conditions are met (e.g., upload errors). For full details, see [MONITORING_ALERTING.md](./MONITORING_ALERTING.md).
+We use Prometheus and Grafana for monitoring metrics and alerting, with Loki and Promtail for log aggregation. Alerts are configured in Grafana and can send notifications via email when certain conditions are met (e.g., upload errors). For full details, see [Monitoring_Alerting.md](./docs/Monitoring_Alerting.md).
 
 ---
 
