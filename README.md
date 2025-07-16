@@ -129,6 +129,9 @@ for both the server and genai service.
 You can manually adapt the `.env` file or the `genai/.env` file to change the
 GenAI provider or other settings.
 
+For running any other GenAI provider except Google Gemini, you need to
+remove the `FILE_PARSING` variable from the `genai/.env` file.
+
 E.g. for using OpenWebUI instead of Gemini, you can change the variables in the `genai/.env` file to:
 
 ```bash
