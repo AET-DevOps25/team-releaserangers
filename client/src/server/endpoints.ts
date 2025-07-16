@@ -6,12 +6,12 @@ const getApiUrl = () => {
     if (hostname.includes("localhost")) {
       return "http://localhost" // Use localhost for development
     }
-    if (hostname.includes("student.k8s.aet.cit.tum.de")) {
+    if (hostname.includes("student") || hostname.includes("k8s")) {
       return `https://${hostname}` // Use the full hostname for production
     }
     // Extract base domain (remove 'client.' prefix if present)
     const baseDomain = hostname.replace(/^client\./, "")
-    return `https://${baseDomain}`
+    return `https://client.${baseDomain}`
   }
 
   return ""
