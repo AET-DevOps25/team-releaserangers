@@ -75,7 +75,33 @@ Our application helps students to study efficient by leveraging LLM generated sm
 
 ---
 
+## Tech Stack
+
+- **Frontend**: Next.js (React)
+- **Backend**: Spring Boot
+- **GenAI Integration**: LangChain
+- **Database**: PostgreSQL
+
+---
+
 ## Quick Local Setup (Recommended)
+
+### Prerequisites
+
+- Node.js (v22 or later)
+- Java JDK 21+
+- Python 3.x
+- Maven
+- Docker and Docker Compose
+- Git
+- For deployment:
+  - AWS
+    - AWS CLI
+    - Terraform
+    - Ansible
+  - Kubernetes
+    - kubectl
+    - Helm
 
 ### Clone the Repository
 
@@ -159,15 +185,6 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 
 For step-by-step instructions on setting up and running each service (client, server, GenAI/LLM service, and database) individually, see the [Start Individual Services Guide](docs/start-individual.md). This guide covers environment variable setup, dependency installation, and how to start each service separately for development or testing.
 
----
-
-## Tech Stack
-
-- **Frontend**: Next.js (React)
-- **Backend**: Spring Boot (Java, JDK 21 or higher)
-  - The backend services require JDK 21 or newer to build and run. You can download the JDK from [Adoptium](https://adoptium.net/) or [Oracle](https://www.oracle.com/java/technologies/downloads/). Verify your installation with `java -version` to ensure you have the correct version installed.
-- **GenAI Integration**: LangChain
-- **Database**: PostgreSQL
 
 ---
 
