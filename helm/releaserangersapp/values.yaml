@@ -124,3 +124,15 @@ ingress:
   tls: true
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  services:
+    client:
+      port: 3000
+    authenticationService:
+      port: 8080
+    coursemgmtService:
+      port: 8080
+    uploadService:
+      port: 8080
+    genaiService:
+      port: 8000
