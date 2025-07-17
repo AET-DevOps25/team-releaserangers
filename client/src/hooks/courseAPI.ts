@@ -1,4 +1,4 @@
-import { COURSE_ENDPOINT, COURSES_ENDPOINT } from "@/server/endpoints"
+import { COURSE_ENDPOINT, COURSES_ENDPOINT, FAVORITES_ENDPOINT } from "@/server/endpoints"
 import useSWR, { mutate } from "swr"
 import { authenticatedFetcher } from "./authenticated-fetcher"
 import { useState } from "react"
@@ -97,6 +97,7 @@ export function useDeleteCourse() {
         throw new Error(response.statusText)
       }
       mutate(COURSES_ENDPOINT) // Revalidate the courses list
+      mutate(FAVORITES_ENDPOINT) // Revalidate the favorites list to remove deleted course and its chapters
     } catch (error) {
       console.error("Error deleting course:", error)
       setError(error as Error)
