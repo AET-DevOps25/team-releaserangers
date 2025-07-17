@@ -1,4 +1,4 @@
-Return to the [main README](./README.md).
+Return to the [main README](../README.md).
 
 ---
 
