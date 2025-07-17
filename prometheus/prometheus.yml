@@ -26,11 +26,6 @@ scrape_configs:
       - targets: ['upload-service:8080']
     metrics_path: '/actuator/prometheus'
 
-#  - job_name: 'upload-service'
-#    static_configs:
-#      - targets: [ 'upload-service:8082' ]
-#    metrics_path: '/actuator/prometheus'
-
 # rule_files:
 #   - alert.rules.yml
 
