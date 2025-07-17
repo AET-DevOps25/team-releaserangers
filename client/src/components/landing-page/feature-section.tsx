@@ -1,4 +1,4 @@
-import { CheckCircle, Shield, Zap, Clock } from "lucide-react"
+import { BookOpen, MessageCircle, Layers, FileText } from "lucide-react"
 
 export function FeatureSection() {
   return (
@@ -7,40 +7,40 @@ export function FeatureSection() {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Features</div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Everything You Need</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Your AI-Powered Study Companion</h2>
             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Our platform provides all the tools you need to streamline your workflow and boost productivity.
+              We help you organize, summarize, and master your lecture materials for efficient exam preparation.
             </p>
           </div>
         </div>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:gap-12">
           <div className="flex flex-col gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-              <Zap className="h-5 w-5 text-primary" />
+              <FileText className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Lightning Fast</h3>
-            <p className="text-muted-foreground">Our platform is optimized for speed, ensuring that your team can work efficiently without delays.</p>
+            <h3 className="text-xl font-bold">Automatic Summarization</h3>
+            <p className="text-muted-foreground">Upload your lecture notes and slides—our AI generates concise, smart summaries for you instantly.</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-              <Shield className="h-5 w-5 text-primary" />
+              <Layers className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Secure by Design</h3>
-            <p className="text-muted-foreground">Security is built into every aspect of our platform, protecting your data and privacy at all times.</p>
+            <h3 className="text-xl font-bold">Learning Chapters</h3>
+            <p className="text-muted-foreground">Your materials are automatically organized into thematic chapters, giving you a clear overview of your course.</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-              <CheckCircle className="h-5 w-5 text-primary" />
+              <BookOpen className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Easy to Use</h3>
-            <p className="text-muted-foreground">Our intuitive interface makes it simple for anyone on your team to get started and be productive.</p>
+            <h3 className="text-xl font-bold">Continuous Updates</h3>
+            <p className="text-muted-foreground">Add new content anytime—summaries and chapters update automatically, so you’re always prepared.</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-              <Clock className="h-5 w-5 text-primary" />
+              <MessageCircle className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Time-Saving</h3>
-            <p className="text-muted-foreground">Automate repetitive tasks and focus on what matters most with our time-saving features.</p>
+            <h3 className="text-xl font-bold">Smart Study Tools</h3>
+            <p className="text-muted-foreground">In the future, you will be able to chat with your material and get AI-powered quizzes to deepen your understanding.</p>
           </div>
         </div>
       </div>

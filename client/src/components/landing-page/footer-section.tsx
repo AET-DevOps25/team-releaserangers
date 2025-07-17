@@ -11,67 +11,60 @@ export function FooterSection() {
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
               </div>
-              Acme Inc.
+              ReleaseRangers
             </Link>
-            <p className="text-sm text-muted-foreground">Simplifying workflows and boosting productivity for teams around the world.</p>
+            <p className="text-sm text-muted-foreground">
+              AI-powered platform for students to organize, summarize, and master their lecture materials for efficient exam preparation.
+            </p>
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium">Product</h3>
             <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground">
               Features
             </Link>
+            <Link href="#testimonials" className="text-sm text-muted-foreground hover:text-foreground">
+              Testimonials
+            </Link>
             <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground">
               Pricing
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-              Integrations
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-              Changelog
             </Link>
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium">Resources</h3>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link target="_blank" href="https://github.com/AET-DevOps25/team-releaserangers" className="text-sm text-muted-foreground hover:text-foreground">
               Documentation
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link target="_blank" href="https://github.com/AET-DevOps25/team-releaserangers/tree/main/docs" className="text-sm text-muted-foreground hover:text-foreground">
               Guides
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-              Support
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link target="_blank" href="https://aet-devops25.github.io/team-releaserangers/api/index.html" className="text-sm text-muted-foreground hover:text-foreground">
               API
             </Link>
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium">Company</h3>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
               About
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-              Blog
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
               Careers
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
               Contact
             </Link>
           </div>
         </div>
         <div className="mt-8 border-t pt-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Acme Inc. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ReleaseRangers. All rights reserved.</p>
             <div className="flex gap-4">
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
                 Terms
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
                 Privacy
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-muted-foreground pointer-events-none">
                 Cookies
               </Link>
             </div>

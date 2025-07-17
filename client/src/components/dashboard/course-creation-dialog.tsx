@@ -17,7 +17,7 @@ import { useCreateCourse } from "@/hooks/courseAPI"
 export enum ButtonType {
   Default,
   Plus,
-  QuickStats,
+  Home,
 }
 
 export function CourseCreationDialog({ buttonType = ButtonType.Default }: { buttonType?: ButtonType }) {
@@ -56,24 +56,27 @@ export function CourseCreationDialog({ buttonType = ButtonType.Default }: { butt
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleSubmit(event)
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {buttonType === ButtonType.Plus ? (
           <Plus className="h-4 w-4" />
         ) : (
-          <Button
-            variant="outline"
-            size={buttonType === ButtonType.QuickStats ? "default" : "sm"}
-            className={buttonType === ButtonType.QuickStats ? "w-full justify-start gap-2" : "gap-2 m-2"}
-          >
+          <Button variant="outline" size={"sm"} className={buttonType === ButtonType.Home ? "gap-2" : "gap-2 m-2"}>
             <BookOpen className="h-4 w-4" />
             New Course
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
           <DialogHeader>
             <DialogTitle>Create New Course</DialogTitle>
             <DialogDescription>Create a new course to organize your learning materials and chapters.</DialogDescription>
