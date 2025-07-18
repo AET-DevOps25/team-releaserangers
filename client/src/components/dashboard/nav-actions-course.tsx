@@ -63,9 +63,26 @@ export function NavActionsCourse({ course }: { course: Course }) {
     navigator.clipboard.writeText(window.location.href)
     setIsOpen(false)
   }
+  const handleExportChapter = (chapter: Chapter) => {
+    const content = chapter.title + "\n\n" + chapter.content
+    const blob = new Blob([content], { type: "text/markdown" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${chapter.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   const handleExport = () => {
-    // Logic to export course data
-    console.log("Export clicked")
+    if (course.chapters && course.chapters.length > 0) {
+      course.chapters.forEach((chapter) => {
+        handleExportChapter(chapter)
+      })
+    }
+    setIsOpen(false)
   }
 
   React.useEffect(() => {

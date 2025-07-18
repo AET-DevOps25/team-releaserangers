@@ -3,6 +3,7 @@ load_dotenv()
 import os
 from fastapi import FastAPI
 from routes import summarize
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(
     title="LLM Summarization Service",
@@ -10,6 +11,8 @@ app = FastAPI(
     version="1.0.0"
 )
 app.include_router(summarize.router)
+
+Instrumentator().instrument(app).expose(app)
 
 # Entry point for direct execution
 if __name__ == "__main__":

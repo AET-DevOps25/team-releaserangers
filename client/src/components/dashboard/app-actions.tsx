@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, Command, LogOut } from "lucide-react"
+import { ChevronDown, GalleryVerticalEnd, LogOut } from "lucide-react"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
@@ -23,10 +23,12 @@ export function AppActions() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit px-1.5">
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-5 items-center justify-center rounded-md">
-                <Command className="size-3" />
+              <div className="flex items-center gap-2 self-center font-medium">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                  <GalleryVerticalEnd className="size-3" />
+                </div>
+                ReleaseRangers
               </div>
-              <span className="truncate font-medium">Acme Inc</span>
               <ChevronDown className="opacity-50" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
