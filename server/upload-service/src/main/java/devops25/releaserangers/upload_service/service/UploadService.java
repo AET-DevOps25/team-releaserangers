@@ -5,6 +5,10 @@ import devops25.releaserangers.upload_service.dto.FileMetadataDTO;
 import devops25.releaserangers.upload_service.model.File;
 import devops25.releaserangers.upload_service.repository.FileRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +25,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -49,15 +56,58 @@ public class UploadService {
     @Value("${coursemgmt.service.url}")
     private String courseMgmtServiceUrl;
 
+    private final MeterRegistry registry;
+    private final Counter uploadRequestCounter;
+    private final Counter uploadErrorTotal;
+    private final Gauge uploadErrorGauge;
+    private final Counter summaryCounter;
+    private final Timer uploadTimer;
+
+    private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
+    private static final Duration ERROR_EXPIRY = Duration.ofMinutes(10);
+
+
     /**
-     * Constructs the UploadService with the required FileRepository.
+     * Constructs an UploadService with the specified dependencies.
      *
-     * @param fileRepository the repository for file persistence
+     * @param fileRepository the repository for file operations
+     * @param restTemplate   the RestTemplate for making HTTP requests
+     * @param registry       the MeterRegistry for metrics
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
-    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate) {
+    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry registry) {
+
+        this.registry = registry;
+        this.registry.config().commonTags("service", "upload-service");
+
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
+
+        this.uploadRequestCounter = Counter.builder("upload_service_requests_total")
+                .description("Total number of upload requests")
+                .tags("service", "upload-service")
+                .register(registry);
+        this.summaryCounter = Counter.builder("upload_service_summary_requests_total")
+                .description("Total number of requests to the summary service")
+                .tags("service", "upload-service")
+                .register(registry);
+        this.uploadErrorGauge = Gauge.builder("upload_service_errors_gauge", errorTimestamps, queue -> {
+            final Instant now = Instant.now();
+            // Remove expired timestamps
+            queue.removeIf(ts -> ts.isBefore(now.minus(ERROR_EXPIRY)));
+            return (double) queue.size();
+        })
+        .description("Number of errors when processing uploaded files (expires after 10 minutes)")
+        .tags("service", "upload-service")
+        .register(registry);
+        this.uploadErrorTotal = Counter.builder("upload_service_errors_total")
+                .description("Total number of errors when processing uploaded files")
+                .tags("service", "upload-service")
+                .register(registry);
+        this.uploadTimer = Timer.builder("upload_service_request_duration")
+                .description("Time taken to get uploaded files summarized")
+                .tags("service", "upload-service")
+                .register(registry);
     }
 
     /**
@@ -74,11 +124,15 @@ public class UploadService {
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
         logger.info("Handle uploaded files");
         if (files == null || files.length == 0) {
+            errorTimestamps.add(Instant.now());
+            uploadErrorTotal.increment();
             logger.info(NO_FILES_ERROR);
             throw new IllegalArgumentException(NO_FILES_ERROR);
         }
         for (final MultipartFile file : files) {
             if (file.isEmpty() || !ALLOWED_TYPES.contains(file.getContentType())) {
+                errorTimestamps.add(Instant.now());
+                uploadErrorTotal.increment();
                 logger.info(INVALID_TYPE_ERROR);
                 throw new IllegalArgumentException(INVALID_TYPE_ERROR);
             }
@@ -87,11 +141,14 @@ public class UploadService {
         for (MultipartFile file : files) {
             final String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || originalFilename.isEmpty()) {
+                errorTimestamps.add(Instant.now());
+                uploadErrorTotal.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
           
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
+            uploadRequestCounter.increment();
             if (existingFile == null) {
                 // No file with this name exists, save as is
                 uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
@@ -200,29 +257,32 @@ public class UploadService {
      * @param token         the authentication token
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
-        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("courseId", courseId);
-        for (File file : uploadedFiles) {
-            body.add("files", new ByteArrayResource(file.getData()) {
-                @Override
-                public String getFilename() {
-                    return file.getFilename();
-                }
-            });
-        }
+        summaryCounter.increment();
+        uploadTimer.record(() -> {
+            final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("courseId", courseId);
+            for (File file : uploadedFiles) {
+                body.add("files", new ByteArrayResource(file.getData()) {
+                    @Override
+                    public String getFilename() {
+                        return file.getFilename();
+                    }
+                });
+            }
 
-        final String chaptersJson = fetchChaptersJson(courseId, token);
-        logger.info("Chapters: {}", chaptersJson);
-        body.add("existingChapterSummary", chaptersJson);
+            final String chaptersJson = fetchChaptersJson(courseId, token);
+            logger.info("Chapters: {}", chaptersJson);
+            body.add("existingChapterSummary", chaptersJson);
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        if (token != null) {
-            headers.add(HttpHeaders.COOKIE, "token=" + token);
-        }
-        final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            final HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            if (token != null) {
+                headers.add(HttpHeaders.COOKIE, "token=" + token);
+            }
+            final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
+            restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
+        });
     }
 
     /**
@@ -262,3 +322,4 @@ public class UploadService {
         }
     }
 }
+
