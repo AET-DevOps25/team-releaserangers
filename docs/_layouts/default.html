@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ page.title | default: site.title }}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f9f9f9;
+        color: #222;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 2em;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+      h1 {
+        color: #2c3e50;
+      }
+      h2 {
+        color: #34495e;
+      }
+      a {
+        color: #007acc;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+      .nav {
+        margin-bottom: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .nav a {
+        margin-right: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <a href="{{ site.baseurl }}/">Home</a>
+        <a href="{{ site.baseurl }}/README.html">Main README</a>
+        <a href="{{ site.baseurl }}/client/README.html">Client README</a>
+        <a href="{{ site.baseurl }}/api/index.html">API Docs</a>
+      </div>
+
+      {{ content }}
+    </div>
+  </body>
+</html>
