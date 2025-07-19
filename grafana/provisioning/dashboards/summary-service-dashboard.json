@@ -210,7 +210,7 @@
           "useBackend": false
         }
       ],
-      "title": "Duration of Last Summary Service Request",
+      "title": "Duration of Last Summary Service Request (s)",
       "type": "timeseries"
     },
     {
@@ -440,5 +440,5 @@
   "timezone": "browser",
   "title": "Summary Service Dashboard",
   "uid": "cb7251fb-ce7b-4b26-83f1-a99e373f25d8",
-  "version": 3
+  "version": 5
 }

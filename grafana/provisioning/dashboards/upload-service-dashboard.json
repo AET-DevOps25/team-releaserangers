@@ -211,7 +211,7 @@
           "useBackend": false
         }
       ],
-      "title": "Latency of the last Request to Upload Service",
+      "title": "Latency of the last Request to Upload Service (ms))",
       "type": "timeseries"
     },
     {
@@ -500,5 +500,5 @@
   "timezone": "browser",
   "title": "Upload Service Dashboard",
   "uid": "5d357a1a-5e3d-494b-a0d6-4cd15f3ace39",
-  "version": 6
+  "version": 7
 }
