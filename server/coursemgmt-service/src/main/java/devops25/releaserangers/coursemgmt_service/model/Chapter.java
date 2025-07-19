@@ -28,7 +28,7 @@ public class Chapter {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "chapter_title", nullable = false)
+    @Column(name = "chapter_title", nullable = false, columnDefinition = "TEXT")
     private String title;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

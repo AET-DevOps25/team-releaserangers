@@ -13,11 +13,31 @@ import Loading from "./loading"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { useCourse } from "@/hooks/courseAPI"
+import { useEffect } from "react"
 
 export default function CoursePage() {
   const params = useParams<{ courseId: string }>()
   const courseId = params ? (typeof params.courseId === "string" ? params.courseId : "") : ""
   const { course, isLoading, error } = useCourse(courseId)
+
+  // Update document title and favicon when course loads
+  useEffect(() => {
+    if (course) {
+      const emoji = course.emoji || "📚"
+      const title = `${course.name} | ReleaseRangers`
+      document.title = title
+
+      // Update favicon with course emoji
+      const favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement | null
+      const apple_icon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement | null
+      if (favicon) {
+        favicon.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${emoji}</text></svg>`
+      }
+      if (apple_icon) {
+        apple_icon.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${emoji}</text></svg>`
+      }
+    }
+  }, [course])
 
   if (isLoading) {
     return <Loading />

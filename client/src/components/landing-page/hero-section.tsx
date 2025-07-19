@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
@@ -8,45 +9,27 @@ export function HeroSection() {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col justify-center space-y-6">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Simplify Your Workflow with Acme Inc.</h1>
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Study Smarter, Not Harder with Smart Summaries</h1>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Our platform helps teams collaborate seamlessly, manage projects efficiently, and deliver results faster.
+                Effortlessly organize, summarize, and master your lecture materials. Our AI-powered platform creates smart summaries, organizes your content into learning chapters,
+                and helps you prepare for exams efficiently—all in one place.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link href="/signup">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Get Started
+                  Get Started Free
                 </Button>
               </Link>
-              <Link href="/about">
+              <Link href="#features">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Learn more
+                  See How It Works
                 </Button>
               </Link>
             </div>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="relative h-[350px] w-full max-w-[500px] rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-1 shadow-xl">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="rounded bg-background p-4 shadow-lg">
-                  <div className="flex h-6 w-full items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                    <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    <div className="ml-2 h-4 w-40 rounded bg-muted"></div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                    <div className="h-20 rounded bg-muted"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center justify-center transform transition-transform scale-110 hover:scale-115 ease-in-out duration-300">
+            <Image src="/hero-releaserangers-light.png" alt="Smart Summaries Screenshot" className="rounded-lg object-contain h-full w-full" width={600} height={400} />
           </div>
         </div>
       </div>

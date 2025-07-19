@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AppearanceSettings } from "@/components/dashboard/settings/appearance-settings"
 import { AccountSettings } from "@/components/dashboard/settings/account-settings"
-import { NotificationSettings } from "@/components/dashboard/settings/notification-settings"
 
 interface SettingsDialogProps {
   triggerVariant?: "icon" | "default"
@@ -39,19 +38,15 @@ export function SettingsDialog({ triggerVariant = "default", className }: Settin
           <DialogDescription>Manage your account settings and preferences.</DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="appearance" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
           <TabsContent value="appearance" className="mt-6 space-y-4">
             <AppearanceSettings />
           </TabsContent>
           <TabsContent value="account" className="mt-6 space-y-4">
             <AccountSettings />
-          </TabsContent>
-          <TabsContent value="notifications" className="mt-6 space-y-4">
-            <NotificationSettings />
           </TabsContent>
         </Tabs>
       </DialogContent>

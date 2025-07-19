@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
@@ -16,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.db
+    restart: unless-stopped
     ports:
       - "5432:5432"
     volumes:
@@ -29,6 +31,7 @@ services:
   authentication-service:
     build:
       context: ./server/authentication-service
+    restart: unless-stopped
     ports:
       - "8081:8080"
     environment:
@@ -41,6 +44,7 @@ services:
   coursemgmt-service:
     build:
       context: ./server/coursemgmt-service
+    restart: unless-stopped
     ports:
       - "8082:8080"
     environment:
@@ -53,6 +57,7 @@ services:
   upload-service:
     build:
       context: ./server/upload-service
+    restart: unless-stopped
     ports:
       - "8083:8080"
     environment:
@@ -88,5 +93,70 @@ services:
       - coursemgmt-service
       - upload-service
 
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - upload-service
+      - genai-service
+      - coursemgmt-service
+      - authentication-service
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+    command: ["grafana-server", "--config=/etc/grafana/grafana.ini"]
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=logsInExplore
+      - GF_LOG_CONSOLECOLORS=true
+    # entrypoint: ["sh", "-c", "/etc/grafana/provisioning/init_grafana.sh"]
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail/promtail.yml:/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
+    command: -config.file=/etc/loki/loki-config.yaml
+    restart: unless-stopped
+
 volumes:
   postgres-data:
+  prometheus_data:
+  grafana-storage:
+  loki_data:
+  promtail_data:
