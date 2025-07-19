@@ -3,15 +3,13 @@ from docling.document_converter import DocumentConverter
 from docling.datamodel.base_models import DocumentStream
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
-from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.document_converter import PdfFormatOption
 from fastapi import UploadFile
 
-import tempfile, pathlib
+import tempfile
+import pathlib
 from langchain_docling import DoclingLoader
 from langchain_docling.loader import ExportType
-from langchain_core.documents import Document
-
-from fastapi import UploadFile
 
 async def extract_markdown_langchain(file: UploadFile) -> str:
     contents = await file.read()
@@ -47,10 +45,9 @@ async def extract_markdown_langchain(file: UploadFile) -> str:
 
 # Currently not used
 async def extract_markdown(file: UploadFile) -> str:
- # Read the uploaded file into memory
+    # Read the uploaded file into memory
     file_bytes = await file.read()
     buffer = BytesIO(file_bytes)
-
 
     # Create a DocumentStream for Docling
     source = DocumentStream(name=file.filename, stream=buffer)
