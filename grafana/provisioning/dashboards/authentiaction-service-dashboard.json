@@ -334,6 +334,7 @@
     }
   ],
   "preload": false,
+  "refresh": "auto",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -347,5 +348,5 @@
   "timezone": "browser",
   "title": "Authentication Service Dashboard",
   "uid": "e5b97d54-1156-4cc7-afbf-a7dc121100d1",
-  "version": 6
+  "version": 9
 }

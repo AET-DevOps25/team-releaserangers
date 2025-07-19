@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -155,6 +155,7 @@
     }
   ],
   "preload": false,
+  "refresh": "auto",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -168,5 +169,5 @@
   "timezone": "browser",
   "title": "Alert Dashboard",
   "uid": "fd7f0367-d1b0-49c1-9bdc-58ccc3aded23",
-  "version": 4
+  "version": 2
 }
