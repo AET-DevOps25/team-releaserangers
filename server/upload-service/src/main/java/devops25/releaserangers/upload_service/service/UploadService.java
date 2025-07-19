@@ -61,7 +61,7 @@ public class UploadService {
     private final Counter uploadErrorTotal;
     private final Counter summaryCounter;
     private final Gauge uploadErrorGauge;
-    private final Timer uploadTimer;
+    private final Timer summaryTimer;
 
     private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
     private static final Duration ERROR_EXPIRY = Duration.ofMinutes(10);
@@ -104,7 +104,7 @@ public class UploadService {
                 .description("Total number of errors when processing uploaded files")
                 .tags("service", "upload-service")
                 .register(registry);
-        this.uploadTimer = Timer.builder("upload_service_request_duration")
+        this.summaryTimer = Timer.builder("upload_service_request_duration")
                 .description("Time taken to get uploaded files summarized")
                 .tags("service", "upload-service")
                 .register(registry);
@@ -263,7 +263,7 @@ public class UploadService {
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
         summaryCounter.increment();
-        uploadTimer.record(() -> {
+        summaryTimer.record(() -> {
             final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("courseId", courseId);
             for (File file : uploadedFiles) {
