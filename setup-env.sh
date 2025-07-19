@@ -56,14 +56,27 @@ fi
 
 # Only overwrite .env if allowed
 if [ $SERVER_OVERWRITE -eq 0 ]; then
+  OLD_JWT_SECRET=""
   if [ -f "$SERVER_ENV" ]; then
+    OLD_JWT_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV")
     rm "$SERVER_ENV"
   fi
   touch "$SERVER_ENV"
 
   # --- JWT_SECRET setup ---
   EXAMPLE_JWT_SECRET=$(grab_var "JWT_SECRET" "$SERVER_ENV_EXAMPLE")
-  if [ -n "$EXAMPLE_JWT_SECRET" ] && [ "$EXAMPLE_JWT_SECRET" != "<your_jwt_secret>" ]; then
+  if [ -n "$OLD_JWT_SECRET" ]; then
+    echo "Existing JWT_SECRET found in .env: $OLD_JWT_SECRET"
+    read -p "Do you want to generate a new JWT_SECRET? (Y/N, default N): " jwt_answer
+    jwt_answer=${jwt_answer:-N}
+    if [[ "$jwt_answer" =~ ^[Yy]$ ]]; then
+      JWT_SECRET=$(generate_jwt_secret)
+      print_status "Generated new JWT_SECRET."
+    else
+      JWT_SECRET="$OLD_JWT_SECRET"
+      print_status "Keeping existing JWT_SECRET."
+    fi
+  elif [ -n "$EXAMPLE_JWT_SECRET" ] && [ "$EXAMPLE_JWT_SECRET" != "<your_jwt_secret>" ]; then
     JWT_SECRET="$EXAMPLE_JWT_SECRET"
     print_status "Using JWT_SECRET from .env.example."
   else
