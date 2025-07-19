@@ -356,6 +356,6 @@ public class UploadService {
 
     private void updateSummaryDuration(long startTime) {
         final long duration = System.nanoTime() - startTime;
-        setLastSummaryDuration(duration / 1_000_000.0);
+        setLastSummaryDuration(duration / 1_000_000_000.0); // Convert to seconds
     }
 }
