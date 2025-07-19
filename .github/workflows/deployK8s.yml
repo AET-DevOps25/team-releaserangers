@@ -2,6 +2,7 @@ name: Deploy to Kubernetes
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   deploy:
