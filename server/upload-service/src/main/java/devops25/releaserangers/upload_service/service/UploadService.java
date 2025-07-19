@@ -9,6 +9,8 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +65,17 @@ public class UploadService {
     private final Gauge uploadErrorGauge;
     private final Timer summaryTimer;
 
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Gauge is used to track latency")
+    private Gauge uploadLatencyGauge;
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Gauge is used to track summary duration")
+    private Gauge summaryDurationGauge;
+    @Getter
+    @Setter
+    private volatile double currentLatency = 0.0;
+    @Getter
+    @Setter
+    private volatile double lastSummaryDuration = 0.0;
+
     private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
     private static final Duration ERROR_EXPIRY = Duration.ofMinutes(10);
 
@@ -108,6 +121,14 @@ public class UploadService {
                 .description("Time taken to get uploaded files summarized")
                 .tags("service", "upload-service")
                 .register(this.uploadRegistry);
+        this.uploadLatencyGauge = Gauge.builder("upload_service_current_latency", this, UploadService::getCurrentLatency)
+                .description("Current latency of the latest upload request (ms)")
+                .tags("service", "upload-service")
+                .register(this.uploadRegistry);
+        this.summaryDurationGauge = Gauge.builder("upload_service_last_summary_duration", this, UploadService::getLastSummaryDuration)
+                .description("Duration of the last summary service request (ms)")
+                .tags("service", "upload-service")
+                .register(this.uploadRegistry);
     }
 
     /**
@@ -146,7 +167,6 @@ public class UploadService {
                 uploadErrorTotal.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
-          
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
             if (existingFile == null) {
@@ -263,6 +283,7 @@ public class UploadService {
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
         summaryCounter.increment();
+        final long startTime = System.nanoTime();
         summaryTimer.record(() -> {
             final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("courseId", courseId);
@@ -288,6 +309,7 @@ public class UploadService {
 
             restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
         });
+        updateSummaryDuration(startTime);
     }
 
     /**
@@ -326,5 +348,14 @@ public class UploadService {
             return "[]";
         }
     }
-}
 
+    public void updateLatency(long startTime) {
+        final long latency = System.nanoTime() - startTime;
+        setCurrentLatency(latency / 1_000_000.0);
+    }
+
+    private void updateSummaryDuration(long startTime) {
+        final long duration = System.nanoTime() - startTime;
+        setLastSummaryDuration(duration / 1_000_000.0);
+    }
+}
