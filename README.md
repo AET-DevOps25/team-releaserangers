@@ -119,7 +119,7 @@ cd team-releaserangers
 
 ### Environment Configuration
 
-> **⚠️ Note:** Make sure to configure the `JWT_SECRET` and `LLM_API_KEY` environment variables before running the project locally. These are required for authentication and GenAI features to work.
+> **⚠️ Note:** Make sure to configure the `JWT_SECRET` and `LLM_API_KEY` environment variables before running the project locally. These are required for authentication and GenAI features to work. You can use script setup to create or update the necessary `.env` files.
 
 Attention: The JWT secret must be the same in both `.env` and
 `authentication-service/src/main/resources/application.properties` files.
@@ -130,7 +130,7 @@ file, so you only need to consider this if you make manual changes to the
 The easiest way to configure your environment for local development is to use
 the provided setup script:
 
-This script contains takes the `.env.example` file which contains all necessary
+This script considers the `.env.example` file which contains all necessary
 environment variables and creates the respective `.env` files for the app.
 Hence, you can always adapt the `.env.example` file to your needs and run the script again
 to update your `.env` files.
