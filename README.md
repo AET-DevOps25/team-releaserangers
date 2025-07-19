@@ -149,9 +149,6 @@ Then run the script and follow the prompts to create and configure the necessary
 ./setup-env.sh
 ```
 
-This script will automatically create and configure all required `.env` files
-for both the server and genai service.
-
 You can manually adapt the `.env` file or the `genai/.env` file to change the
 GenAI provider or other settings.
 

@@ -107,7 +107,7 @@ if [ $GENAI_OVERWRITE -eq 0 ]; then
     LLM_API_KEY="$EXAMPLE_LLM_API_KEY"
     print_status "Using LLM_API_KEY from .env.example."
   else
-    read -p "Enter your gemini LLM_API_KEY for GenAI service: " LLM_API_KEY
+    read -p "Enter your LLM_API_KEY (gemini key in the default setup) for GenAI service: " LLM_API_KEY
     while [ -z "$LLM_API_KEY" ]; do
       echo "LLM_API_KEY is required. Please enter your key: "
       read LLM_API_KEY
