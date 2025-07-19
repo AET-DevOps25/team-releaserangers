@@ -56,7 +56,7 @@ public class UploadService {
     @Value("${coursemgmt.service.url}")
     private String courseMgmtServiceUrl;
 
-    private final MeterRegistry registry;
+    private final MeterRegistry uploadRegistry;
     private final Counter uploadServiceRequestCounter;
     private final Counter uploadErrorTotal;
     private final Counter summaryCounter;
@@ -72,13 +72,13 @@ public class UploadService {
      *
      * @param fileRepository the repository for file operations
      * @param restTemplate   the RestTemplate for making HTTP requests
-     * @param registry       the MeterRegistry for metrics
+     * @param uploadRegistry       the MeterRegistry for metrics
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
-    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry registry) {
+    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry uploadRegistry) {
 
-        this.registry = registry;
-        this.registry.config().commonTags("service", "upload-service");
+        this.uploadRegistry = uploadRegistry;
+        this.uploadRegistry.config().commonTags("service", "upload-service");
 
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
@@ -86,11 +86,11 @@ public class UploadService {
         this.uploadServiceRequestCounter = Counter.builder("upload_service_requests_total")
                 .description("Total number of upload requests")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
         this.summaryCounter = Counter.builder("upload_service_summary_requests_total")
                 .description("Total number of requests to the summary service")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
         this.uploadErrorGauge = Gauge.builder("upload_service_errors_gauge", errorTimestamps, queue -> {
             final Instant now = Instant.now();
             // Remove expired timestamps
@@ -99,15 +99,15 @@ public class UploadService {
         })
         .description("Number of errors when processing uploaded files (expires after 10 minutes)")
         .tags("service", "upload-service")
-        .register(registry);
+        .register(this.uploadRegistry);
         this.uploadErrorTotal = Counter.builder("upload_service_errors_total")
                 .description("Total number of errors when processing uploaded files")
                 .tags("service", "upload-service")
-                .register(registry);
-        this.summaryTimer = Timer.builder("upload_service_request_duration")
+                .register(this.uploadRegistry);
+        this.summaryTimer = Timer.builder("summary_service_request_duration")
                 .description("Time taken to get uploaded files summarized")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
     }
 
     /**

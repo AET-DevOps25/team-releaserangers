@@ -15,11 +15,10 @@
       }
     ]
   },
-  "description": "This is our dashboard to show basic metrics",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 11,
   "links": [],
   "panels": [
     {
@@ -87,7 +86,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 2,
+      "id": 1,
       "options": {
         "legend": {
           "calcs": [],
@@ -104,9 +103,13 @@
       "pluginVersion": "12.0.1",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "upload_service_request_duration_seconds_max",
+          "expr": "auth_service_requests_total{service=\"auth-service\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -115,7 +118,7 @@
           "useBackend": false
         }
       ],
-      "title": "Max Upload Duration",
+      "title": "Total Amount of Requests to the Authentication Service",
       "type": "timeseries"
     },
     {
@@ -123,6 +126,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Always displays the latency of the last request to the authentication service",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -184,6 +188,8 @@
         "y": 0
       },
       "id": 3,
+      "interval": "1",
+      "maxDataPoints": 1000,
       "options": {
         "legend": {
           "calcs": [],
@@ -202,7 +208,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "upload_service_requests_total",
+          "expr": "auth_service_current_latency{service=\"auth-service\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -211,7 +217,7 @@
           "useBackend": false
         }
       ],
-      "title": "Sum of uploads",
+      "title": "Current Latency of Authentication Service (ms)",
       "type": "timeseries"
     },
     {
@@ -275,7 +281,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{__name__=\"upload_service_errors_total\", instance=\"upload-service:8080\", job=\"upload-service\", service=\"upload-service\"}"
+              "options": "{__name__=\"auth_service_errors_total\", instance=\"authentication-service:8080\", job=\"authentication-service\", service=\"auth-service\"}"
             },
             "properties": [
               {
@@ -295,7 +301,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 4,
+      "id": 2,
       "options": {
         "legend": {
           "calcs": [],
@@ -314,7 +320,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "upload_service_errors_total",
+          "expr": "auth_service_errors_total{service=\"auth-service\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -323,166 +329,7 @@
           "useBackend": false
         }
       ],
-      "title": "Sum of errors when uploading",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "{__name__=\"http_server_requests_active_seconds_max\", exception=\"none\", instance=\"upload-service:8080\", job=\"upload-service\", method=\"POST\", outcome=\"SUCCESS\", service=\"upload-service\", status=\"200\", uri=\"UNKNOWN\"}"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 19,
-        "x": 0,
-        "y": 16
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "process_virtual_memory_bytes",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "application_ready_time_seconds",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "B",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "http_server_requests_active_seconds_max",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "C",
-          "useBackend": false
-        }
-      ],
-      "title": "New panel",
+      "title": "Total Amount of Authentiaction Service Errors",
       "type": "timeseries"
     }
   ],
@@ -493,12 +340,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "main-dashboard",
-  "uid": "5d357a1a-5e3d-494b-a0d6-4cd15f3ace39",
+  "title": "Authentication Service Dashboard",
+  "uid": "e5b97d54-1156-4cc7-afbf-a7dc121100d1",
   "version": 6
 }
