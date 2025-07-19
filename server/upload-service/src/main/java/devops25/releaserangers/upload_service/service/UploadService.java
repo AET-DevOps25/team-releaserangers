@@ -9,6 +9,8 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,12 +58,23 @@ public class UploadService {
     @Value("${coursemgmt.service.url}")
     private String courseMgmtServiceUrl;
 
-    private final MeterRegistry registry;
-    private final Counter uploadRequestCounter;
+    private final MeterRegistry uploadRegistry;
+    private final Counter uploadServiceRequestCounter;
     private final Counter uploadErrorTotal;
-    private final Gauge uploadErrorGauge;
     private final Counter summaryCounter;
-    private final Timer uploadTimer;
+    private final Gauge uploadErrorGauge;
+    private final Timer summaryTimer;
+
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Gauge is used to track latency")
+    private Gauge uploadLatencyGauge;
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Gauge is used to track summary duration")
+    private Gauge summaryDurationGauge;
+    @Getter
+    @Setter
+    private volatile double currentLatency = 0.0;
+    @Getter
+    @Setter
+    private volatile double lastSummaryDuration = 0.0;
 
     private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
     private static final Duration ERROR_EXPIRY = Duration.ofMinutes(10);
@@ -72,25 +85,25 @@ public class UploadService {
      *
      * @param fileRepository the repository for file operations
      * @param restTemplate   the RestTemplate for making HTTP requests
-     * @param registry       the MeterRegistry for metrics
+     * @param uploadRegistry       the MeterRegistry for metrics
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposing service references is acceptable here")
-    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry registry) {
+    public UploadService(final FileRepository fileRepository, RestTemplate restTemplate, MeterRegistry uploadRegistry) {
 
-        this.registry = registry;
-        this.registry.config().commonTags("service", "upload-service");
+        this.uploadRegistry = uploadRegistry;
+        this.uploadRegistry.config().commonTags("service", "upload-service");
 
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
 
-        this.uploadRequestCounter = Counter.builder("upload_service_requests_total")
+        this.uploadServiceRequestCounter = Counter.builder("upload_service_requests_total")
                 .description("Total number of upload requests")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
         this.summaryCounter = Counter.builder("upload_service_summary_requests_total")
                 .description("Total number of requests to the summary service")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
         this.uploadErrorGauge = Gauge.builder("upload_service_errors_gauge", errorTimestamps, queue -> {
             final Instant now = Instant.now();
             // Remove expired timestamps
@@ -99,15 +112,23 @@ public class UploadService {
         })
         .description("Number of errors when processing uploaded files (expires after 10 minutes)")
         .tags("service", "upload-service")
-        .register(registry);
+        .register(this.uploadRegistry);
         this.uploadErrorTotal = Counter.builder("upload_service_errors_total")
                 .description("Total number of errors when processing uploaded files")
                 .tags("service", "upload-service")
-                .register(registry);
-        this.uploadTimer = Timer.builder("upload_service_request_duration")
+                .register(this.uploadRegistry);
+        this.summaryTimer = Timer.builder("summary_service_request_duration")
                 .description("Time taken to get uploaded files summarized")
                 .tags("service", "upload-service")
-                .register(registry);
+                .register(this.uploadRegistry);
+        this.uploadLatencyGauge = Gauge.builder("upload_service_current_latency", this, UploadService::getCurrentLatency)
+                .description("Current latency of the latest upload request (ms)")
+                .tags("service", "upload-service")
+                .register(this.uploadRegistry);
+        this.summaryDurationGauge = Gauge.builder("upload_service_last_summary_duration", this, UploadService::getLastSummaryDuration)
+                .description("Duration of the last summary service request (ms)")
+                .tags("service", "upload-service")
+                .register(this.uploadRegistry);
     }
 
     /**
@@ -123,6 +144,7 @@ public class UploadService {
     @Transactional
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
         logger.info("Handle uploaded files");
+        uploadServiceRequestCounter.increment();
         if (files == null || files.length == 0) {
             errorTimestamps.add(Instant.now());
             uploadErrorTotal.increment();
@@ -145,10 +167,8 @@ public class UploadService {
                 uploadErrorTotal.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
-          
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
-            uploadRequestCounter.increment();
             if (existingFile == null) {
                 // No file with this name exists, save as is
                 uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
@@ -171,6 +191,7 @@ public class UploadService {
     }
 
     private File saveFile(String filename, String contentType, byte[] data, String courseId) {
+        uploadServiceRequestCounter.increment();
         final File fileEntity = new File();
         fileEntity.setFilename(filename);
         fileEntity.setContentType(contentType);
@@ -203,6 +224,7 @@ public class UploadService {
      * @return list of FileMetadataDTO objects
      */
     public List<FileMetadataDTO> getAllFiles() {
+        uploadServiceRequestCounter.increment();
         return fileRepository.findAll().stream()
             .map(f -> new FileMetadataDTO(
                 f.getId(),
@@ -221,6 +243,7 @@ public class UploadService {
      * @return list of FileMetadataDTO objects
      */
     public List<FileMetadataDTO> getFilesByCourseId(String courseId) {
+        uploadServiceRequestCounter.increment();
         return fileRepository.findByCourseIdWithoutData(courseId).stream()
                 .map(f -> new FileMetadataDTO(
                         f.getId(),
@@ -236,6 +259,7 @@ public class UploadService {
      * Deletes all files.
      */
     public void deleteAllFiles() {
+        uploadServiceRequestCounter.increment();
         fileRepository.deleteAll();
     }
 
@@ -245,6 +269,7 @@ public class UploadService {
      * @param courseId the course identifier
      */
     public void deleteFilesByCourseId(String courseId) {
+        uploadServiceRequestCounter.increment();
         final List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
         fileRepository.deleteAll(files);
     }
@@ -258,7 +283,8 @@ public class UploadService {
      */
     public void forwardFilesToSummaryService(final List<File> uploadedFiles, final String courseId, final String token) {
         summaryCounter.increment();
-        uploadTimer.record(() -> {
+        final long startTime = System.nanoTime();
+        summaryTimer.record(() -> {
             final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("courseId", courseId);
             for (File file : uploadedFiles) {
@@ -283,6 +309,7 @@ public class UploadService {
 
             restTemplate.postForEntity(summaryServiceUrl, requestEntity, String.class);
         });
+        updateSummaryDuration(startTime);
     }
 
     /**
@@ -321,5 +348,14 @@ public class UploadService {
             return "[]";
         }
     }
-}
 
+    public void updateLatency(long startTime) {
+        final long latency = System.nanoTime() - startTime;
+        setCurrentLatency(latency / 1_000_000.0);
+    }
+
+    private void updateSummaryDuration(long startTime) {
+        final long duration = System.nanoTime() - startTime;
+        setLastSummaryDuration(duration / 1_000_000_000.0); // Convert to seconds
+    }
+}

@@ -10,6 +10,7 @@ scrape_configs:
   - job_name: 'genai-service'
     static_configs:
       - targets: ['genai-service:8000']
+    metrics_path: '/metrics'
 
   - job_name: 'authentication-service'
     static_configs:
@@ -25,7 +26,3 @@ scrape_configs:
     static_configs:
       - targets: ['upload-service:8080']
     metrics_path: '/actuator/prometheus'
-
-# rule_files:
-#   - alert.rules.yml
-
