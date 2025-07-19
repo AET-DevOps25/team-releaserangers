@@ -32,7 +32,10 @@ jobs:
           helm upgrade --install releaserangersapp ./helm/releaserangersapp \
             -n releaserangers --create-namespace \
             -f ./helm/releaserangersapp/values.yaml
-
+      
+      - name: Force rollout restart for all deployments
+        run: |
+          kubectl rollout restart deployment -n releaserangers
 
       - name: Show pods
         run: kubectl get pods -n releaserangers
