@@ -41,7 +41,6 @@ async def summarize_with_llm(
         - Return a valid JSON object, make sure there are no characters that can break json.loads. Escape everything necessary, with all newlines inside string values escaped as \\n
         Respond with **only** the JSON object and **nothing else**. Do not include any explanation, commentary, or formatting outside the JSON.
         """
-
     
     if FILE_PARSING: 
         summary_prompt = PromptTemplate(
@@ -54,7 +53,8 @@ async def summarize_with_llm(
                 {{lecture_text}}
                 --------------------
 
-                Now, generate a clear, well-organized **Markdown-formatted** summary based on the content above. The output should be suitable for exam preparation.
+                Now, generate a clear, well-organized **Markdown-formatted** summary based on the content above. 
+                The output should be suitable for exam preparation.
 
                 Respond in the following **JSON format**:
                 {{
@@ -73,7 +73,9 @@ async def summarize_with_llm(
         file_prompt = f"""
             {PROMPT_INSTRUCTIONS}
 
-            Now, generate a clear, well-organized **Markdown-formatted** summary based on the contents of the uploaded document. The output should be suitable for exam preparation.
+            Now, generate a clear, well-organized **Markdown-formatted** summary
+            based on the contents of the uploaded document. 
+            The output should be suitable for exam preparation.
 
             Respond in the following **JSON format**:
             {{
@@ -82,8 +84,8 @@ async def summarize_with_llm(
             "emoji": "🎓"
             }}
             """
-        file_bytes = io.BytesIO( file.read())
-        summary =  llm._call(
+        file_bytes = io.BytesIO(file.read())
+        summary = llm._call(
             file=file_bytes,
             prompt=file_prompt
         )

@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
-load_dotenv()
-import os
 from fastapi import FastAPI
 from routes import summarize
 from prometheus_fastapi_instrumentator import Instrumentator
+import os
+load_dotenv()
 
 app = FastAPI(
     title="LLM Summarization Service",

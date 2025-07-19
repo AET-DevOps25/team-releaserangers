@@ -2,11 +2,10 @@ import pytest
 import os
 import sys
 from unittest.mock import Mock, patch
+from services.summarizer import summarize
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from services.summarizer import summarize
 
 
 class TestSummarizer:

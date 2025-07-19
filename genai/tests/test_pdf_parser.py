@@ -2,11 +2,10 @@ import pytest
 import os
 import sys
 from unittest.mock import Mock, patch, AsyncMock
+from services.pdf_parser import extract_markdown_langchain, extract_markdown
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from services.pdf_parser import extract_markdown_langchain, extract_markdown
 
 
 class TestPDFParser:

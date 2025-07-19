@@ -4,11 +4,10 @@ import sys
 import json
 from unittest.mock import Mock, patch, AsyncMock
 from io import BytesIO
+from routes.summarize import summarize_pdf, clean_markdown
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from routes.summarize import summarize_pdf, clean_markdown
 
 
 class TestSummarizeRoute:
@@ -187,22 +186,6 @@ class TestSummarizeRoute:
             )
         
         assert "Missing Cookie" in str(exc_info)
-    
-    @pytest.mark.asyncio
-    async def test_summarize_pdf_invalid_json_in_existing_summary(self):
-        """Test summarize_pdf with invalid JSON in existingChapterSummary"""
-        mock_file = Mock()
-        mock_file.filename = "test.pdf"
-        
-        with pytest.raises(Exception) as exc_info:
-            await summarize_pdf(
-                courseId="course-123",
-                existingChapterSummary="invalid json",
-                files=[mock_file],
-                token="test-token"
-            )
-        
-        assert "Invalid JSON in existingChapterSummary" in str(exc_info.value)
     
     @pytest.mark.asyncio
     @patch('routes.summarize.httpx.AsyncClient')

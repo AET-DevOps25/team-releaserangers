@@ -1,12 +1,10 @@
-import pytest
+from models.summary import SummaryResponse
 import os
 import sys
 import json
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from models.summary import SummaryResponse
 
 
 class TestSummaryResponse:

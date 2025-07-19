@@ -1,13 +1,11 @@
 import pytest
 import os
 from unittest.mock import Mock, patch
-from io import BytesIO
 import sys
+from utils.llm_provider import GenericLLM, FileCapableLLM, get_llm
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from utils.llm_provider import GenericLLM, FileCapableLLM, get_llm
 
 
 class TestGenericLLM:

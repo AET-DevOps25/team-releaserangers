@@ -3,11 +3,10 @@ import json
 import sys
 from unittest.mock import Mock, patch
 import pytest
+from utils.llm_clients import summarize_with_llm
 
 # Add the parent directory to the path to import the application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from utils.llm_clients import summarize_with_llm
 
 
 class TestSummarizeWithLLM:
