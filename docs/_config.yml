@@ -1,0 +1,26 @@
+title: ReleaseRangers Documentation
+description: Documentation for the ReleaseRangers project
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Include the README files
+include:
+  - README.md
+  - ../README.md
+
+# Plugin settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Exclude files from processing
+exclude:
+  - node_modules/
+  - package*.json
+  - .git/
+  - .gitignore
