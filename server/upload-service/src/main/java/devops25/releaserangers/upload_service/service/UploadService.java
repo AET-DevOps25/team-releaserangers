@@ -57,10 +57,10 @@ public class UploadService {
     private String courseMgmtServiceUrl;
 
     private final MeterRegistry registry;
-    private final Counter uploadRequestCounter;
+    private final Counter uploadServiceRequestCounter;
     private final Counter uploadErrorTotal;
-    private final Gauge uploadErrorGauge;
     private final Counter summaryCounter;
+    private final Gauge uploadErrorGauge;
     private final Timer uploadTimer;
 
     private final ConcurrentLinkedQueue<Instant> errorTimestamps = new ConcurrentLinkedQueue<>();
@@ -83,7 +83,7 @@ public class UploadService {
         this.fileRepository = fileRepository;
         this.restTemplate = restTemplate;
 
-        this.uploadRequestCounter = Counter.builder("upload_service_requests_total")
+        this.uploadServiceRequestCounter = Counter.builder("upload_service_requests_total")
                 .description("Total number of upload requests")
                 .tags("service", "upload-service")
                 .register(registry);
@@ -123,6 +123,7 @@ public class UploadService {
     @Transactional
     public List<File> handleUploadedFiles(final MultipartFile[] files, final String courseId, final String token) throws IOException {
         logger.info("Handle uploaded files");
+        uploadServiceRequestCounter.increment();
         if (files == null || files.length == 0) {
             errorTimestamps.add(Instant.now());
             uploadErrorTotal.increment();
@@ -148,7 +149,6 @@ public class UploadService {
           
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
-            uploadRequestCounter.increment();
             if (existingFile == null) {
                 // No file with this name exists, save as is
                 uploadedFiles.add(saveFile(originalFilename, file.getContentType(), fileBytes, courseId));
@@ -171,6 +171,7 @@ public class UploadService {
     }
 
     private File saveFile(String filename, String contentType, byte[] data, String courseId) {
+        uploadServiceRequestCounter.increment();
         final File fileEntity = new File();
         fileEntity.setFilename(filename);
         fileEntity.setContentType(contentType);
@@ -203,6 +204,7 @@ public class UploadService {
      * @return list of FileMetadataDTO objects
      */
     public List<FileMetadataDTO> getAllFiles() {
+        uploadServiceRequestCounter.increment();
         return fileRepository.findAll().stream()
             .map(f -> new FileMetadataDTO(
                 f.getId(),
@@ -221,6 +223,7 @@ public class UploadService {
      * @return list of FileMetadataDTO objects
      */
     public List<FileMetadataDTO> getFilesByCourseId(String courseId) {
+        uploadServiceRequestCounter.increment();
         return fileRepository.findByCourseIdWithoutData(courseId).stream()
                 .map(f -> new FileMetadataDTO(
                         f.getId(),
@@ -236,6 +239,7 @@ public class UploadService {
      * Deletes all files.
      */
     public void deleteAllFiles() {
+        uploadServiceRequestCounter.increment();
         fileRepository.deleteAll();
     }
 
@@ -245,6 +249,7 @@ public class UploadService {
      * @param courseId the course identifier
      */
     public void deleteFilesByCourseId(String courseId) {
+        uploadServiceRequestCounter.increment();
         final List<File> files = fileRepository.findByCourseIdWithoutData(courseId);
         fileRepository.deleteAll(files);
     }
