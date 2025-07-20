@@ -2,6 +2,10 @@ name: Build and Deploy Docker to AWS EC2
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Setup the AWS environment"]
+    types:
+      - completed
 
 jobs:
   build-and-deploy:

@@ -22,7 +22,7 @@ pip install -r requirements-test.txt
 # Set test environment variables
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 export LLM_API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent"
-export LLM_API_KEY="test-key"
+export LLM_API_KEY="test-key" # pragma: allowlist secret
 export LLM_MODEL="gemini-2.5-flash-lite-preview-06-17"
 export LLM_BACKEND="google"
 export COURSEMGMT_URL="http://localhost:8081"
