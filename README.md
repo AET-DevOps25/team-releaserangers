@@ -10,22 +10,40 @@ This project is leveraging GenAI to create smart summaries of lecture materials.
 
 ## Section Overview
 
-- [Our Team](#our-team)
-- [Student Responsibilities](#student-responsibilities)
-- [Subsystem Ownership](#subsystem-ownership)
-- [Key Features](#key-features)
-- [Project Overview](#project-overview)
-- [Quick Local Setup (Recommended)](#quick-local-setup-recommended)
-- [Individual Setup Instructions](#individual-setup-instructions)
-- [Tech Stack](#tech-stack)
-- [Architecture Overview](#architecture-overview)
-- [Database Schema](#database-schema)
-- [API documentation](#api-documentation)
-- [CI/CD Instructions](#ci-cd-instructions)
-- [Monitoring Instructions](#monitoring-instructions)
-- [Testing Instructions](#testing-instructions)
-- [Code Quality: SpotBugs & Checkstyle](#code-quality-spotbugs--checkstyle)
-- [Deployment Instructions](#deployment-instructions)
+- [DevOps 2025 - Team ReleaseRangers](#devops-2025---team-releaserangers)
+  - [Section Overview](#section-overview)
+  - [Our Team](#our-team)
+  - [Student Responsibilities](#student-responsibilities)
+  - [Subsystem Ownership](#subsystem-ownership)
+  - [Key Features](#key-features)
+  - [Project Overview](#project-overview)
+  - [Tech Stack](#tech-stack)
+  - [Quick Local Setup (Recommended)](#quick-local-setup-recommended)
+    - [Prerequisites](#prerequisites)
+    - [Clone the Repository](#clone-the-repository)
+    - [Environment Configuration](#environment-configuration)
+    - [Run locally using Docker Compose (Recommended)](#run-locally-using-docker-compose-recommended)
+  - [Individual Setup Instructions](#individual-setup-instructions)
+  - [Additional Documentation](#additional-documentation)
+    - [Models](#models)
+    - [User Stories](#user-stories)
+  - [Database Schema](#database-schema)
+    - [Schema Documentation](#schema-documentation)
+    - [Key Tables](#key-tables)
+  - [API documentation](#api-documentation)
+  - [CI/CD Instructions](#cicd-instructions)
+    - [Documentation](#documentation)
+  - [Monitoring \& Alerting](#monitoring--alerting)
+  - [Monitoring Instructions](#monitoring-instructions)
+  - [Testing Instructions](#testing-instructions)
+    - [Client Tests](#client-tests)
+    - [Server Tests](#server-tests)
+    - [GenAI Service Tests](#genai-service-tests)
+  - [Code Quality: SpotBugs \& Checkstyle \& pnpm Audit](#code-quality-spotbugs--checkstyle--pnpm-audit)
+    - [How to Run SpotBugs and Checkstyle](#how-to-run-spotbugs-and-checkstyle)
+    - [Maven Phase Integration](#maven-phase-integration)
+    - [How to Run pnpm Audit for the Client](#how-to-run-pnpm-audit-for-the-client)
+  - [Deployment Instructions](#deployment-instructions)
 
 ---
 
@@ -41,7 +59,7 @@ This project is maintained by:
 
 ## Student Responsibilities
 
-- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup
+- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Deployment
 - **Jonathan Müller (JM)**: Frontend Development, Authentication Service,
   Database Design, Client Testing, Terraform and Ansible Setup, AWS Deployment, GenAI Service Testing
 - **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup, Monitoring and Observation
@@ -156,6 +174,7 @@ For running any other GenAI provider except Google Gemini, you need to
 remove the `FILE_PARSING` variable from the `genai/.env` file.
 
 E.g. for using OpenWebUI instead of Gemini, you can change the variables in the `genai/.env` file to:
+Note: This will then take longer as our pipeline will then first extract the text from the pdf and then query the LLM, thus depending on the size of the pdf this might take a few seconds longer.
 
 ```bash
 LLM_API_URL=https://gpu.aet.cit.tum.de/api/chat/completions
@@ -386,6 +405,6 @@ For deployment instructions for AWS, please refer to the [Terraform and Ansible
 Setup Guide](docs/terraform_ansible_setup.md). This guide provides step-by-step
 instructions on how to set up Terraform and Ansible for deploying the
 application on AWS.
-For kubernetes deployment, you can refer to the [Kubernetes Deployment Guide](docs/kubernetes_deployment.md).
+For Kubernetes deployment, you can refer to the [Kubernetes Deployment Guide](docs/kubernetes_deployment.md).
 
 ---
