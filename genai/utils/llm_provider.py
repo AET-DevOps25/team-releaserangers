@@ -135,7 +135,6 @@ class FileCapableLLM(LLM):
             file=file,
             config={"mime_type": "application/pdf"}
         )
-
         
         response = client.models.generate_content(
             model=self.model_name,
