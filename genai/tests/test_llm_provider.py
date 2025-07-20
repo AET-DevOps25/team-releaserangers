@@ -15,7 +15,7 @@ class TestGenericLLM:
         """Test LLM initialization with environment variables"""
         llm = GenericLLM()
         assert llm.api_url == "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent"
-        assert llm.api_key == "test-key"
+        assert llm.api_key == "test-key"  # pragma: allowlist secret
         assert llm.model_name == "gemini-2.5-flash-lite-preview-06-17"
         assert llm.backend == "google"
     
@@ -112,7 +112,7 @@ class TestFileCapableLLM:
         """Test FileCapableLLM initialization"""
         llm = FileCapableLLM()
         assert llm.api_url == "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent"
-        assert llm.api_key == "test-key"
+        assert llm.api_key == "test-key"  # pragma: allowlist secret
         assert llm.model_name == "gemini-2.5-flash-lite-preview-06-17"
         assert llm.backend == "google"
 

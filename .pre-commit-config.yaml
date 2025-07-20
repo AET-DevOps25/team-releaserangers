@@ -1,0 +1,61 @@
+repos:
+  # JavaScript/TypeScript linting with pnpm
+  - repo: local
+    hooks:
+      - id: pnpm-lint
+        name: pnpm lint
+        entry: bash -c 'cd client && pnpm lint'
+        language: system
+        files: ^client/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+
+  # Python code quality checks using local flake8
+  - repo: local
+    hooks:
+      # Basic flake8 check with complexity and line length limits
+      - id: flake8-basic
+        name: flake8 basic check
+        entry: flake8
+        language: system
+        args:
+          [
+            "--count",
+            "--exit-zero",
+            "--max-complexity=10",
+            "--max-line-length=127",
+            "--statistics",
+            "--exclude=client/node_modules,*/venv/*,*/env/*,*/.venv/*,*/.env/*",
+          ]
+        files: \.py$
+
+      # Critical error checks
+      - id: flake8-critical
+        name: flake8 critical errors
+        entry: flake8
+        language: system
+        args:
+          [
+            "--count",
+            "--select=E9,F63,F7,F82",
+            "--show-source",
+            "--statistics",
+            "--exclude=client/node_modules,*/venv/*,*/env/*,*/.venv/*,*/.env/*",
+          ]
+        files: \.py$
+
+  # Secret detection using local detect-secrets
+  - repo: local
+    hooks:
+      - id: detect-secrets
+        name: detect secrets
+        entry: detect-secrets-hook
+        language: system
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: |
+          (?x)^(
+            .*\.lock$|
+            .*node_modules/.*|
+            .*\.git/.*|
+            .*pnpm-lock\.yaml$|
+            .*package-lock\.json$
+          )$
