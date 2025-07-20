@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from typing import List
-from langchain_core.documents import Document
 
 class SummaryResponse(BaseModel):
     chapter_title: str

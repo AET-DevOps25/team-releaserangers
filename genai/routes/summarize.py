@@ -21,7 +21,7 @@ FILE_PARSING = os.getenv("FILE_PARSING", "False").lower() in ("true", "1", "yes"
         )
 async def summarize_pdf(
     courseId: str = Form(...),
-    existingChapterSummary: str = Form(...), # will be JSON string
+    existingChapterSummary: str = Form(...),  # will be JSON string
     files: List[UploadFile] = File(...),
     token: Optional[str] = Cookie(None)
 ):
@@ -40,12 +40,13 @@ async def summarize_pdf(
 
     if token is None:
         raise HTTPException(status_code=401, detail="Missing Cookie")
+    
     # Parse existing summary JSON
-
-    try:
+    # WIP
+    '''try:
         existing_summary_data = json.loads(existingChapterSummary)
     except json.JSONDecodeError as e:
-        raise Exception(f"Invalid JSON in existingChapterSummary: {str(e)}")
+        raise Exception(f"Invalid JSON in existingChapterSummary: {str(e)}")'''
 
     summaries = []
     for file in files:
@@ -92,7 +93,7 @@ async def summarize_pdf(
            
             chapter_resp = await client.post(
                 url,
-                #headers={"Authorization": authorization},
+                # headers={"Authorization": authorization},
                 cookies={"token": token},
                 json=chapter_payload
             )
