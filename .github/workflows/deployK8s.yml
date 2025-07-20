@@ -23,7 +23,7 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
 
-      - name: Helm dependencies (if needed)
+      - name: Helm dependencies
         run: |
           helm dependency update ./helm/releaserangersapp
 
@@ -36,6 +36,17 @@ jobs:
       - name: Force rollout restart for all deployments
         run: |
           kubectl rollout restart deployment -n releaserangers
+          kubectl rollout restart deployment -n ranger-observatory
 
-      - name: Show pods
+      - name: Show pods application namespace
         run: kubectl get pods -n releaserangers
+      
+      - name: Show pods in monitoring namespace
+        run: kubectl get pods -n ranger-observatory
+
+      - name: Get service endpoints
+        run: |
+          echo "Application Services:"
+          kubectl get svc -n releaserangers
+          echo "Monitoring Services:"
+          kubectl get svc -n ranger-observatory
