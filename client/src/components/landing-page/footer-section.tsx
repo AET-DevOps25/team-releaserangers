@@ -31,7 +31,7 @@ export function FooterSection() {
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium">Resources</h3>
-            <Link target="_blank" href="https://github.com/AET-DevOps25/team-releaserangers" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link target="_blank" href="https://github.com/AET-DevOps25/team-releaserangers/blob/main/README.md" className="text-sm text-muted-foreground hover:text-foreground">
               Documentation
             </Link>
             <Link target="_blank" href="https://github.com/AET-DevOps25/team-releaserangers/tree/main/docs" className="text-sm text-muted-foreground hover:text-foreground">

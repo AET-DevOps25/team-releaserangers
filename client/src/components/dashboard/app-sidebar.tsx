@@ -42,7 +42,7 @@ const data = {
   navSecondary: [
     {
       title: "Help",
-      url: "https://github.com/AET-DevOps25/team-releaserangers/tree/main/docs",
+      url: "https://github.com/AET-DevOps25/team-releaserangers/blob/main/README.md",
       icon: MessageCircleQuestion,
     },
   ],

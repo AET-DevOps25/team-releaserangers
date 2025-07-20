@@ -1,0 +1,66 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Helm dependencies
+        run: |
+          helm dependency update ./helm/releaserangersapp
+      
+      - name: Generate Kubernetes Secrets
+        run: |
+          cat helm/releaserangersapp/secrets.yaml.template | \
+          sed "s/\${JWT_SECRET}/${{ secrets.JWT_SECRET }}/g" | \
+          sed "s/\${LLM_API_KEY}/${{ secrets.LLM_API_KEY }}/g" > \
+          helm/releaserangersapp/secrets.yaml
+            
+      - name: Apply Kubernetes Secrets
+        run: |
+          kubectl apply -f helm/releaserangersapp/secrets.yaml
+
+      - name: Deploy Helm chart
+        run: |
+          helm upgrade --install releaserangersapp ./helm/releaserangersapp \
+            -n releaserangers --create-namespace \
+            -f ./helm/releaserangersapp/values.yaml
+      
+      - name: Force rollout restart for all deployments
+        run: |
+          kubectl rollout restart deployment -n releaserangers
+          kubectl rollout restart deployment -n ranger-observatory
+
+      - name: Show pods application namespace
+        run: kubectl get pods -n releaserangers
+      
+      - name: Show pods in monitoring namespace
+        run: kubectl get pods -n ranger-observatory
+
+      - name: Get service endpoints
+        run: |
+          echo "Application Services:"
+          kubectl get svc -n releaserangers
+          echo "Monitoring Services:"
+          kubectl get svc -n ranger-observatory

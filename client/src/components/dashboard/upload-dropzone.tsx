@@ -159,12 +159,12 @@ export function UploadDropzone({ isInDialog = false, onUploadComplete, courseId 
             <h3 className={cn(isInDialog ? "text-base" : "text-xl mb-2 font-semibold")}>{isInDialog ? "Drag and drop your new material" : "This course has no content yet"}</h3>
             <p className={cn("mt-1 text-muted-foreground", isInDialog ? "text-sm" : "text-base")}>
               {isInDialog ? (
-                "Upload PDF, DOCX, PPTX, or other course materials"
+                "Upload your PDF files here."
               ) : (
                 <>
                   Upload your first material to get started with this course.
                   <br />
-                  You can upload PDF, DOCX, PPTX, or other course materials.
+                  You can upload only upload PDF files.
                 </>
               )}
             </p>
