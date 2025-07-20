@@ -43,18 +43,18 @@
 
 Make sure to create a .env file from the .env.example and add your API Key.
 
-1. Navigate to the <code>genai</code> directory:
+- Navigate to the <code>genai</code> directory:
 
-   ```bash
-   cd genai
-   ```
+  ```bash
+  cd genai
+  ```
 
-2. Install Dependencies:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip3 install -r requirements.txt
-   ```
+- Install Dependencies:
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip3 install -r requirements.txt
+  ```
 
 ## Running the Application
 
@@ -74,6 +74,8 @@ From the project root, run:
 cd client
 pnpm dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ### Start the Server
 

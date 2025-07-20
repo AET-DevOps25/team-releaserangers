@@ -217,6 +217,7 @@ All diagrams giving an insight into our architecture are available as PDFs in th
 You can find and view these diagrams in the [docs/models](./docs/models) folder. They provide valuable insights into the design, data flow, and user experience of the ReleaseRangers platform.
 
 ### User Stories
+
 For a detailed list of user stories and requirements, please refer to the [User Stories](./docs/User_Stories.md) document. This outlines the key functionalities and user interactions that the application supports.
 It also represents the basis for our initial product backlog for development and testing efforts, ensuring that we meet the needs of our users effectively.
 
@@ -243,7 +244,7 @@ Our application uses PostgreSQL as the primary database with tables distributed 
 
 ## API documentation
 
-The entire API is defined using OpenAPI (see [`api-collections/openapi.yml`](api-collections/openapi.yml)).
+The entire API is defined using OpenAPI (see [`docs/api/openapi.yml`](docs/api/openapi.yml)).
 
 You can view the Swagger UI via GitHub Pages:
 
