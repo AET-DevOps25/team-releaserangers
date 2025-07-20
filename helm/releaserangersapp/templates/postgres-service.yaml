@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: "{{ .Values.team }}"
+spec:
+  type: {{ .Values.postgres.service.type }}
+  selector:
+    app: postgres
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: 5432

@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring-ingress
+  namespace: {{ .Values.monitoring.namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: "nginx"
+  tls:
+    - hosts:
+        - "{{ .Values.team }}-prometheus.student.k8s.aet.cit.tum.de"
+        - "{{ .Values.team }}-grafana.student.k8s.aet.cit.tum.de"
+      secretName: "monitoring-tls"
+  rules:
+    - host: "{{ .Values.team }}-prometheus.student.k8s.aet.cit.tum.de"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: {{ .Values.monitoring.prometheus.service.port }}
+    - host: "{{ .Values.team }}-grafana.student.k8s.aet.cit.tum.de"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: {{ .Values.monitoring.grafana.service.port }}

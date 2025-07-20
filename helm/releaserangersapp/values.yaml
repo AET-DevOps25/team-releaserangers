@@ -1,6 +1,30 @@
 # This file contains the default values for the App Helm chart.
+team: releaserangers
+
 namespace:
   create: false
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: csi-rbd-sc
+ 
+  service:
+    type: ClusterIP
+    port: 5432
 
 authenticationService:
   image:
@@ -15,6 +39,25 @@ authenticationService:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: CLIENT_URL
+      value: "http://client:3000"
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentication-env
+          key: JWT_SECRET
+
+client:
+  image:
+    repository: ghcr.io/aet-devops25/team-releaserangers/client
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  replicaCount: 1
+  env: []
 
 coursemgmtService:
   image:
@@ -29,6 +72,8 @@ coursemgmtService:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: CLIENT_URL
+      value: "http://client:3000"
 
 uploadService:
   image:
@@ -43,6 +88,35 @@ uploadService:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: CLIENT_URL
+      value: "http://client:3000"
+
+genaiService:
+  image:
+    repository: ghcr.io/aet-devops25/team-releaserangers/genai-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+  replicaCount: 1
+  env:
+    - name: LLM_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: genai-env
+          key: LLM_API_KEY
+    - name: LLM_API_URL
+      value: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent"
+    - name: LLM_MODEL
+      value: "gemini-2.5-flash-lite-preview-06-17"
+    - name: LLM_BACKEND
+      value: "google"
+    - name: COURSEMGMT_URL
+      value: "http://coursemgmt-service:8080"
+    - name: FILE_PARSING
+      value: "False"
 
 ingress:
   enabled: true
@@ -50,3 +124,43 @@ ingress:
   tls: true
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  services:
+    client:
+      port: 3000
+    authenticationService:
+      port: 8080
+    coursemgmtService:
+      port: 8080
+    uploadService:
+      port: 8080
+    genaiService:
+      port: 8000
+
+monitoring:
+  namespace: ranger-observatory
+  
+  prometheus:
+    image:
+      repository: prom/prometheus
+      tag: v2.45.0
+    service:
+      port: 9090
+    resources: {}
+    persistence:
+      enabled: false # set to false for testing
+      size: 5Gi
+      storageClassName: csi-rbd-sc
+
+  grafana:
+    image:
+      repository: grafana/grafana
+      tag: 10.1.5
+    service:
+      port: 3000
+    resources: {}
+    persistence:
+      enabled: false  # Set to false for simpler testing first
+      size: 2Gi
+      storageClassName: csi-rbd-sc
+      

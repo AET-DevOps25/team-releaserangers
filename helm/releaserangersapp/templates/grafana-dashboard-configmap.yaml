@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: {{ .Values.monitoring.namespace }}
+data:
+  main-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/main-dashboard.json" | indent 4 }}
+  alert-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/alert-dashboard.json" | indent 4 }}
+  all-services.json: |-
+{{ .Files.Get "grafana/dashboards/all-services.json" | indent 4 }}
+  authentication-service-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/authentiaction-service-dashboard.json" | indent 4 }}
+  coursemgmt-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/coursemgmt-dashboard.json" | indent 4 }}
+  summary-service-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/summary-service-dashboard.json" | indent 4 }}
+  upload-service-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/upload-service-dashboard.json" | indent 4 }}
+  dashboard.yml: |-
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        type: file
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /etc/grafana/provisioning/dashboards
