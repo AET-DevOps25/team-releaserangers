@@ -382,3 +382,6 @@ ansible/inventory.ini
 
 # Bruno
 api-collections/ReleaseRangers
+
+#K8s
+secrets.yaml

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: genai-service
+  namespace: "{{ .Values.team }}"
+spec:
+  type: {{ .Values.genaiService.service.type | default "ClusterIP" }}
+  selector:
+    app: genai-service
+  ports:
+    - port: {{ .Values.genaiService.service.port }}
+      targetPort: {{ .Values.genaiService.service.targetPort | default 8080 }}
