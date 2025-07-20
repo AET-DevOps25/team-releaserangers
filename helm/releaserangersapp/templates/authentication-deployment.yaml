@@ -5,6 +5,7 @@ metadata:
   namespace: "{{ .Values.team }}"
   labels:
     app: authentication-service
+    monitoring: "true"
 spec:
   replicas: {{ .Values.authenticationService.replicaCount }}
   selector:

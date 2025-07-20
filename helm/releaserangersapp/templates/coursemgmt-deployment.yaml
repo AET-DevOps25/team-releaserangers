@@ -5,6 +5,7 @@ metadata:
   namespace: "{{ .Values.team }}"
   labels:
     app: coursemgmt-service
+    monitoring: "true"
 spec:
   replicas: {{ .Values.coursemgmtService.replicaCount }}
   selector:

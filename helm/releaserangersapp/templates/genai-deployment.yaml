@@ -5,6 +5,7 @@ metadata:
   namespace: "{{ .Values.team }}"
   labels:
     app: genai-service
+    monitoring: "true"
 spec:
   replicas: {{ .Values.genaiService.replicaCount }}
   selector:

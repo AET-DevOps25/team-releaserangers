@@ -5,6 +5,7 @@ metadata:
   namespace: "{{ .Values.team }}"
   labels:
     app: upload-service
+    monitoring: "true"
 spec:
   replicas: {{ .Values.uploadService.replicaCount }}
   selector:

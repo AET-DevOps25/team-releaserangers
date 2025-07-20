@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: client
   namespace: "{{ .Values.team }}"
+  labels: 
+    monitoring: "true"
 spec:
   replicas: {{ .Values.client.replicaCount }}
   selector:

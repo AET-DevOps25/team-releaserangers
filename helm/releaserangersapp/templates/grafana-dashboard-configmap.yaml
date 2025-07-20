@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: {{ .Values.monitoring.namespace }}
+data:
+  main-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/main-dashboard.json" | indent 4 }}
+  alert-dashboard.json: |-
+{{ .Files.Get "grafana/dashboards/alert-dashboard.json" | indent 4 }}
+  dashboard.yml: |-
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        type: file
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /etc/grafana/provisioning/dashboards
