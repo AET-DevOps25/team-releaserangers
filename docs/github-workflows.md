@@ -133,5 +133,3 @@
     3. **Display KICS results:** Outputs the scan results to the workflow log for review and remediation.
 
 ---
-
-> This documentation provides a comprehensive summary of all CI/CD workflows, their triggers, and detailed explanations of each step performed for every pipeline in this repository.
