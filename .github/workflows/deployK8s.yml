@@ -28,6 +28,17 @@ jobs:
       - name: Helm dependencies
         run: |
           helm dependency update ./helm/releaserangersapp
+      
+      - name: Generate Kubernetes Secrets
+        run: |
+          cat helm/releaserangersapp/secrets.yaml.template | \
+          sed "s/\${JWT_SECRET}/${{ secrets.JWT_SECRET }}/g" | \
+          sed "s/\${LLM_API_KEY}/${{ secrets.LLM_API_KEY }}/g" > \
+          helm/releaserangersapp/secrets.yaml
+            
+      - name: Apply Kubernetes Secrets
+        run: |
+          kubectl apply -f helm/releaserangersapp/secrets.yaml
 
       - name: Deploy Helm chart
         run: |
