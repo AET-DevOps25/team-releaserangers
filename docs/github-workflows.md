@@ -9,6 +9,8 @@
   - [Build and Test Java Services](#build-and-test-java-services)
   - [Build Docker Images](#build-docker-images)
   - [Client CI](#client-ci)
+  - [Lint and Test GenAI Service](#lint-and-test-genai-service)
+  - [Setup the AWS environment](#setup-the-aws-environment)
   - [Build and Deploy Docker to AWS EC2](#build-and-deploy-docker-to-aws-ec2)
   - [Gitleaks Secret and KICS IaC Scan](#gitleaks-secret-and-kics-iac-scan)
   - [Deploy to Kubernetes](#deploy-to-kubernetes)
@@ -98,13 +100,63 @@
 
 ---
 
+## Lint and Test GenAI Service
+
+**Workflow file:** `.github/workflows/lint_and_test_genai_service.yml`
+
+**Trigger:**
+
+- On every push to the repository.
+
+**Jobs:**
+
+- **Test:**
+  - **Runs on:** `ubuntu-latest`
+  - **Working directory:** `./genai`
+  - **Steps:**
+    1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest codebase for the GenAI service.
+    2. **Set up Python 3.13:** Uses `actions/setup-python@v4` to install Python version 3.13 for a consistent testing environment.
+    3. **Cache pip dependencies:** Uses `actions/cache@v3` to cache pip's package directory (`~/.cache/pip`) based on the hash of all `requirements*.txt` files, speeding up subsequent installs.
+    4. **Install dependencies:** Installs and upgrades pip, then installs all required packages from `requirements.txt` and `requirements-test.txt` to ensure the environment is ready for linting and testing.
+    5. **Lint with flake8:** Installs flake8 and runs it twice: first to catch syntax errors and undefined names (failing the build if found), and then to report all style issues as warnings, enforcing code quality and style guidelines.
+    6. **Run tests:** Makes `run_tests.sh` executable and runs it to execute all tests for the GenAI service, ensuring correctness and stability.
+
+---
+
+## Setup the AWS environment
+
+**Workflow file:** `.github/workflows/setup_aws_environment.yml`
+
+**Trigger:**
+
+- Manually via `workflow_dispatch` with required AWS credentials and optional
+  Terraform state as inputs (encoded in base64).
+
+**Jobs:**
+
+- **Setup AWS:**
+  - **Runs on:** `ubuntu-latest`
+  - **Steps:**
+    1. **Checkout repository:** Uses `actions/checkout@v4` to fetch the latest codebase.
+    2. **Set up Terraform:** Uses `hashicorp/setup-terraform@v3` to install Terraform for infrastructure provisioning.
+    3. **Set up AWS credentials:** Uses `aws-actions/configure-aws-credentials@v4` to configure AWS credentials from workflow inputs, enabling secure access to AWS resources in the `us-east-1` region.
+    4. **Set up Terraform variables:** Creates a `terraform.tfvars` file in the `terraform` directory, injecting the SSH private and public keys from GitHub secrets for use by Terraform.
+    5. **Restore Terraform state (if provided):** If a base64-encoded Terraform state is provided as input, decodes and restores it to `terraform/terraform.tfstate` to resume from a previous state.
+    6. **Run Terraform to set up AWS environment:** Initializes and applies the Terraform configuration in the `terraform` directory, automatically approving changes to provision the AWS infrastructure.
+    7. **Wait for the AWS environment to be ready:** Waits for 120 seconds to allow AWS resources to become fully available.
+    8. **Output Terraform state for future use:** Outputs the base64-encoded Terraform state as a GitHub Actions notice, allowing it to be reused in future runs.
+
+---
+
 ## Build and Deploy Docker to AWS EC2
 
 **Workflow file:** `.github/workflows/deployAWS_docker.yml`
 
 **Trigger:**
 
-- Manually via `workflow_dispatch` (triggered by a user from the GitHub Actions UI).
+- Manually via `workflow_dispatch` (triggered by a user from the GitHub Actions
+  UI).
+- Or after a successful run of the `setup_aws_environment` workflow.
 
 **Steps:**
 

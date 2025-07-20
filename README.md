@@ -414,8 +414,7 @@ Documentation](docs/pre_commit_setup.md).
 
 ## Deployment Instructions
 
-For deployment instructions for AWS, please refer to the [Terraform and Ansible
-Setup Guide](docs/terraform_ansible_setup.md). This guide provides step-by-step
+For deployment instructions for AWS, please refer to the [AWS Deployment Guide](docs/aws_deployment.md). This guide provides step-by-step
 instructions on how to set up Terraform and Ansible for deploying the
 application on AWS.
 For Kubernetes deployment, you can refer to the [Kubernetes Deployment Guide](docs/kubernetes_deployment.md).
