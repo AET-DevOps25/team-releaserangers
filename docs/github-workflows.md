@@ -4,11 +4,14 @@
 
 ## Overview
 
-- [Build and Test Java Services](#build-and-test-java-services)
-- [Build Docker Images](#build-docker-images)
-- [Client CI](#client-ci)
-- [Build and Deploy Docker to AWS EC2](#build-and-deploy-docker-to-aws-ec2)
-- [Gitleaks Secret and KICS IaC Scan](#gitleaks-secret-and-kics-iac-scan)
+- [GitHub Workflows Documentation](#github-workflows-documentation)
+  - [Overview](#overview)
+  - [Build and Test Java Services](#build-and-test-java-services)
+  - [Build Docker Images](#build-docker-images)
+  - [Client CI](#client-ci)
+  - [Build and Deploy Docker to AWS EC2](#build-and-deploy-docker-to-aws-ec2)
+  - [Gitleaks Secret and KICS IaC Scan](#gitleaks-secret-and-kics-iac-scan)
+  - [Deploy to Kubernetes](#deploy-to-kubernetes)
 
 ---
 
@@ -131,5 +134,33 @@
     1. **Checkout code:** Ensures the latest code is available for scanning.
     2. **Run KICS Scan:** Uses `checkmarx/kics-github-action@v2.1.11` to scan Infrastructure-as-Code files (e.g., Terraform, Docker Compose) for security vulnerabilities and misconfigurations. Results are saved to `./kicsResults/`.
     3. **Display KICS results:** Outputs the scan results to the workflow log for review and remediation.
+
+---
+
+## Deploy to Kubernetes
+
+**Workflow file:** `.github/workflows/deploy_kubernetes.yml`
+
+**Trigger:**
+
+- Manually via `workflow_dispatch` (triggered by a user from the GitHub Actions UI).
+- On every merge to main.
+
+**Jobs:**
+
+- **Deploy:**
+  - **Steps:**
+    1. **Checkout code:** Uses `actions/checkout@v4` to fetch the latest codebase for Kubernetes deployment.
+    2. **Set up Kubeconfig:** Creates a Kubernetes configuration file from a GitHub secret (`KUBECONFIG`), enabling secure access to the Kubernetes cluster.
+    3. **Set up Helm:** Uses `azure/setup-helm@v4` to install Helm, the Kubernetes package manager used for deploying the application.
+    4. **Set up kubectl:** Uses `azure/setup-kubectl@v4` to install kubectl, the Kubernetes command-line tool for managing cluster resources.
+    5. **Helm dependencies:** Updates dependencies for the Helm chart by running `helm dependency update ./helm/releaserangersapp`, ensuring all required charts are available.
+    6. **Generate Kubernetes Secrets:** Creates a secrets file from a template, replacing placeholders with actual secret values from GitHub secrets (`JWT_SECRET`, `LLM_API_KEY`).
+    7. **Apply Kubernetes Secrets:** Deploys the generated secrets to the Kubernetes cluster using `kubectl apply`.
+    8. **Deploy Helm chart:** Uses Helm to deploy or update the application by running `helm upgrade --install`. This deploys all services to the `releaserangers` namespace, creating it if it doesn't exist.
+    9. **Force rollout restart:** Restarts all deployments in both the application namespace (`releaserangers`) and monitoring namespace (`ranger-observatory`) to ensure they pick up the latest changes.
+    10. **Show pods in application namespace:** Displays the status of all pods in the `releaserangers` namespace for verification.
+    11. **Show pods in monitoring namespace:** Displays the status of all pods in the `ranger-observatory` namespace for verification.
+    12. **Get service endpoints:** Lists all services in both namespaces, showing their endpoints and access information.
 
 ---
