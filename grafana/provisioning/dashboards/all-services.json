@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 19,
   "links": [],
   "panels": [
     {
@@ -26,7 +26,6 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "This panel keeps track of all upload errors that occurred. Each error is listed for 10 minutes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -74,38 +73,32 @@
               },
               {
                 "color": "red",
-                "value": 1
+                "value": 80
               }
             ]
           }
         },
         "overrides": [
           {
+            "__systemRef": "hideSeriesFrom",
             "matcher": {
-              "id": "byName",
-              "options": "{__name__=\"upload_service_errors_total\", instance=\"upload-service:8080\", job=\"upload-service\", service=\"upload-service\"}"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-red",
-                  "mode": "thresholds"
-                }
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "{__name__=\"application_ready_time_seconds\", instance=\"authentication-service:8080\", job=\"authentication-service\", main_application_class=\"devops25.releaserangers.authentication_service.AuthenticationServiceApplication\", service=\"auth-service\"}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
               }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "{__name__=\"upload_service_errors_gauge\", instance=\"upload-service:8080\", job=\"upload-service\", service=\"upload-service\"}"
             },
             "properties": [
               {
-                "id": "color",
+                "id": "custom.hideFrom",
                 "value": {
-                  "fixedColor": "dark-red",
-                  "mode": "thresholds"
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
                 }
               }
             ]
@@ -113,8 +106,8 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 11,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -132,7 +125,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.2",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "datasource": {
@@ -141,21 +134,55 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "upload_service_errors_gauge",
+          "expr": "process_virtual_memory_bytes",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "application_ready_time_seconds",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "http_server_requests_active_seconds_max",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C",
+          "useBackend": false
         }
       ],
-      "title": "Upload Error Gauge Panel",
+      "title": "All Services Ready Time and Requests Active Seconds",
       "type": "timeseries"
     }
   ],
   "preload": false,
-  "refresh": "auto",
+  "refresh": "5s",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -167,7 +194,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Alert Dashboard",
-  "uid": "fd7f0367-d1b0-49c1-9bdc-58ccc3aded23",
-  "version": 1
+  "title": "All Services Ready Time and Requests Active Seconds",
+  "uid": "434b1a96-257b-4407-ad0d-db0df628cade",
+  "version": 3
 }
