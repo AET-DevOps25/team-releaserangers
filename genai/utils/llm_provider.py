@@ -33,7 +33,7 @@ class GenericLLM(LLM):
             raise ValueError("LLM_API_KEY environment variable is required")
         if not self.api_url:
             raise ValueError("LLM_API_URL environment variable is required")
-        
+
         if self.backend == "google":
             # Special handling for Google Gemini
             headers = {
@@ -123,12 +123,12 @@ class FileCapableLLM(LLM):
     ) -> str:
         if self.backend != "google":
             raise NotImplementedError("This class only supports Google Gemini for file input.")
-        
+
         if not self.api_key:
             raise ValueError("LLM_API_KEY environment variable is required")
         if not self.api_url:
             raise ValueError("LLM_API_URL environment variable is required")
-        
+
         client = genai.Client(api_key=self.api_key)
 
         uploaded_file = client.files.upload(
@@ -136,7 +136,7 @@ class FileCapableLLM(LLM):
             config={"mime_type": "application/pdf"}
         )
 
-        
+
         response = client.models.generate_content(
             model=self.model_name,
             contents=[uploaded_file, prompt],
@@ -146,5 +146,5 @@ class FileCapableLLM(LLM):
 def get_llm(fileParsing):
     if fileParsing:
         return GenericLLM()
-    else: 
+    else:
         return FileCapableLLM()

@@ -129,18 +129,18 @@ resource "null_resource" "configure_instance" {
         echo "Waiting for SSH connection..."
         sleep 10
       done
-      
+
       # Create inventory file
       cat > ../ansible/inventory.ini <<EOF
       [app_server]
       ${aws_eip.app_server_eip.public_ip}
       EOF
-      
+
       # Create temporary private key file
       PRIVATE_KEY_FILE=$(mktemp)
       echo '${nonsensitive(var.ssh_private_key)}' > $PRIVATE_KEY_FILE
       chmod 600 $PRIVATE_KEY_FILE
-      
+
       # Run Ansible playbook with host key checking disabled
       ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
         -i ../ansible/inventory.ini \
@@ -148,7 +148,7 @@ resource "null_resource" "configure_instance" {
         --private-key=$PRIVATE_KEY_FILE \
         --extra-vars 'ansible_python_interpreter=/usr/bin/python3' \
         ../ansible/playbook.yml
-        
+
       # Clean up the temporary private key file
       rm -f $PRIVATE_KEY_FILE
     EOT

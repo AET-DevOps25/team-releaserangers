@@ -27,13 +27,13 @@ async def summarize_pdf(
 ):
     """
     Generate a summary of the given file(s).
-    
+
     Args:
         files: The request containing the uploaded file(s).
-        
+
     Returns:
         List of SummaryResponse containing the summaries and metadata for each file.
-        
+
     Raises:
         HTTPException: If the API call fails or other errors occur
     """
@@ -70,7 +70,7 @@ async def summarize_pdf(
             summary_string = await summarizer.summarize(file=file.file, filename=file.filename)
             end_summary = time.perf_counter()
             print(f"Summarization took {end_summary - start_summary:.2f} seconds")
-        
+
         # Clean summary
         cleaned = clean_markdown(summary_string)
         try:
@@ -89,7 +89,7 @@ async def summarize_pdf(
         print(url)
         # Send to chapter backend
         async with httpx.AsyncClient() as client:
-           
+
             chapter_resp = await client.post(
                 url,
                 #headers={"Authorization": authorization},

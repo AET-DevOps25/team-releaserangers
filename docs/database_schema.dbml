@@ -7,7 +7,7 @@ Table users {
   password varchar [note: 'Encrypted password']
   created_at timestamp [not null, default: `now()`, note: 'Account creation timestamp']
   updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
-  
+
   Note: 'User accounts for authentication and authorization'
 }
 
@@ -20,7 +20,7 @@ Table courses {
   course_is_favorite boolean [default: false, note: 'Whether course is marked as favorite']
   created_at timestamp [not null, default: `now()`, note: 'Course creation timestamp']
   updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
-  
+
   Note: 'Courses created by users to organize learning material'
 }
 
@@ -33,7 +33,7 @@ Table chapters {
   chapter_is_favorite boolean [default: false, note: 'Whether chapter is marked as favorite']
   created_at timestamp [not null, default: `now()`, note: 'Chapter creation timestamp']
   updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
-  
+
   Note: 'Individual chapters within courses containing learning content'
 }
 
@@ -45,7 +45,7 @@ Table uploaded_files {
   course_id varchar [not null, note: 'References the associated course']
   created_at timestamp [not null, default: `now()`, note: 'File upload timestamp']
   updated_at timestamp [not null, default: `now()`, note: 'Last update timestamp']
-  
+
   Note: 'Files uploaded by users for course content (PDFs, documents, etc.)'
 }
 

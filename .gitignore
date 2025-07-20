@@ -382,3 +382,7 @@ ansible/inventory.ini
 
 # Bruno
 api-collections/ReleaseRangers
+# Pre-commit cache
+.cache/pre-commit/
+# Pre-commit cache
+.cache/pre-commit/

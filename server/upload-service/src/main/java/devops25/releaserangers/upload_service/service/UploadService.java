@@ -41,7 +41,7 @@ public class UploadService {
 
     private final RestTemplate restTemplate;
     private static final Logger logger = LoggerFactory.getLogger(UploadService.class);
-  
+
     private static final List<String> ALLOWED_TYPES = List.of("application/pdf");
     private static final String NO_FILES_ERROR = "No files provided. Please upload at least one PDF file.";
     private static final String INVALID_TYPE_ERROR = "Currently only PDF file(s) are allowed. Please upload valid PDF file(s).";
@@ -145,7 +145,7 @@ public class UploadService {
                 uploadErrorTotal.increment();
                 throw new IllegalArgumentException(NULL_FILENAME_ERROR);
             }
-          
+
             final File existingFile = fileRepository.findByFilename(originalFilename);
             final byte[] fileBytes = file.getBytes();
             uploadRequestCounter.increment();

@@ -25,7 +25,7 @@ A clear and concise description of what you expected to happen.
 - [ ] Firefox
 - [ ] Safari
 - [ ] Edge
-- [ ] Other (please specify): 
+- [ ] Other (please specify):
 
 ## Additional Behavior
 Add any other context about the problem here. Include screenshots if applicable.

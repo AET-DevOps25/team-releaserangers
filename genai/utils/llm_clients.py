@@ -11,7 +11,7 @@ async def summarize_with_llm(
     file: Optional[BinaryIO] = None,
     filename: Optional[str] = None
 ) -> str:
-   
+
     # Initialize the LLM
     llm = get_llm(fileParsing=FILE_PARSING)
 
@@ -42,8 +42,8 @@ async def summarize_with_llm(
         Respond with **only** the JSON object and **nothing else**. Do not include any explanation, commentary, or formatting outside the JSON.
         """
 
-    
-    if FILE_PARSING: 
+
+    if FILE_PARSING:
         summary_prompt = PromptTemplate(
             input_variables=["lecture_text"],
             template=f"""

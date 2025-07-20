@@ -63,7 +63,7 @@ async def extract_markdown(file: UploadFile) -> str:
         format_options={
             InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
         }
-    )   
+    )
 
     # Convert the document
     result = converter.convert(source)
