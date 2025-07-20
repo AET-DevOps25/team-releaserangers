@@ -10,5 +10,5 @@ python-dotenv==1.1.1
 Requests==2.32.4
 uvicorn==0.35.0
 google-genai==1.25.0
-python-multipart==0.0.20
+python-multipart==0.0.18
 prometheus-fastapi-instrumentator
