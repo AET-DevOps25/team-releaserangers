@@ -182,14 +182,24 @@ This will build and start all services as defined in the `docker-compose.yml` fi
 
 For step-by-step instructions on setting up and running each service (client, server, GenAI/LLM service, and database) individually, see the [Start Individual Services Guide](docs/start-individual.md). This guide covers environment variable setup, dependency installation, and how to start each service separately for development or testing.
 
-
 ---
 
-## Architecture Overview
+## Additional Documentation
 
-### Top Level Architecture
+All diagrams giving an insight into our architecture are available as PDFs in the [docs/models](./docs/models) folder and can be checked out for more details.
 
-### Subsystem Decomposition
+### Models
+
+- **ArchitectureOverview.drawio.pdf**: Offers a comprehensive view of the overall system architecture, showing how the main components interact and communicate.
+- **SubsystemDecomposition.drawio.pdf**: Breaks down the system into its core subsystems, detailing the responsibilities and boundaries of each module/microservice.
+- **AnalysisObjectModel.drawio.pdf**: Presents the object model used for analysis, including key entities and their relationships.
+- **UseCaseDiagram.drawio.pdf**: Visualizes the main user interactions and use cases supported by the application.
+
+You can find and view these diagrams in the [docs/models](./docs/models) folder. They provide valuable insights into the design, data flow, and user experience of the ReleaseRangers platform.
+
+### User Stories
+For a detailed list of user stories and requirements, please refer to the [User Stories](./docs/User_Stories.md) document. This outlines the key functionalities and user interactions that the application supports.
+It also represents the basis for our initial product backlog for development and testing efforts, ensuring that we meet the needs of our users effectively.
 
 ---
 
