@@ -1,0 +1,53 @@
+name: Setup the AWS environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_access_key_id:
+        description: "AWS Access Key ID"
+        required: true
+        type: string
+      aws_secret_access_key:
+        description: "AWS Secret Access Key"
+        required: true
+        type: string
+      aws_session_token:
+        description: "AWS Session Token"
+        required: true
+        type: string
+
+jobs:
+  setup_aws:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ github.event.inputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
+          aws-session-token: ${{ github.event.inputs.aws_session_token }}
+          aws-region: us-east-1
+
+      - name: Set up Terraform variables
+        run: |
+          cd terraform
+          cat > terraform.tfvars <<EOF
+          ssh_private_key = "${{ secrets.AWS_EC2_PRIVATE_KEY }}"
+          ssh_public_key = "${{ secrets.AWS_EC2_PUBLIC_KEY }}"
+          EOF
+
+      - name: Run Terraform to set up AWS environment
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Wait for the AWS environment to be ready
+        run: sleep 120
