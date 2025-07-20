@@ -6,11 +6,14 @@ import devops25.releaserangers.coursemgmt_service.model.Course;
 import devops25.releaserangers.coursemgmt_service.service.ChapterService;
 import devops25.releaserangers.coursemgmt_service.service.CourseService;
 import devops25.releaserangers.coursemgmt_service.util.AuthUtils;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -53,8 +56,8 @@ class CourseControllerIntegrationTest {
     private ChapterService chapterService;
     @MockitoBean
     private AuthUtils authUtils;
+    // @Mock(answer = Answers.RETURNS_DEEP_STUBS) private MeterRegistry meterRegistry;
 
-    @Test
     @DisplayName("Should return 401 and empty body when unauthenticated")
     void getCourses_Unauthenticated_ShouldReturn401() throws Exception {
         when(authUtils.validateAndGetUserId(anyString())).thenReturn(Optional.empty());
@@ -242,5 +245,13 @@ class CourseControllerIntegrationTest {
 
         mockMvc.perform(delete(ENDPOINT_COURSE_1_DELETE).cookie(new Cookie(COOKIE_TOKEN, TOKEN_GOOD)))
                 .andExpect(status().isNoContent());
+    }
+
+    @TestConfiguration
+    static class MeterRegistryTestConfig {
+        @Bean
+        public MeterRegistry meterRegistry() {
+            return org.mockito.Mockito.mock(MeterRegistry.class, org.mockito.Answers.RETURNS_DEEP_STUBS);
+        }
     }
 }
