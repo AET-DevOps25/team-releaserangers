@@ -8,7 +8,7 @@ This document describes the monitoring and alerting setup for the ReleaseRangers
 
 ## Overview
 
-We use Prometheus and Grafana for monitoring, with Loki and Promtail for log aggregation. Alerts are configured in Grafana and can send notifications via email when certain conditions are met (e.g., upload errors).
+We use Prometheus and Grafana for monitoring, with Loki and Promtail for log aggregation. One alert rule is configured in Grafana, can be monitored using our alert dashboard and trigger when certain conditions are met (upload errors).
 
 ## Components
 
@@ -26,9 +26,14 @@ We use Prometheus and Grafana for monitoring, with Loki and Promtail for log agg
 
 ## Example: Upload Error Alert
 
-An alert is configured to monitor the `upload_service_errors_gauge` metric. If errors are detected, Grafana sends an email notification to the configured receiver.
+An alert is configured to monitor the `upload_service_errors_gauge` metric. If errors are detected, Grafana triggers the alert rule and the status is first set to pending and if the error persists to alerting.
+This alert can be monitored in the Grafana alert dashboard. The alert can be triggered e.g. by creating an empty pdf using:
+```bash
+touch empty.pdf
+```
+And then uploading it using the client application. This will cause the upload service to throw an error and trigger the alert.
 
-## How to Use
+## How to Use in local setup
 
 - Start all services using Docker Compose: `docker compose up --build`
 - Access Grafana at [http://localhost:3001](http://localhost:3001)
@@ -44,5 +49,6 @@ An alert is configured to monitor the `upload_service_errors_gauge` metric. If e
 - `grafana/provisioning/dashboards/`: Dashboard definitions
 - `grafana/provisioning/datasources/`: Datasource definitions
 - `grafana/provisioning/alerting/alerts.yaml`: Alerting rules
+
 
 ---
