@@ -9,15 +9,15 @@ data:
   alert-dashboard.json: |-
 {{ .Files.Get "grafana/dashboards/alert-dashboard.json" | indent 4 }}
   all-services.json: |-
-{{ .Files.Get "grafana/provisioning/dashboards/all-services.json" | indent 4 }}
+{{ .Files.Get "grafana/dashboards/all-services.json" | indent 4 }}
   authentication-service-dashboard.json: |-
-{{ .Files.Get "grafana/provisioning/dashboards/authentiaction-service-dashboard.json" | indent 4 }}
+{{ .Files.Get "grafana/dashboards/authentiaction-service-dashboard.json" | indent 4 }}
   coursemgmt-dashboard.json: |-
-{{ .Files.Get "grafana/provisioning/dashboards/coursemgmt-dashboard.json" | indent 4 }}
+{{ .Files.Get "grafana/dashboards/coursemgmt-dashboard.json" | indent 4 }}
   summary-service-dashboard.json: |-
-{{ .Files.Get "grafana/provisioning/dashboards/summary-service-dashboard.json" | indent 4 }}
+{{ .Files.Get "grafana/dashboards/summary-service-dashboard.json" | indent 4 }}
   upload-service-dashboard.json: |-
-{{ .Files.Get "grafana/provisioning/dashboards/upload-service-dashboard.json" | indent 4 }}
+{{ .Files.Get "grafana/dashboards/upload-service-dashboard.json" | indent 4 }}
   dashboard.yml: |-
     apiVersion: 1
     providers:
