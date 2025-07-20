@@ -10,6 +10,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
@@ -80,6 +81,7 @@ public class CourseController {
         return ResponseEntity.ok(course);
     }
 
+    @WithSpan
     @GetMapping
     public ResponseEntity<List<Course>> getCourses(@CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -108,6 +110,7 @@ public class CourseController {
         return ResponseEntity.ok(sortedCourses);
     }
 
+    @WithSpan
     @GetMapping("/{courseId}")
     public ResponseEntity<Course> getCourseById(@PathVariable String courseId, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -122,6 +125,7 @@ public class CourseController {
         return response;
     }
 
+    @WithSpan
     @GetMapping("/{courseId}/chapters")
     public ResponseEntity<List<Chapter>> getChaptersByCourseId(@PathVariable String courseId, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -146,6 +150,7 @@ public class CourseController {
         return ResponseEntity.ok(chapters);
     }
 
+    @WithSpan
     @PostMapping
     public ResponseEntity<Course> createCourse(@RequestBody Course course, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -167,6 +172,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.saveCourse(course));
     }
 
+    @WithSpan
     @PostMapping("/{courseId}/chapters")
     public ResponseEntity<Chapter> createChapterInCourse(
             @PathVariable String courseId,
@@ -191,6 +197,7 @@ public class CourseController {
         return ResponseEntity.ok(chapterService.saveChapter(request));
     }
 
+    @WithSpan
     @PutMapping("/{courseId}")
     public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course course, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -212,6 +219,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.saveCourse(existingCourse));
     }
 
+    @WithSpan
     @PatchMapping("/{courseId}")
     public ResponseEntity<Course> patchCourse(@PathVariable String courseId, @RequestBody Course course, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();
@@ -244,6 +252,7 @@ public class CourseController {
         }
     }
 
+    @WithSpan
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Void> deleteCourse(@PathVariable String courseId, @CookieValue(value = "token", required = false) String token) {
         courseMgmtRequestCounter.increment();

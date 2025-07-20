@@ -49,6 +49,7 @@ services:
       - "8082:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=udp://jaeger:6831
     env_file: .env
     depends_on:
       postgres-db:
@@ -151,7 +152,19 @@ services:
       - "3100:3100"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./loki/chunks:/loki/chunks
+      - ./loki/rules:/loki/rules
     command: -config.file=/etc/loki/loki-config.yaml
+    environment:
+      - JAEGER_AGENT_HOST=localhost
+      - JAEGER_AGENT_PORT=6831
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "6831:6831/udp" # Jaeger agent
     restart: unless-stopped
 
 volumes:
