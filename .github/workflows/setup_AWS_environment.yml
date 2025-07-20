@@ -15,6 +15,10 @@ on:
         description: "AWS Session Token"
         required: true
         type: string
+      terraform_state:
+        description: "Terraform state file content (optional, base64 encoded)"
+        required: false
+        type: string
 
 jobs:
   setup_aws:
@@ -47,6 +51,12 @@ jobs:
           EOT
           EOF
 
+      - name: Restore Terraform state (if provided)
+        if: ${{ github.event.inputs.terraform_state != '' }}
+        run: |
+          cd terraform
+          echo "${{ github.event.inputs.terraform_state }}" | base64 -d > terraform.tfstate
+
       - name: Run Terraform to set up AWS environment
         run: |
           cd terraform
@@ -55,3 +65,9 @@ jobs:
 
       - name: Wait for the AWS environment to be ready
         run: sleep 120
+
+      - name: Output Terraform state for future use
+        run: |
+          cd terraform
+          echo "::notice title=Terraform State::To reuse this infrastructure, copy the following base64-encoded state:"
+          echo "::notice::$(base64 -w 0 terraform.tfstate)"
