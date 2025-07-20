@@ -42,7 +42,9 @@ This project is leveraging GenAI to create smart summaries of lecture materials.
   - [Code Quality: SpotBugs \& Checkstyle \& pnpm Audit](#code-quality-spotbugs--checkstyle--pnpm-audit)
     - [How to Run SpotBugs and Checkstyle](#how-to-run-spotbugs-and-checkstyle)
     - [Maven Phase Integration](#maven-phase-integration)
-    - [How to Run pnpm Audit for the Client](#how-to-run-pnpm-audit-for-the-client)
+    - [How to Run pnpm Audit for the
+      Client](#how-to-run-pnpm-audit-for-the-client)
+    - [Run Pre-commit Hook](#run-pre-commit-hook)
   - [Deployment Instructions](#deployment-instructions)
 
 ---
@@ -332,9 +334,13 @@ mvn clean package
 
 ### GenAI Service Tests
 
+For the GenAI service tests, please refer to the [GenAI Service Testing
+Guide](docs/genai_service_testing.md). This guide provides detailed instructions
+on how to set up and run tests for this service.
+
 ---
 
-## Code Quality: SpotBugs & Checkstyle & pnpm Audit
+## Code Quality: SpotBugs & Checkstyle & pnpm Audit & Pre-commit Hook
 
 ### How to Run SpotBugs and Checkstyle
 
@@ -397,6 +403,12 @@ To ensure the client dependencies are secure and up-to-date, you can use `pnpm a
 
   This will analyze the installed dependencies and report any known
   vulnerabilities.
+
+### Run Pre-commit Hook
+
+To ensure code quality and consistency, we have set up a pre-commit hook. For
+more information on that, check out the [Pre-commit Hook
+Documentation](docs/pre_commit_setup.md).
 
 ---
 
