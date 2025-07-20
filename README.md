@@ -41,9 +41,9 @@ This project is maintained by:
 
 ## Student Responsibilities
 
-- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup, Python Testing
+- **Florian Charrot (FC)**: GenAI microservice, LLM Integration, Kubernetes Setup
 - **Jonathan Müller (JM)**: Frontend Development, Authentication Service,
-  Database Design, Client Testing, Terraform and Ansible Setup, AWS Deployment
+  Database Design, Client Testing, Terraform and Ansible Setup, AWS Deployment, GenAI Service Testing
 - **Luis Leutbecher (LL)**: SpringBoot Backend, GitHub Actions, CI/CD Pipeline, Spring Boot Testing, Docker Setup, Monitoring and Observation
 
 ---
