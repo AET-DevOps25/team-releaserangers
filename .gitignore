@@ -384,4 +384,4 @@ ansible/inventory.ini
 api-collections/ReleaseRangers
 
 #K8s
-secrets.yaml
+# secrets.yaml (deactivated to provide tutor with necessar credentials)
