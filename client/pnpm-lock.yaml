@@ -57,8 +57,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       frimousse:
-        specifier: ^0.2.0
-        version: 0.2.0(react@19.1.0)
+        specifier: ^0.3.0
+        version: 0.3.0(react@19.1.0)(typescript@5.8.3)
       jose:
         specifier: ^6.0.11
         version: 6.0.11
@@ -1632,10 +1632,14 @@ packages:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
     engines: {node: '>= 0.4'}
 
-  frimousse@0.2.0:
-    resolution: {integrity: sha512-viSrsVQWKR4Q7xzC0lkx3Wu9i1+IHrth0QXn0nlIIJXpltwUnjkGXSTuoW7WHI5aJ4z49WR8E/pyQizFjlNtTA==}
+  frimousse@0.3.0:
+    resolution: {integrity: sha512-kO6LMoKY/cLAYEhXXtqLRaLIE6L/DagpFPrUZaLv3LsUa1/8Iza3HhwZcgN8eZ+weXnhv69eoclNUPohcCa/IQ==}
     peerDependencies:
       react: ^18 || ^19
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -4304,9 +4308,11 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
-  frimousse@0.2.0(react@19.1.0):
+  frimousse@0.3.0(react@19.1.0)(typescript@5.8.3):
     dependencies:
       react: 19.1.0
+    optionalDependencies:
+      typescript: 5.8.3
 
   fsevents@2.3.2:
     optional: true
